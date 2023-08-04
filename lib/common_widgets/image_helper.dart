@@ -1,6 +1,6 @@
 
 
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -46,7 +46,7 @@ class ImageHelper {
   }
 
   static Widget loadImageFile(
-    Uint8List path,{
+    File path,{
     double? width,
     double? height,
     BoxFit? fit,
@@ -55,7 +55,7 @@ class ImageHelper {
   }) {
     return ClipRRect(
       borderRadius: borderRadius ?? BorderRadius.zero,
-      child: Image.memory(
+      child: Image.file(
         path,
         width: width,
         height: height,

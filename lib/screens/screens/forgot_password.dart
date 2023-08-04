@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
-import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 

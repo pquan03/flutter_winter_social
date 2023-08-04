@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/constants/asset_helper.dart';
-import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/screens/screens/forgot_password.dart';
@@ -22,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
+  // bool _isLoading = false;
 
   @override
   void dispose() {
@@ -33,9 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _loginUser() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      // setState(() {
+      //   _isLoading = true;
+      // });
       final res = await AuthApi()
           .loginUser(
               _accountController.text, _passwordController.text
@@ -43,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if(!mounted) return;
       Provider.of<AuthProvider>(context, listen: false).setAuth(res);
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MainAppScreen()));
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
     } catch (err) {
       showSnackBar(context, 'Error', 'Email or password is incorrect');
     }

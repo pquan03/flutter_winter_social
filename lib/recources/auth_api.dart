@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/recources/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,8 +14,8 @@ class AuthApi {
           },
           null);
       final auth = Auth.fromJson(res);
-      final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-      final SharedPreferences prefs = await _prefs;
+      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final SharedPreferences prefs = await asynPrefs;
       prefs.setString('accessToken', auth.accessToken!);
       prefs.setString('refreshToken', auth.refreshToken!);
       return auth;
@@ -80,8 +78,8 @@ class AuthApi {
     try {
       final res = await _repository.getApi('refresh_token', refreshToken);
       final auth = Auth.fromJson(res);
-      final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-      final SharedPreferences prefs = await _prefs;
+      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final SharedPreferences prefs = await asynPrefs;
       prefs.setString('accessToken', auth.accessToken!);
       prefs.setString('refreshToken', auth.refreshToken!);
       return auth;
@@ -92,8 +90,8 @@ class AuthApi {
 
   Future<dynamic> logoutUser() async {
     try {
-      final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-      final SharedPreferences prefs = await _prefs;
+      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final SharedPreferences prefs = await asynPrefs;
       prefs.remove('accessToken');
       prefs.remove('refreshToken');
       return 'Success';

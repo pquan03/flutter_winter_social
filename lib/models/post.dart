@@ -1,4 +1,3 @@
-import 'package:insta_node_app/models/user.dart';
 
 class Images {
   String? publicId;
@@ -21,24 +20,24 @@ class Images {
 
 class UserPost {
   String? sId;
-  String? fullname;
   String? username;
   String? avatar;
+  String? fullname;
 
-  UserPost({this.sId, this.fullname, this.username, this.avatar});
+  UserPost({this.sId, this.username, this.avatar, this.fullname = ''});
 
   UserPost.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    fullname = json['fullname'];
     username = json['username'];
+    fullname = json['fullname'] ?? '';
     avatar = json['avatar'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
-    data['fullname'] = this.fullname;
     data['username'] = this.username;
+    data['fullname'] = this.fullname ?? '';
     data['avatar'] = this.avatar;
     return data;
   }
@@ -77,7 +76,7 @@ class Post {
     }
     likes = json['likes'].cast<String>();
     comments = json['comments'].cast<String>();
-    userPost = json['user'];
+    userPost = json['user'] != null ? new UserPost.fromJson(json['user']) : null;
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];

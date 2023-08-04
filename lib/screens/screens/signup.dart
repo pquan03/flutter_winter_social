@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/retry.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/widgets/signup_layout.dart';

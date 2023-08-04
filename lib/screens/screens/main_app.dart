@@ -1,15 +1,14 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/screens/screens/add_post.dart';
 import 'package:insta_node_app/screens/screens/home.dart';
 import 'package:insta_node_app/screens/screens/keep_alive_screen.dart';
 import 'package:insta_node_app/screens/screens/profile.dart';
 import 'package:insta_node_app/screens/screens/reels.dart';
 import 'package:insta_node_app/screens/screens/search.dart';
+import 'package:insta_node_app/widgets/picker_crop_result_screen.dart';
 import 'package:provider/provider.dart';
 
 class MainAppScreen extends StatefulWidget {
@@ -43,14 +42,14 @@ class _MainAppScreenState extends State<MainAppScreen> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context).auth;
     return SafeArea(
-      child: Scaffold(
-        body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: _pageController,
-          onPageChanged: _onPageChanged,
-          children: <Widget>[..._screens(auth).map((e) => e).toList()],
-        ),
-        bottomNavigationBar: Container(
+        child: Scaffold(
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: <Widget>[..._screens(auth).map((e) => e).toList()],
+      ),
+      bottomNavigationBar: Container(
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
@@ -59,60 +58,85 @@ class _MainAppScreenState extends State<MainAppScreen> {
               ),
             ),
           ),
-          child: CupertinoTabBar(
-            backgroundColor: Colors.black,
-            activeColor: Colors.white,
-            currentIndex: _currentIndex,
+          child: CurvedNavigationBar(
+            animationDuration: const Duration(milliseconds: 300),
+            height: 50,
+            index: _currentIndex,
+            color: Colors.black,
+            backgroundColor: Colors.white,
+            buttonBackgroundColor: Colors.black,
+            letIndexChange: (value) {
+              if (value == 2) {
+                InstaAssetPicker.pickAssets(
+                          context,
+                          title: 'New post',
+                          pickerTheme: InstaAssetPicker.themeData(
+                                  Theme.of(context).primaryColor)
+                              .copyWith(
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.blue,
+                                disabledForegroundColor: Colors.red,
+                              ),
+                            ),
+                          ),
+                          maxAssets: 5,
+                          onCompleted: (cropStream) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PickerCropResultScreen(
+                                  cropStream: cropStream,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                return false;
+              }
+              return true;
+            },
             onTap: navigationTapped,
             items: [
-              ActiveBottomNavigationBarItem(
-                  0, Icon(Icons.home), Icon(Icons.home_outlined)),
-              ActiveBottomNavigationBarItem(
-                  1, Icon(Icons.search), Icon(Icons.search_outlined)),
-              ActiveBottomNavigationBarItem(
-                  2, Icon(Icons.add_box), Icon(Icons.add_box_outlined)),
-              ActiveBottomNavigationBarItem(
-                  3, Icon(Icons.movie_filter), Icon(Icons.movie_filter_outlined)),
-              ActiveBottomNavigationBarItem(
-                  4,
-                  Container(
-                    height: 35,
-                    width: 35,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2)),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(auth.user!.avatar!),
-                      radius: 16,
-                    ),
-                  ),
-                  CircleAvatar(
-                      backgroundImage: NetworkImage(auth.user!.avatar!),
-                      radius: 16,
-                    ),
-              )
+              iconWidget(0, Icons.home, Icons.home_outlined),
+              iconWidget(1, Icons.search, Icons.search_outlined),
+              iconWidget(2, Icons.add_box, Icons.add_box_outlined),
+              iconWidget(3, Icons.movie_filter, Icons.movie_filter_outlined),
+              Container(
+                height: 35,
+                width: 35,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: _currentIndex == 4
+                        ? Border.all(color: Colors.white, width: 2)
+                        : Border.all(color: Colors.transparent, width: 0)),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(auth.user!.avatar!),
+                  radius: 16,
+                ),
+              ),
             ],
-          ),
-        ),
-      ),
-    );
+          )),
+    ));
   }
 
+  List<Widget> _screens(Auth auth) => [
+        KeepAlivePage(
+            child: HomeScreen(
+          accessToken: auth.accessToken!,
+        )),
+        KeepAlivePage(
+            child: SearchScreen(
+          accessToken: auth.accessToken!,
+        )),
+        Container(),
+        ReelsScreen(),
+        ProfileScreen(),
+      ];
 
-  List<Widget> _screens (Auth auth) => [
-    KeepAlivePage(child: HomeScreen(accessToken: auth.accessToken!,)),
-    SearchScreen(),
-    AddPostScreen(),
-    ReelsScreen(),
-    ProfileScreen(),
-  ];
-
-  BottomNavigationBarItem ActiveBottomNavigationBarItem(
-      int index, Widget iconActive, Widget iconInactive) {
-    return BottomNavigationBarItem(
-      icon: _currentIndex == index ? iconActive : iconInactive,
-      // label: label,
-      backgroundColor: _currentIndex == index ? Colors.black : Colors.grey,
+  Widget iconWidget(int index, IconData iconActive, IconData iconInactive) {
+    return Icon(
+      index == _currentIndex ? iconActive : iconInactive,
+      color: index == _currentIndex ? Colors.white : Colors.grey,
     );
   }
 }

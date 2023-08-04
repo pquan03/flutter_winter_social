@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,8 +5,10 @@ import 'package:insta_node_app/constants/asset_helper.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
-import 'package:insta_node_app/screens/screens/messages.dart';
+import 'package:insta_node_app/screens/screens/keep_alive_screen.dart';
+import 'package:insta_node_app/screens/screens/conversation.dart';
 import 'package:insta_node_app/screens/screens/notifications.dart';
+import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 
@@ -22,55 +22,136 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Post> _posts = [];
+  static int page = 1;
+  bool _isLoadMore = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     getPosts();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        getPosts();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 
   void getPosts() async {
-    final res = await PostApi().getPosts(widget.accessToken);
-    if(res is List<Post>) {
+    setState(() {
+      _isLoadMore = true;
+    });
+    final res = await PostApi().getPosts(widget.accessToken, page);
+    if (res is List) {
       setState(() {
-        _posts = res;
+        _posts = [..._posts, ...res];
+        page++;
+        _isLoadMore = false;
       });
     } else {
-      print(res);
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    }
+  }
+
+  void _deletePost(String postId) async {
+    print('halo');
+    final res = await PostApi().deletePost(postId, widget.accessToken);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _posts.removeWhere((post) => post.sId == postId);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    final auth = Provider.of<AuthProvider>(context).auth;
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.black,
-        title: SvgPicture.asset(AssetHelper.icSvg, height: 32, color: Colors.white,),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => NotificationScreen()));
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Icon(Icons.favorite_outline),
-            )),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => MessageScreen()));
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(FontAwesomeIcons.comment),
-            ),
+        appBar: AppBar(
+          centerTitle: false,
+          backgroundColor: Colors.black,
+          title: SvgPicture.asset(
+            AssetHelper.icSvg,
+            height: 32,
+            color: Colors.white,
           ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: _posts.length,
-        itemBuilder: (context, index) {
-          return PostCard(post: _posts[index],);
-        },
+          actions: [
+            Row(
+              children: [
+                GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => KeepAlivePage(
+                                  child: NotificationScreen(
+                                accessToken: widget.accessToken,
+                              ))));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Icon(Icons.favorite_outline),
+                    )),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ConversationScreen(
+                              accessToken: widget.accessToken,
+                            )));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Icon(FontAwesomeIcons.comment),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            setState(() {
+              _posts = [];
+              page = 1;
+            });
+            getPosts();
+          },
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: _posts.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _posts.length) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Opacity(
+                        opacity: _isLoadMore ? 1.0 : 0.0,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        )),
+                  ),
+                );
+              }
+              return PostCard(
+                post: _posts[index],
+                deletePost: _deletePost,
+                auth: auth,
+              );
+            },
+          ),
+        ),
       ),
     );
   }

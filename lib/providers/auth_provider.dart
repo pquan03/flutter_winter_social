@@ -12,4 +12,5 @@ class AuthProvider extends ChangeNotifier {
     _auth = auth;
     notifyListeners();
   }
+
 } 

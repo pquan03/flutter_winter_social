@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:insta_node_app/common_widgets/button_widget.dart';
+import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/user.dart' as model;
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/recources/user_api.dart';
+import 'package:insta_node_app/screens/screens/edit_profile.dart';
 import 'package:insta_node_app/screens/screens/settings.dart';
+import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -14,13 +17,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  void handleUpdateUser(Map<String, dynamic> data) async {
+    final res = await UserApi().updateUser(data['user']!, data['access_token']!);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      if (!mounted) return;
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.setAuth(Auth.fromJson(data));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final model.User user = Provider.of<AuthProvider>(context).auth.user!;
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.grey[900],
           title: Text(user.username!,
               style: TextStyle(
                 fontSize: 20,
@@ -71,18 +86,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     flex: 1,
                     child: Row(
                       children: [
-                        StartColumnItem(0, 'Posts'),
+                        startColumnItem(0, 'Posts'),
                         Spacer(),
-                        StartColumnItem(user.followers!.length, 'Followers'),
+                        startColumnItem(user.followers!.length, 'Followers'),
                         Spacer(),
-                        StartColumnItem(user.following!.length, 'Following'),
+                        startColumnItem(user.following!.length, 'Following'),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            Text(user.mobile!, style: TextStyle(fontSize: 18, color: Colors.white),),
+            Text(
+              user.mobile!,
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
             const SizedBox(
               height: 16,
             ),
@@ -92,14 +110,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => EditProfileScreen(
+                                  user: user,
+                                  onUpdateUser: handleUpdateUser,
+                                )));
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: HexColor('#121212'),
-                          borderRadius: BorderRadius.circular(10)
-                        ),
+                            color: HexColor('#121212'),
+                            borderRadius: BorderRadius.circular(10)),
                         child: Text('Edit Profile',
                             style: TextStyle(
                                 fontSize: 16,
@@ -108,18 +131,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8,),
+                  const SizedBox(
+                    width: 8,
+                  ),
                   Expanded(
                     child: GestureDetector(
-                      onTap:  () {
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: HexColor('#121212'),
-                          borderRadius: BorderRadius.circular(10)
-                        ),
+                            color: HexColor('#121212'),
+                            borderRadius: BorderRadius.circular(10)),
                         child: Text('Share profile',
                             style: TextStyle(
                                 fontSize: 16,
@@ -135,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ));
   }
 
-  Column StartColumnItem(int num, String title) {
+  Column startColumnItem(int num, String title) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,

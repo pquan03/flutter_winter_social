@@ -26,20 +26,20 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.white,
           primaryIconTheme: const IconThemeData(color: Colors.black),
           primaryTextTheme: const TextTheme(
-            headline6: TextStyle(color: Colors.black, fontFamily: "Roboto"),
+            headlineMedium: TextStyle(color: Colors.black, fontFamily: "Roboto"),
           ),
           textTheme: const TextTheme(
-            headline6: TextStyle(color: Colors.black),
+            headlineMedium: TextStyle(color: Colors.black),
           ),
         ),
         darkTheme: ThemeData(
           primaryColor: Colors.black,
           primaryIconTheme: const IconThemeData(color: Colors.white),
           primaryTextTheme: const TextTheme(
-            headline6: TextStyle(color: Colors.white, fontFamily: "Roboto"),
+            headlineMedium: TextStyle(color: Colors.white, fontFamily: "Roboto"),
           ),
           textTheme: const TextTheme(
-            headline6: TextStyle(color: Colors.white),
+            headlineMedium: TextStyle(color: Colors.white),
           ),
         ),
         home: const SplashPage()
