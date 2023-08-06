@@ -130,7 +130,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
         )),
         Container(),
         ReelsScreen(),
-        ProfileScreen(),
+        KeepAlivePage(
+          child: ProfileScreen(
+            token: auth.accessToken!,
+            userId: auth.user!.sId!,
+          ),
+        ),
       ];
 
   Widget iconWidget(int index, IconData iconActive, IconData iconInactive) {

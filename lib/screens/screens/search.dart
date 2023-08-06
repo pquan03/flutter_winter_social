@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
@@ -6,6 +5,7 @@ import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
+import 'package:insta_node_app/screens/screens/other_profile.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -22,11 +22,12 @@ class _SearchScreenState extends State<SearchScreen> {
   final FocusNode _focusNode = FocusNode();
   bool _isLoading = false;
   bool _isLoadingShimmer = false;
-  List<Post> _posts = [];
+  List<ProfilePost> _posts = [];
   List<UserPost> users = [];
   bool _isSearch = false;
-  bool _isLoadMore = false;
+  bool _isLoadMore = true;
   static int page = 1;
+  static const int limit = 15;
 
   @override
   void initState() {
@@ -48,19 +49,24 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void getPostDiscover() async {
+    if (_posts.isNotEmpty && _posts.length % limit != 0) {
+      setState(() {
+        _isLoadMore = false;
+      });
+      return;
+    }
     setState(() {
-      _isLoadMore = true;
       _isLoading = true;
     });
-    final res = await PostApi().getPostDiscover(widget.accessToken, page);
+    final res =
+        await PostApi().getPostDiscover(widget.accessToken, page, limit);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        page++;
         _posts = [..._posts, ...res];
-        _isLoadMore = false;
+        page++;
         _isLoading = false;
       });
     }
@@ -79,6 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       onTap: () {
                         setState(() {
                           _isSearch = false;
+                          _searchController.clear();
                           users = [];
                           _focusNode.unfocus();
                         });
@@ -132,7 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     controller: _searchController,
                     autofocus: false,
                     style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white, fontWeight: FontWeight.bold),
                     focusNode: _focusNode,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search, color: Colors.white),
@@ -163,63 +170,83 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         body: !_isSearch
             ? _isLoading
-                ? MasonryGridView.count(
-                    itemCount: 12,
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                    itemBuilder: (context, index) {
-                      if (index % 3 == 0 && index != 0) {
-                        return Container(
-                          height: 300,
-                          color: Colors.grey[800],
-                        );
-                      }
-                      return Container(
-                        height: 150,
-                        color: Colors.grey[800],
-                      );
-                    },
-                  )
+                ? SingleChildScrollView(
+                  child: StaggeredGrid.count(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 2,
+                      crossAxisSpacing: 2,
+                      children: [
+                        ...List.generate(15, (index) {
+                          if (index == 0 ||
+                              index == 7 ||
+                              (index >= 10 &&
+                                  (index % 10 == 0 || index % 10 == 6))) {
+                            return StaggeredGridTile.count(
+                              crossAxisCellCount: 1,
+                              mainAxisCellCount: 2,
+                              child: Container(
+                                color: Colors.grey,
+                              ),
+                            );
+                          } 
+                          return StaggeredGridTile.count(
+                            crossAxisCellCount: 1,
+                            mainAxisCellCount: 1,
+                            child: Container(
+                              color: Colors.grey,
+                            ),
+                          );
+                        })
+                      ],
+                    ),
+                )
                 : RefreshIndicator(
                     onRefresh: () async {
                       setState(() {
                         _posts = [];
                         page = 1;
+                        
                       });
                       getPostDiscover();
                     },
-                    child: MasonryGridView.count(
+                    child: SingleChildScrollView(
                       controller: _scrollController,
-                      itemCount: _posts.length + 1,
+                  child: StaggeredGrid.count(
                       crossAxisCount: 3,
                       mainAxisSpacing: 2,
                       crossAxisSpacing: 2,
-                      itemBuilder: (context, index) {
-                        if (index == _posts.length) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
+                      children: [...[..._posts, ProfilePost.fromJson({
+                        '_id': '1',
+                        'image': 'https://i.pinimg.com/originals/0f/6a/9e/0f6a9e2e2e2e2e2e2e2e2e2e2e2e2e2.jpg',
+                      })].asMap().entries.map((e) {
+                        if(e.key == 0 ||
+                              e.key == 7 ||
+                              (e.key >= 10 &&
+                                  (e.key % 10 == 0 || e.key % 10 == 6))) {
+                            return StaggeredGridTile.count(
+                              crossAxisCellCount: 1,
+                              mainAxisCellCount: 2,
+                              child: ImageHelper.loadImageNetWork(_posts[e.key].image!, fit: BoxFit.cover),
+                            );
+                          } else if(e.key == _posts.length) {
+                            return StaggeredGridTile.count(
+                              crossAxisCellCount: 3,
+                              mainAxisCellCount: 1,
                               child: Opacity(
-                                  opacity: _isLoadMore ? 1.0 : 0.0,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )),
-                            ),
+                                opacity: _isLoadMore ? 1  : 0,
+                                child: Center(
+                                  child: CircularProgressIndicator(color: Colors.white, valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+                              )
+                            );
+                          }
+                          return StaggeredGridTile.count(
+                            crossAxisCellCount: 1,
+                            mainAxisCellCount: 1,
+                            child: ImageHelper.loadImageNetWork(_posts[e.key].image!, fit: BoxFit.cover),
                           );
-                        }
-                        if (index == 0 || index == 7 ||(index >= 10 && (index % 10 == 0 || index % 10 == 6))) {
-                          return ImageHelper.loadImageNetWork(
-                              _posts[index].images![0].url!,
-                              fit: BoxFit.cover,
-                              height: 300);
-                        }
-                        return ImageHelper.loadImageNetWork(
-                            _posts[index].images![0].url!,
-                            fit: BoxFit.cover,
-                            height: 150);
-                      },
+                      }).toList()],
                     ),
+                ),
                   )
             : _isLoadingShimmer
                 ? LoadingShimmer(
@@ -233,20 +260,28 @@ class _SearchScreenState extends State<SearchScreen> {
                 : ListView.builder(
                     itemCount: users.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(users[index].avatar!),
-                        ),
-                        title: Text(
-                          users[index].username!,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          users[index].fullname!,
-                          style: TextStyle(
-                              color: Colors.grey, fontWeight: FontWeight.w600),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => OtherProfileScreen(userId: users[index].sId!, token: widget.accessToken,)));
+                        },
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 25,
+                            backgroundImage: NetworkImage(users[index].avatar!),
+                          ),
+                          title: Text(
+                            users[index].username!,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            users[index].fullname!,
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                       );
                     },

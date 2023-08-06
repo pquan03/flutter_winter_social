@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_node_app/bloc/message_bloc/message_bloc.dart';
-import 'package:insta_node_app/bloc/message_bloc/message_event.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/widgets/grid_icon.dart';
@@ -79,13 +77,13 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
             widget.controller.text != ''
                 ? TextButton(
                     onPressed: () {
-                      context.read<MessageBloc>().add(CreateMessageEvent(data: {
-                        'text': widget.controller.text,
-                        'media': const [],
-                        'recipient' : widget.recipientId,
-                        'call' : null,
-                      }, token: accessToken));
-                      widget.controller.text = '';
+                      // context.read<MessageBloc>().add(CreateMessageEvent(data: {
+                      //   'text': widget.controller.text,
+                      //   'media': const [],
+                      //   'recipient' : widget.recipientId,
+                      //   'call' : null,
+                      // }, token: accessToken));
+                      // widget.controller.text = '';
                     },
                     child: Text(
                       'Send',

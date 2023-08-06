@@ -39,7 +39,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       showSnackBar(context, 'Error', res);
     } else {
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
     setState(() {
       _isLoading = false;

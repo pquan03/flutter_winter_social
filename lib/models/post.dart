@@ -46,7 +46,7 @@ class UserPost {
 class Post {
   String? sId;
   String? content;
-  List<Images>? images;
+  List<String>? images;
   List<String>? likes;
   List<String>? comments;
   UserPost? userPost;
@@ -69,10 +69,7 @@ class Post {
     sId = json['_id'];
     content = json['content'];
     if (json['images'] != null) {
-      images = <Images>[];
-      json['images'].forEach((v) {
-        images!.add(new Images.fromJson(v));
-      });
+      images = json['images'].cast<String>();
     }
     likes = json['likes'].cast<String>();
     comments = json['comments'].cast<String>();
@@ -86,9 +83,7 @@ class Post {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['content'] = this.content;
-    if (this.images != null) {
-      data['images'] = this.images!.map((v) => v.toJson()).toList();
-    }
+    data['images'] = this.images;
     data['likes'] = this.likes;
     data['comments'] = this.comments;
     data['user'] = this.userPost;
@@ -99,3 +94,23 @@ class Post {
   }
 }
 
+
+
+class ProfilePost {
+  String? sId;
+  String? image;
+
+  ProfilePost({this.sId, this.image});
+
+  ProfilePost.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    image = json['image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['image'] = this.image;
+    return data;
+  }
+}

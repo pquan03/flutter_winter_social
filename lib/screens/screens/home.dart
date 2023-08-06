@@ -23,7 +23,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Post> _posts = [];
   static int page = 1;
-  bool _isLoadMore = false;
+  static const int limit = 9;
+  bool _isLoadMore = true;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -45,15 +46,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getPosts() async {
-    setState(() {
-      _isLoadMore = true;
-    });
-    final res = await PostApi().getPosts(widget.accessToken, page);
+    if(_posts.isNotEmpty && _posts.length % limit != 0){
+      setState(() {
+        _isLoadMore = false;
+      });  
+      return;
+    }
+    final res = await PostApi().getPosts(widget.accessToken, page, limit);
     if (res is List) {
       setState(() {
         _posts = [..._posts, ...res];
         page++;
-        _isLoadMore = false;
       });
     } else {
       if (!mounted) return;
@@ -133,8 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: _posts.length + 1,
             itemBuilder: (context, index) {
               if (index == _posts.length) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
+                return SizedBox(
+                  height: 200,
                   child: Center(
                     child: Opacity(
                         opacity: _isLoadMore ? 1.0 : 0.0,

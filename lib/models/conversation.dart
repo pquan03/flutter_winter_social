@@ -1,3 +1,4 @@
+import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 
 class Conversations {
@@ -6,6 +7,7 @@ class Conversations {
   String? createdAt;
   List<String>? media;
   List<UserPost>? recipients;
+  List<Messages>? messages;
   bool? isRead;
   String? text;
   String? updatedAt;
@@ -17,6 +19,7 @@ class Conversations {
       this.createdAt,
       this.media,
       this.recipients,
+      this.messages,
       this.text,
       this.updatedAt,
       this.isRead,
@@ -38,6 +41,12 @@ class Conversations {
         recipients!.add(new UserPost.fromJson(v));
       });
     }
+    if (json['messages'] != null) {
+      messages = <Messages>[];
+      json['messages'].forEach((v) {
+        messages!.add(new Messages.fromJson(v));
+      });
+    }
     isRead = json['isRead'];
     text = json['text'];
     updatedAt = json['updatedAt'];
@@ -54,6 +63,9 @@ class Conversations {
     }
     if (this.recipients != null) {
       data['recipients'] = this.recipients!.map((v) => v.toJson()).toList();
+    }
+    if (this.messages != null) {
+      data['messages'] = this.messages!.map((v) => v.toJson()).toList();
     }
     data['isRead'] = this.isRead;
     data['text'] = this.text;

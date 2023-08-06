@@ -168,10 +168,12 @@ class _PostCardState extends State<PostCard> {
                         setState(() {
                           _isShowPageImage = true;
                         });
-                        await Future.delayed(Duration(seconds: 2), () {
-                          setState(() {
-                            _isShowPageImage = false;
-                        });
+                        await Future.delayed(Duration(seconds: 1), () {
+                          if(mounted) {
+                            setState(() {
+                              _isShowPageImage = false;
+                            });
+                          }
                         });
                       },
                       enableInfiniteScroll: false,
@@ -180,7 +182,7 @@ class _PostCardState extends State<PostCard> {
                   items: widget.post.images!.map((i) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return ImageHelper.loadImageNetWork(i.url!,
+                        return ImageHelper.loadImageNetWork(i,
                             width: double.infinity,
                             height: MediaQuery.sizeOf(context).height * 0.7,
                             fit: BoxFit.cover);

@@ -29,86 +29,45 @@ class _PostModalState extends State<PostModal> {
       height: MediaQuery.of(context).size.height * 0.6,
       child: ListView(
         children: [
-          // Container(
-          //   width: 50,
-          //   height: 5,
-          //   decoration: const BoxDecoration(
-          //     borderRadius: BorderRadius.all(Radius.circular(16)),
-          //     color: Colors.grey,
-          //   ),
-          // ),
-          // const SizedBox(
-          //   height: 16,
-          // ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.savePost();
-                    Navigator.pop(context);
-                  },
-                  child: widget.isSaved ?
-                  Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16),
-                        decoration: const BoxDecoration(
-                        color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.fromBorderSide(
-                              BorderSide(color: Colors.white)),
-                        ),
-                        child: Icon(
-                          Icons.bookmark,
-                          color: Colors.black,
-                          size: 30,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        'unSave',
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
-                  )
-                  : Expanded(
-                    child: Column(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(16),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.fromBorderSide(
-                                BorderSide(color: Colors.white)),
-                          ),
-                          child: Icon(
-                            Icons.bookmark_outline,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
+              GestureDetector(
+                onTap: () {
+                  widget.savePost();
+                  Navigator.pop(context);
+                },
+                child: widget.isSaved ?
+                Column(
                   children: [
                     Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                      color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.fromBorderSide(
+                            BorderSide(color: Colors.white)),
+                      ),
+                      child: Icon(
+                        Icons.bookmark,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      'unSave',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  ],
+                )
+                : Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
                       padding: const EdgeInsets.all(16),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
@@ -116,7 +75,7 @@ class _PostModalState extends State<PostModal> {
                             BorderSide(color: Colors.white)),
                       ),
                       child: Icon(
-                        Icons.qr_code,
+                        Icons.bookmark_outline,
                         color: Colors.white,
                         size: 30,
                       ),
@@ -125,11 +84,35 @@ class _PostModalState extends State<PostModal> {
                       height: 8,
                     ),
                     Text(
-                      'QR code',
+                      'Save',
                       style: TextStyle(color: Colors.white),
                     )
                   ],
                 ),
+              ),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.fromBorderSide(
+                          BorderSide(color: Colors.white)),
+                    ),
+                    child: Icon(
+                      Icons.qr_code,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    'QR code',
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
               ),
             ],
           ),

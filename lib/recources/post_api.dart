@@ -10,9 +10,9 @@ import 'package:insta_node_app/utils/image_picker.dart';
 class PostApi {
   final Repository _repository = Repository();
 
-  Future<dynamic> getPosts(String token, int page) async {
+  Future<dynamic> getPosts(String token, int page, int limit) async {
     try {
-      final res = await _repository.getApi('posts?page=$page', token);
+      final res = await _repository.getApi('posts?page=$page&limit=$limit', token);
       return res.map((post)  {
         return model.Post.fromJson(post);
       }).toList();
@@ -21,11 +21,11 @@ class PostApi {
     }
   } 
 
-  Future<dynamic> getPostDiscover(String token, int page) async {
+  Future<dynamic> getPostDiscover(String token, int page, int limit) async {
     try {
-      final res = await _repository.getApi('post_discover?page=$page', token);
+      final res = await _repository.getApi('post_discover?page=$page&limit=$limit', token);
       return res.map((post)  {
-        return model.Post.fromJson(post);
+        return ProfilePost.fromJson(post);
       }).toList();
     } catch(err) {
       return err.toString();
