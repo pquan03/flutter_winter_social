@@ -3,11 +3,11 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/constants/asset_helper.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/screens/screens/forgot_password.dart';
-import 'package:insta_node_app/screens/screens/main_app.dart';
-import 'package:insta_node_app/screens/screens/signup.dart';
 import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
+import 'package:insta_node_app/screens/forgot_password.dart';
+import 'package:insta_node_app/screens/main_app.dart';
+import 'package:insta_node_app/screens/signup.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 

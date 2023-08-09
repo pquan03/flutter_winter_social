@@ -5,7 +5,7 @@ import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/screens/screens/edit_item_profile.dart';
+import 'package:insta_node_app/screens/edit_item_profile.dart';
 import 'package:insta_node_app/widgets/edit_avatar_modal.dart';
 import 'package:provider/provider.dart';
 

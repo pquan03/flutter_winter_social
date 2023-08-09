@@ -5,8 +5,8 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/constants/asset_helper.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/screens/screens/login.dart';
-import 'package:insta_node_app/screens/screens/main_app.dart';
+import 'package:insta_node_app/screens/login.dart';
+import 'package:insta_node_app/screens/main_app.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

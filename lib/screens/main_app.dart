@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/screens/screens/home.dart';
-import 'package:insta_node_app/screens/screens/keep_alive_screen.dart';
-import 'package:insta_node_app/screens/screens/profile.dart';
-import 'package:insta_node_app/screens/screens/reels.dart';
-import 'package:insta_node_app/screens/screens/search.dart';
+import 'package:insta_node_app/screens/home.dart';
+import 'package:insta_node_app/screens/keep_alive_screen.dart';
+import 'package:insta_node_app/screens/profile.dart';
+import 'package:insta_node_app/screens/reels.dart';
+import 'package:insta_node_app/screens/search.dart';
 import 'package:insta_node_app/widgets/picker_crop_result_screen.dart';
 import 'package:provider/provider.dart';
 

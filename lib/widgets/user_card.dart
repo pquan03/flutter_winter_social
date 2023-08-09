@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/screens/screens/other_profile.dart';
-import 'package:insta_node_app/screens/screens/profile.dart';
+import 'package:insta_node_app/screens/other_profile.dart';
+import 'package:insta_node_app/screens/profile.dart';
 import 'package:provider/provider.dart';
 
 class UserCardWidget extends StatelessWidget {

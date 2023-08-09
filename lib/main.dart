@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/constants/themes.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/providers/theme.dart';
-import 'package:insta_node_app/screens/screens/splash.dart';
+import 'package:insta_node_app/screens/splash.dart';
 import 'package:provider/provider.dart';
 
 void main() {

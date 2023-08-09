@@ -8,8 +8,8 @@ import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/screens/screens/message.dart';
-import 'package:insta_node_app/screens/screens/search_user.dart';
+import 'package:insta_node_app/screens/message.dart';
+import 'package:insta_node_app/screens/search_user.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 

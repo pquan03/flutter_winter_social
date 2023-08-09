@@ -3,13 +3,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/post.dart';
-import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/screens/screens/explore_list_post.dart';
-import 'package:insta_node_app/screens/screens/other_profile.dart';
+import 'package:insta_node_app/screens/explore_list_post.dart';
+import 'package:insta_node_app/screens/other_profile.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
-import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   final String accessToken;

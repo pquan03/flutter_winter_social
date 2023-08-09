@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
-import 'package:insta_node_app/screens/screens/add_post.dart';
+import 'package:insta_node_app/screens/add_post.dart';
 import 'package:insta_node_app/widgets/crop_result_view.dart';
 
 class PickerCropResultScreen extends StatelessWidget {

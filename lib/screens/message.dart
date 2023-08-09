@@ -28,7 +28,7 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  List<Messages> messages = [];
+  final List<Messages> messages = [];
   List<String> media = [];
   bool _isLoadMore = true;
   int page = 2;
@@ -37,8 +37,8 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   void initState() {
     super.initState();
-    messages = widget.messages;
-    _isLoadMore = messages.length < limit ? false : true;
+    messages.addAll(widget.messages);
+    _isLoadMore = messages.length < (limit - 1) ? false : true;
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -57,7 +57,7 @@ class _MessageScreenState extends State<MessageScreen> {
   void _handleLoadMoreMessage() async {
     final accessToken =
         Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    if (messages.isNotEmpty && messages.length % limit != 0) {
+    if (messages.isNotEmpty &&( messages.length + page - 1) % limit != 0) {
       setState(() {
         _isLoadMore = false;
       });
@@ -70,7 +70,7 @@ class _MessageScreenState extends State<MessageScreen> {
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        messages = [...messages, ...res];
+        messages.addAll([...res]);
         page++;
       });
     }

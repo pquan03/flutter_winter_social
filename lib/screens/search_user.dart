@@ -3,7 +3,7 @@ import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/screens/screens/message.dart';
+import 'package:insta_node_app/screens/message.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 

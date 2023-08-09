@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/screens/screens/dark_mode.dart';
-import 'package:insta_node_app/screens/screens/splash.dart';
+import 'package:insta_node_app/screens/dark_mode.dart';
+import 'package:insta_node_app/screens/splash.dart';
 import 'package:insta_node_app/widgets/setting_item_card.dart';
 
 class SettingsScreen extends StatefulWidget {
