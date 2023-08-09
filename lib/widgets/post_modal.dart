@@ -8,14 +8,14 @@ class PostModal extends StatefulWidget {
   final Function(String id) deletePost;
   final Function savePost;
   final bool isSaved;
-  const PostModal(
-      {super.key,
-      required this.postId,
-      required this.postUserId,
-      required this.deletePost,
-      required this.savePost,
-      required this.isSaved,
-      });
+  const PostModal({
+    super.key,
+    required this.postId,
+    required this.postUserId,
+    required this.deletePost,
+    required this.savePost,
+    required this.isSaved,
+  });
 
   @override
   State<PostModal> createState() => _PostModalState();
@@ -37,71 +37,70 @@ class _PostModalState extends State<PostModal> {
                   widget.savePost();
                   Navigator.pop(context);
                 },
-                child: widget.isSaved ?
-                Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                      color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.fromBorderSide(
-                            BorderSide(color: Colors.white)),
+                child: widget.isSaved
+                    ? Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.secondary,
+                              shape: BoxShape.circle,
+                              border: Border.fromBorderSide(BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                              )),
+                            ),
+                            child: Icon(
+                              Icons.bookmark,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 30,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            'Unsave',
+                          )
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.fromBorderSide(BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                              )),
+                            ),
+                            child: Icon(
+                              Icons.bookmark_outline,
+                              size: 30,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            'Save',
+                          )
+                        ],
                       ),
-                      child: Icon(
-                        Icons.bookmark,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      'unSave',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                )
-                : Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.fromBorderSide(
-                            BorderSide(color: Colors.white)),
-                      ),
-                      child: Icon(
-                        Icons.bookmark_outline,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ),
               ),
               Column(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.fromBorderSide(
-                          BorderSide(color: Colors.white)),
+                      border: Border.fromBorderSide(BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                      )),
                     ),
                     child: Icon(
                       Icons.qr_code,
-                      color: Colors.white,
                       size: 30,
                     ),
                   ),
@@ -110,7 +109,6 @@ class _PostModalState extends State<PostModal> {
                   ),
                   Text(
                     'QR code',
-                    style: TextStyle(color: Colors.white),
                   )
                 ],
               ),
@@ -139,21 +137,28 @@ class _PostModalState extends State<PostModal> {
               Icons.report_gmailerrorred_outlined, 'Report', () {}, true),
           userId == widget.postUserId
               ? rowStartItem(Icons.delete, 'Delete', () {
-                  showDialog(context: context, builder: (context) => AlertDialog(
-                    title: const Text('Delete Post'),
-                    content: const Text('Are you sure you want to delete this post?'),
-                    actions: [
-                      TextButton(onPressed: () {
-                        Navigator.pop(context);
-                      }, child: const Text('Cancel')),
-                      TextButton(onPressed: () async {
-                        await widget.deletePost(widget.postId);
-                        if(!mounted) return;
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }, child: const Text('Delete')),
-                    ],
-                  ));
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text('Delete Post'),
+                            content: const Text(
+                                'Are you sure you want to delete this post?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancel')),
+                              TextButton(
+                                  onPressed: () async {
+                                    await widget.deletePost(widget.postId);
+                                    if (!mounted) return;
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Delete')),
+                            ],
+                          ));
                 }, true)
               : Container()
         ],
@@ -172,18 +177,21 @@ class _PostModalState extends State<PostModal> {
           children: [
             Icon(
               icon,
-              color: isImportant ? Colors.red : Colors.white,
               size: 30,
+              color: isImportant
+                  ? Theme.of(context).colorScheme.error
+                  : null,
             ),
             const SizedBox(
               width: 16,
             ),
             Text(
               title,
-              style: TextStyle(
-                  color: isImportant ? Colors.red : Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18,
+              color: isImportant
+                  ? Theme.of(context).colorScheme.error
+                  : null
+              ),
             )
           ],
         ),

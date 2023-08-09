@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
@@ -9,8 +10,13 @@ import 'package:insta_node_app/models/user.dart' as model;
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/screens/screens/edit_profile.dart';
+import 'package:insta_node_app/screens/screens/explore_list_post.dart';
+import 'package:insta_node_app/screens/screens/follow_user.dart';
+import 'package:insta_node_app/screens/screens/preview.dart';
 import 'package:insta_node_app/screens/screens/settings.dart';
+import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/widgets/picker_crop_result_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -26,9 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   bool _isLoading = false;
   bool _isLoadMore = true;
-  List<ProfilePost> _posts = [];
-  static int page = 1;
-  static const int limit = 12;
+  List<Post> _posts = [];
+  int page = 1;
+  int limit = 12;
   int _currentIndex = 0;
   final ScrollController _scrollController = ScrollController();
 
@@ -52,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void getPostProfile() async {
     if (_posts.isNotEmpty && _posts.length % limit != 0) {
+      print('no more');
       setState(() {
         _isLoadMore = false;
       });
@@ -93,17 +100,41 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     final model.User user = Provider.of<AuthProvider>(context).auth.user!;
     return Scaffold(
-        backgroundColor: Colors.black,
         appBar: AppBar(
-          backgroundColor: Colors.grey[900],
           title: Text(user.username!,
               style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               )),
           actions: [
             GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  InstaAssetPicker.pickAssets(
+                    context,
+                    title: 'New post',
+                    pickerTheme: InstaAssetPicker.themeData(
+                            Theme.of(context).colorScheme.secondary)
+                        .copyWith(
+                      textButtonTheme: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                                  foregroundColor: Colors.blue,
+                                disabledForegroundColor: Colors.red,
+                        ),
+                      ),
+                    ),
+                    maxAssets: 5,
+                    onCompleted: (cropStream) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PickerCropResultScreen(
+                            cropStream: cropStream,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
                 child: Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Icon(Icons.add_box_outlined))),
@@ -121,12 +152,17 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
         body: _isLoading
             ? Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
+                child: CircularProgressIndicator(),
               )
             : RefreshIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 onRefresh: () async {
+                  setState(() {
+                    _posts = [];
+                    page = 1;
+                    _isLoadMore = true;
+                  });
                   getPostProfile();
                 },
                 child: ListView(
@@ -134,23 +170,30 @@ class _ProfileScreenState extends State<ProfileScreen>
                   controller: _scrollController,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(user.avatar!),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(createRoute(
+                                      PreviewScreen(
+                                          imagesString: [user.avatar!])));
+                                },
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: NetworkImage(user.avatar!),
+                                ),
                               ),
                               const SizedBox(height: 8),
                               Text(user.fullname!,
                                   style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white)),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  )),
                             ],
                           ),
                           const SizedBox(width: 30),
@@ -158,13 +201,48 @@ class _ProfileScreenState extends State<ProfileScreen>
                             flex: 1,
                             child: Row(
                               children: [
-                                startColumnItem(0, 'Posts'),
+                                GestureDetector(
+                                    onTap: () {
+                                      // scroll to center screen
+                                      _scrollController.animateTo(
+                                          MediaQuery.of(context).size.width / 2,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.ease);
+                                    },
+                                    child: startColumnItem(
+                                        user.countPosts!, 'Posts')),
                                 Spacer(),
-                                startColumnItem(
-                                    user.followers!.length, 'Followers'),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => FollowUserScreen(
+                                                  initIndex: 0,
+                                                  username: user.username!,
+                                                  followers: user.followers!,
+                                                  following: user.following!,
+                                                  accessToken: widget.token,
+                                                )));
+                                  },
+                                  child: startColumnItem(
+                                      user.followers!.length, 'Followers'),
+                                ),
                                 Spacer(),
-                                startColumnItem(
-                                    user.following!.length, 'Following'),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => FollowUserScreen(
+                                                  initIndex: 1,
+                                                  username: user.username!,
+                                                  followers: user.followers!,
+                                                  following: user.following!,
+                                                  accessToken: widget.token,
+                                                )));
+                                  },
+                                  child: startColumnItem(
+                                      user.following!.length, 'Following'),
+                                ),
                               ],
                             ),
                           ),
@@ -172,16 +250,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         user.story!,
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                     const SizedBox(
                       height: 16,
                     ),
-                    SizedBox(
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       height: 40,
                       child: Row(
                         children: [
@@ -199,13 +278,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     const EdgeInsets.symmetric(vertical: 8),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                    color: HexColor('#121212'),
+                                    color: Theme.of(context).colorScheme.primaryContainer,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Text('Edit Profile',
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    )),
                               ),
                             ),
                           ),
@@ -220,13 +299,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     const EdgeInsets.symmetric(vertical: 8),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                    color: HexColor('#121212'),
+                                    color: Theme.of(context).colorScheme.primaryContainer,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Text('Share profile',
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    )),
                               ),
                             ),
                           ),
@@ -247,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 SizedBox(
                                   height: 65,
                                   child: TabBar(
-                                    indicatorColor: Colors.white,
+                                    // indicatorColor: Colors.white,
                                     onTap: (value) {
                                       setState(() {
                                         _currentIndex = value;
@@ -289,21 +368,30 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                 child: Opacity(
                                                   opacity: _isLoadMore ? 1 : 0,
                                                   child: Center(
-                                                      child: CircularProgressIndicator(
-                                                          color: Colors.white,
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                      Color>(
-                                                                  Colors
-                                                                      .white))),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            color: Theme.of(context).colorScheme.secondary,
+                                                          )),
                                                 ));
                                           }
                                           return StaggeredGridTile.count(
                                             crossAxisCellCount: 1,
                                             mainAxisCellCount: 1,
-                                            child: ImageHelper.loadImageNetWork(
-                                                _posts[e.key].image!,
-                                                fit: BoxFit.cover),
+                                            child: GestureDetector(
+                                              onTap: () => Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          ExploreListPostScreen(
+                                                              title: 'Posts',
+                                                              posts: _posts,
+                                                              accessToken:
+                                                                  widget
+                                                                      .token))),
+                                              child:
+                                                  ImageHelper.loadImageNetWork(
+                                                      _posts[e.key].images![0],
+                                                      fit: BoxFit.cover),
+                                            ),
                                           );
                                         }).toList()
                                       ],
@@ -313,7 +401,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         'No Reeels yet',
                                         style: TextStyle(
                                             fontSize: 20,
-                                            color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -327,23 +414,26 @@ class _ProfileScreenState extends State<ProfileScreen>
               ));
   }
 
-  Column startColumnItem(int num, String title) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(num.toString(),
-            style: TextStyle(
+  Widget startColumnItem(int num, String title) {
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(num.toString(),
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        const SizedBox(height: 8),
-        Text(title,
-            style: TextStyle(
+              )),
+          const SizedBox(height: 8),
+          Text(title,
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white)),
-      ],
+              )),
+        ],
+      ),
     );
   }
 }

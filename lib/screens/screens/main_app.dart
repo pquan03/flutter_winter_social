@@ -41,82 +41,78 @@ class _MainAppScreenState extends State<MainAppScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context).auth;
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        children: <Widget>[..._screens(auth).map((e) => e).toList()],
+    physics: const NeverScrollableScrollPhysics(),
+    controller: _pageController,
+    onPageChanged: _onPageChanged,
+    children: <Widget>[..._screens(auth).map((e) => e).toList()],
       ),
       bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-            ),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            width: 1,
           ),
-          child: CurvedNavigationBar(
-            animationDuration: const Duration(milliseconds: 300),
-            height: 50,
-            index: _currentIndex,
-            color: Colors.black,
-            backgroundColor: Colors.white,
-            buttonBackgroundColor: Colors.black,
-            letIndexChange: (value) {
-              if (value == 2) {
-                InstaAssetPicker.pickAssets(
-                          context,
-                          title: 'New post',
-                          pickerTheme: InstaAssetPicker.themeData(
-                                  Theme.of(context).primaryColor)
-                              .copyWith(
-                            textButtonTheme: TextButtonThemeData(
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.blue,
-                                disabledForegroundColor: Colors.red,
-                              ),
+        ),
+      ),
+      child: CurvedNavigationBar(
+        animationDuration: const Duration(milliseconds: 300),
+        height: 70,
+        index: _currentIndex,
+        color: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+        letIndexChange: (value) {
+          if (value == 2) {
+            InstaAssetPicker.pickAssets(
+                      context,
+                      title: 'New post',
+                      pickerTheme: InstaAssetPicker.themeData(
+                              Theme.of(context).colorScheme.secondary)
+                          .copyWith(
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            disabledForegroundColor: Colors.red,
+                          ),
+                        ),
+                      ),
+                      maxAssets: 5,
+                      onCompleted: (cropStream) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PickerCropResultScreen(
+                              cropStream: cropStream,
                             ),
                           ),
-                          maxAssets: 5,
-                          onCompleted: (cropStream) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PickerCropResultScreen(
-                                  cropStream: cropStream,
-                                ),
-                              ),
-                            );
-                          },
                         );
-                return false;
-              }
-              return true;
-            },
-            onTap: navigationTapped,
-            items: [
-              iconWidget(0, Icons.home, Icons.home_outlined),
-              iconWidget(1, Icons.search, Icons.search_outlined),
-              iconWidget(2, Icons.add_box, Icons.add_box_outlined),
-              iconWidget(3, Icons.movie_filter, Icons.movie_filter_outlined),
-              Container(
-                height: 35,
-                width: 35,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: _currentIndex == 4
-                        ? Border.all(color: Colors.white, width: 2)
-                        : Border.all(color: Colors.transparent, width: 0)),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(auth.user!.avatar!),
-                  radius: 16,
-                ),
-              ),
-            ],
-          )),
-    ));
+                      },
+                    );
+            return false;
+          }
+          return true;
+        },
+        onTap: navigationTapped,
+        items: [
+          iconWidget(0, Icons.home, Icons.home_outlined),
+          iconWidget(1, Icons.search, Icons.search_outlined),
+          iconWidget(2, Icons.add_box, Icons.add_box_outlined),
+          iconWidget(3, Icons.movie_filter, Icons.movie_filter_outlined),
+          Container(
+            height: 35,
+            width: 35,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+            ),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(auth.user!.avatar!),
+              radius: 12,
+            ),
+          ),
+        ],
+      )),
+    );
   }
 
   List<Widget> _screens(Auth auth) => [
@@ -141,7 +137,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   Widget iconWidget(int index, IconData iconActive, IconData iconInactive) {
     return Icon(
       index == _currentIndex ? iconActive : iconInactive,
-      color: index == _currentIndex ? Colors.white : Colors.grey,
+      color: Theme.of(context).colorScheme.secondary,
     );
   }
 }

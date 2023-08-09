@@ -95,7 +95,6 @@ class _CommentCardState extends State<CommentCard> {
                           Text(
                             widget.comment.user!.username!,
                             style: TextStyle(
-                                color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
@@ -110,8 +109,8 @@ class _CommentCardState extends State<CommentCard> {
                                 TextSpan(
                                   text: widget.comment.content!,
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold
+                                    fontSize: 16,
+                                    color: Theme.of(context).colorScheme.secondary,
                                   )
                                 )
                               ]
@@ -120,7 +119,10 @@ class _CommentCardState extends State<CommentCard> {
                           :
                           Text(
                             widget.comment.content!,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ],
                       ),
@@ -140,7 +142,6 @@ class _CommentCardState extends State<CommentCard> {
                               : // [2
                               Icon(
                                   Icons.favorite_border_outlined,
-                                  color: Colors.white,
                                 )),
                     )
                   ],
@@ -153,14 +154,16 @@ class _CommentCardState extends State<CommentCard> {
                     Text(
                       DateFormat.yMMMd()
                           .format(DateTime.parse(widget.comment.createdAt!)),
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
                     SizedBox(
                       width: 8,
                     ),
                     Text(
                       '${widget.comment.likes!.length} like',
-                      style: TextStyle(color: Colors.white),
                     ),
                     SizedBox(
                       width: 8,
@@ -169,7 +172,6 @@ class _CommentCardState extends State<CommentCard> {
                       onTap: () => widget.handleClickReply(widget.comment),
                       child: Text(
                         'Reply',
-                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],

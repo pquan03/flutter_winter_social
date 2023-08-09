@@ -46,10 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getPosts() async {
-    if(_posts.isNotEmpty && _posts.length % limit != 0){
+    if (_posts.isNotEmpty && _posts.length % limit != 0) {
       setState(() {
         _isLoadMore = false;
-      });  
+      });
       return;
     }
     final res = await PostApi().getPosts(widget.accessToken, page, limit);
@@ -83,14 +83,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.black,
         appBar: AppBar(
           centerTitle: false,
-          backgroundColor: Colors.black,
-          title: SvgPicture.asset(
-            AssetHelper.icSvg,
-            height: 32,
-            color: Colors.white,
+          title: GestureDetector(
+            onTap: () {
+              // Scroll to top
+              _scrollController.animateTo(0,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut);
+            },
+            child: SvgPicture.asset(
+              AssetHelper.icSvg,
+              height: 32,
+              color:  Theme.of(context).colorScheme.secondary,
+            ),
           ),
           actions: [
             Row(
@@ -124,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: RefreshIndicator(
+          color: Theme.of(context).colorScheme.secondary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           onRefresh: () async {
             setState(() {
               _posts = [];
@@ -142,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Opacity(
                         opacity: _isLoadMore ? 1.0 : 0.0,
                         child: CircularProgressIndicator(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.secondary,
                         )),
                   ),
                 );

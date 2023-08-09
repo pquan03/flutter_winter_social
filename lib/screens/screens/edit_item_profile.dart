@@ -30,14 +30,14 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
           builder: (context) {
             return AlertDialog(
               alignment: Alignment.center,
-              title: Text('Unsaved changes?', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+              title: Text('Unsaved changes?', style: TextStyle( fontSize: 20, fontWeight: FontWeight.bold),),
               content: Text('You have unsaved changes. Are you sure you want to cancel?'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   }, 
-                  child: Text('No', style: TextStyle(color: Colors.black)),
+                  child: Text('No'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -90,9 +90,7 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
                         Spacer(),
                         Radio(
                           toggleable: false,
-                          fillColor: MaterialStateProperty.all(Colors.white),
                           activeColor: Colors.blue,
-                          overlayColor: MaterialStateProperty.all(Colors.white),
                           value: e,
                           groupValue: _controller.text,
                           onChanged: (value) {
@@ -118,18 +116,20 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
                 border: Border(bottom: BorderSide(color: Colors.blue, width: 1))
               ),
               child: TextField(
+                enabled: listCannotChange.contains(widget.label) ? false : true,
                 autofocus: true,
                 controller: _controller,
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: listCannotChange.contains(widget.label) ? Colors.grey[700] : null, fontSize: 18),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                 ),
               ),
             ),
             Text(
-              'This is not your username or pin. This name will be visible to your Instagram followers.',
-              style: TextStyle(
-                color: Colors.grey[300],
+              listCannotChange.contains(widget.label) ? 
+              'This is not your username or pin. This name will be visible to your Instagram followers.' : 
+              'Provide your personal information, even if the account is used for a business, a pet or something else. This won\'t be a part of your public profile.',              style: TextStyle(
+                color: Colors.grey[700],
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
@@ -141,4 +141,5 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
   }
 
   List<String> listData = ['Female', 'Male', 'Other'];
+  List<String> listCannotChange = ['Username', 'Email'];
 }

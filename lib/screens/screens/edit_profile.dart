@@ -83,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           builder: (context) {
             return AlertDialog(
               alignment: Alignment.center,
-              title: Text('Unsaved changes?', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+              title: Text('Unsaved changes?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
               content: Text('You have unsaved changes. Are you sure you want to cancel?'),
               actions: [
                 TextButton(
@@ -252,9 +252,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     controller: controller,
                     style: TextStyle(
-                        color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                    ),
                     decoration: InputDecoration(
                       suffix: label == 'Gender'
                           ? Padding(

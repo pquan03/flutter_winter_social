@@ -6,8 +6,9 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 
 class PreviewScreen extends StatelessWidget {
-  final List<File> images;
-  const PreviewScreen({super.key, required this.images});
+  final List<File>? imagesFile;
+  final List<String>? imagesString;
+  const PreviewScreen({super.key, this.imagesFile, this.imagesString});
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +17,34 @@ class PreviewScreen extends StatelessWidget {
       title: 'Preview',
       child: Container(
         alignment: Alignment.center,
-        child: CarouselSlider(
+        child: imagesFile != null ?  CarouselSlider(
           options: CarouselOptions(
               onPageChanged: (index, reason) {},
               onScrolled: (_) async {},
               enableInfiniteScroll: false,
               height: MediaQuery.sizeOf(context).height * 0.5,
               viewportFraction: 1),
-          items: images.map((i) {
+          items:  imagesFile!.map((i) {
             return Builder(
               builder: (BuildContext context) {
                 return ImageHelper.loadImageFile(i,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    );
+              },
+            );
+          }).toList(),
+        ) : CarouselSlider(
+          options: CarouselOptions(
+              onPageChanged: (index, reason) {},
+              onScrolled: (_) async {},
+              enableInfiniteScroll: false,
+              height: MediaQuery.sizeOf(context).height * 0.5,
+              viewportFraction: 1),
+          items:  imagesString!.map((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return ImageHelper.loadImageNetWork(i,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     );

@@ -27,7 +27,7 @@ class UserApi {
   Future<dynamic> getPostProfile( String userId,String token, int page, int limit) async {
     try {
       final res = await _repository.getApi('user_posts/$userId?page=$page&limit=$limit', token);
-      return res.map((e) => ProfilePost.fromJson(e)).toList();
+      return res.map((e) => Post.fromJson(e)).toList();
     } catch(err) {
       return err.toString();
     }
@@ -38,7 +38,7 @@ class UserApi {
       final res = await _repository.getApi('user/$userId?page=$page&limit=$limit', token);
       Map<String, dynamic> data = {
         'user': User.fromJson(res['user']),
-        'posts': res['newPosts'].map((ele) => ProfilePost.fromJson(ele)).toList(),
+        'posts': res['data'].map((ele) => Post.fromJson(ele)).toList(),
       };
       return data;
     } catch(err) {
@@ -57,6 +57,15 @@ class UserApi {
     Future<dynamic> unFollowUser(String userId, String token) async {
     try {
       await _repository.patchApi('user/$userId/unfollow', {}, token);
+    } catch(err) {
+      return err.toString();
+    }
+  }
+
+  Future<dynamic> getInfoListFollow(List<String> data, String token) async {
+    try {
+      final res = await _repository.postApi('list_user', data, token);
+      return res.map((e) => UserPost.fromJson(e)).toList();
     } catch(err) {
       return err.toString();
     }

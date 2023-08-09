@@ -4,14 +4,14 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
-import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
+import 'package:insta_node_app/screens/screens/other_profile.dart';
+import 'package:insta_node_app/screens/screens/profile.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/widgets/comment_modal.dart';
 import 'package:insta_node_app/widgets/like_animation.dart';
 import 'package:insta_node_app/widgets/post_modal.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -42,8 +42,6 @@ class _PostCardState extends State<PostCard> {
   void dispose() {
     super.dispose();
   }
-
-
 
   void handleLikePost(String uId) async {
     if (widget.post.likes!.contains(uId)) {
@@ -99,7 +97,6 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context).auth.user!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -108,18 +105,41 @@ class _PostCardState extends State<PostCard> {
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16)
                 .copyWith(right: 0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(widget.post.userPost!.avatar!),
-                  radius: 16,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      widget.post.userPost!.username!,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                GestureDetector(
+                  onTap: () {
+                    if (widget.post.userPost!.sId! == widget.auth.user!.sId!) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => ProfileScreen(
+                              userId: widget.auth.user!.sId!,
+                              token: widget.auth.accessToken!)));
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => OtherProfileScreen(
+                              userId: widget.post.userPost!.sId!,
+                              token: widget.auth.accessToken!)));
+                    }
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(widget.post.userPost!.avatar!),
+                          radius: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            widget.post.userPost!.username!,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -128,18 +148,17 @@ class _PostCardState extends State<PostCard> {
                       showModalBottomSheetCustom(
                         context,
                         PostModal(
-                            postId: widget.post.sId!,
-                            postUserId: widget.post.userPost!.sId!,
-                            deletePost: widget.deletePost,
-                            savePost: handleSavePost,
-                            isSaved: widget.auth.user!.saved!
-                                .contains(widget.post.sId!),
-                            ),
+                          postId: widget.post.sId!,
+                          postUserId: widget.post.userPost!.sId!,
+                          deletePost: widget.deletePost,
+                          savePost: handleSavePost,
+                          isSaved: widget.auth.user!.saved!
+                              .contains(widget.post.sId!),
+                        ),
                       );
                     },
                     icon: Icon(
                       Icons.more_vert,
-                      color: Colors.white,
                     ))
               ],
             ),
@@ -148,7 +167,7 @@ class _PostCardState extends State<PostCard> {
           ,
           GestureDetector(
             onDoubleTap: () {
-              handleLikePost(user.sId!);
+              handleLikePost(widget.auth.user!.sId!);
               setState(() {
                 _isAnimating = true;
               });
@@ -169,7 +188,7 @@ class _PostCardState extends State<PostCard> {
                           _isShowPageImage = true;
                         });
                         await Future.delayed(Duration(seconds: 1), () {
-                          if(mounted) {
+                          if (mounted) {
                             setState(() {
                               _isShowPageImage = false;
                             });
@@ -231,7 +250,6 @@ class _PostCardState extends State<PostCard> {
                       },
                       child: Icon(
                         Icons.favorite,
-                        color: Colors.white,
                         size: 100,
                         shadows: const [
                           BoxShadow(
@@ -250,11 +268,12 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               LikeAnimation(
-                isAnimating: widget.post.likes!.contains(user.sId), // [1
+                isAnimating:
+                    widget.post.likes!.contains(widget.auth.user!.sId), // [1
                 smallLike: true,
                 child: IconButton(
-                    onPressed: () => handleLikePost(user.sId!),
-                    icon: widget.post.likes!.contains(user.sId)
+                    onPressed: () => handleLikePost(widget.auth.user!.sId!),
+                    icon: widget.post.likes!.contains(widget.auth.user!.sId)
                         ? Icon(
                             Icons.favorite,
                             color: Colors.pinkAccent,
@@ -262,7 +281,6 @@ class _PostCardState extends State<PostCard> {
                         : // [2
                         Icon(
                             Icons.favorite_border_outlined,
-                            color: Colors.white,
                           )),
               ),
               IconButton(
@@ -277,13 +295,11 @@ class _PostCardState extends State<PostCard> {
                   },
                   icon: Icon(
                     Icons.comment_outlined,
-                    color: Colors.white,
                   )),
               IconButton(
                   onPressed: () {},
                   icon: Icon(
                     Icons.send_outlined,
-                    color: Colors.white,
                   )),
               Spacer(),
               LikeAnimation(
@@ -295,11 +311,9 @@ class _PostCardState extends State<PostCard> {
                     icon: widget.auth.user!.saved!.contains(widget.post.sId)
                         ? Icon(
                             Icons.bookmark,
-                            color: Colors.white,
                           )
                         : Icon(
                             Icons.bookmark_border_outlined,
-                            color: Colors.white,
                           )),
               ),
             ],
@@ -316,7 +330,7 @@ class _PostCardState extends State<PostCard> {
                   child: Text(
                     '${widget.post.likes!.length} likes',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(
@@ -324,17 +338,16 @@ class _PostCardState extends State<PostCard> {
                 ),
                 RichText(
                   text: TextSpan(
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyText1!.color),
                       children: [
                         TextSpan(
                           text: widget.post.userPost!.username!,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        TextSpan(children: [
-                          TextSpan(
-                            text: ' ${widget.post.content}',
-                          ),
-                        ], style: TextStyle(fontWeight: FontWeight.normal)),
+                        TextSpan(
+                          style: TextStyle(fontWeight: FontWeight.normal),
+                          text: ' ${widget.post.content}',
+                        ),
                       ]),
                 ),
                 // View all comment section
@@ -353,7 +366,7 @@ class _PostCardState extends State<PostCard> {
                   },
                   child: Text(
                     'View all ${widget.post.comments!.length} comments',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    style: TextStyle( fontSize: 16),
                   ),
                 ),
                 const SizedBox(
@@ -362,7 +375,7 @@ class _PostCardState extends State<PostCard> {
                 Text(
                     DateFormat.yMMMd()
                         .format(DateTime.parse(widget.post.createdAt!)),
-                    style: TextStyle(color: Colors.grey, fontSize: 16))
+                    style: TextStyle(fontSize: 16))
               ],
             ),
           ),

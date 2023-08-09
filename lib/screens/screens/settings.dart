@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
+import 'package:insta_node_app/screens/screens/dark_mode.dart';
 import 'package:insta_node_app/screens/screens/splash.dart';
 import 'package:insta_node_app/widgets/setting_item_card.dart';
 
@@ -28,33 +29,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'Instagram settings',
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
                         fontSize: 18),
                   )),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.userPlus, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.userPlus),
                   title: 'Follow and Invite Friends'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.bell, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.bell),
                   title: 'Notifications'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.lock, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.lock),
                   title: 'Privacy'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.photoFilm, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.photoFilm),
                   title: 'Suggested content'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.circleUser, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.circleUser),
                   title: 'Preferences'),
               SettingItemCard(
                   icon:
-                      Icon(FontAwesomeIcons.solidLifeRing, color: Colors.white),
+                      Icon(FontAwesomeIcons.solidLifeRing),
                   title: 'Help'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.circleInfo, color: Colors.white),
+                  icon: Icon(FontAwesomeIcons.circleInfo),
                   title: 'About'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.moon, color: Colors.white),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DarkModeScreen())), 
+                  icon: Icon(FontAwesomeIcons.moon),
                   title: 'Dark mode'),
               Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -63,7 +64,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     'Logins',
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
                         fontSize: 18),
                   )),
               GestureDetector(
@@ -84,71 +84,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               GestureDetector(
                 onTap: () {
-                  (showDialog(
+                  // show dialog confirm logout user
+                  showDialog(
                       context: context,
-                      builder: (context) {
-                        return Dialog(
-                          child: Container(
-                            color: Colors.black87,
-                            height: MediaQuery.sizeOf(context).height * 0.22,
-                            width: MediaQuery.sizeOf(context).width * 0.2,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                        padding: const EdgeInsets.all(16),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Are you want to log out?',
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                        ))),
-                                Container(
-                                    width: double.infinity,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.brown,
-                                      border: Border(
-                                        top: BorderSide(
-                                            width: 1.0, color: Colors.black),
-                                        bottom: BorderSide(
-                                            width: 1.0, color: Colors.black),
-                                      ),
-                                    ),
-                                    child: TextButton(
-                                        onPressed: () async {
-                                          await AuthApi().logoutUser();
-                                          if (!mounted) return;
-                                          Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const SplashPage()),
-                                              (route) => false);
-                                        },
-                                        child: Text(
-                                          'Logout',
-                                          style: TextStyle(
-                                              color: Colors.blue,
-                                              fontWeight: FontWeight.bold),
-                                        ))),
-                                Container(
-                                    width: double.infinity,
-                                    color: Colors.transparent,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          'Cancel',
-                                          style: TextStyle(color: Colors.white),
-                                        )))
-                              ],
-                            ),
-                          ),
-                        );
-                      }));
+                      builder: (context) => AlertDialog(
+                            title: const Text('Log out'),
+                            content: const Text(
+                                'Are you sure you want to log out?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancel')),
+                              TextButton(
+                                  onPressed: () async {
+                                    await AuthApi().logoutUser();
+                                    if (!mounted) return;
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const SplashPage()));
+                                  },
+                                  child: const Text('Log out', style: TextStyle(color: Colors.blue),)),
+                            ],
+                          ));
                 },
                 child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),

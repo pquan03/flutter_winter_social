@@ -85,7 +85,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           children: [
             GestureDetector(
               onTap: () => Navigator.of(context).push(
-                  createRoute(PreviewScreen(images: widget.croppedFiles))),
+                  createRoute(PreviewScreen(imagesFile: widget.croppedFiles))),
               child: Padding(
                 padding: const EdgeInsets.only(left: 10),
                 child: ImageHelper.loadImageFile(widget.croppedFiles[0],

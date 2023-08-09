@@ -29,11 +29,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       ConversationEventRead event, Emitter<ConversationState> emit) async {
     await MessageApi().readMessage(event.conversationId, event.token);
     _conversations = _conversations.map((e) {
-      if (e.sId == event.conversationId) {
-        e.isRead = true;
+      if (e.sId == event.conversationId) {                
       }
       return e;
     }).toList();
     emit(ConversationSuccess(listConversation: _conversations));
   }
+
 }

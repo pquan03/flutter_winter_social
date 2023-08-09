@@ -18,31 +18,53 @@ class EditAvatarModal extends StatefulWidget {
 }
 
 class _EditAvatarModalState extends State<EditAvatarModal> {
-  bool _isLoading = false;
-  final _instaAssetsPicker = InstaAssetPicker();
-  final _provider = DefaultAssetPickerProvider(maxAssets: 1);
-  late final ThemeData _pickerTheme =
-      InstaAssetPicker.themeData(Theme.of(context).primaryColor).copyWith(
-    appBarTheme: const AppBarTheme(
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 18)),
-  );
   Future<void> callRestorablePicker(Auth auth) async {
-    setState(() {
-      _isLoading = true;
-    });
     final List<AssetEntity>? result =
-        await _instaAssetsPicker.restorableAssetsPicker(
+        await InstaAssetPicker().restorableAssetsPicker(
       context,
       title: 'Change avatar',
       closeOnComplete: true,
-      provider: _provider,
-      pickerTheme: _pickerTheme,
+      provider: DefaultAssetPickerProvider(maxAssets: 1),
+      pickerTheme:
+          InstaAssetPicker.themeData(Theme.of(context).colorScheme.secondary)
+              .copyWith(
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.blue,
+            disabledForegroundColor: Colors.red,
+          ),
+        ),
+        appBarTheme: const AppBarTheme(titleTextStyle: TextStyle(fontSize: 18)),
+      ),
       onCompleted: (cropStream) {},
     );
+    if (!mounted) return;
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) {
+          return Dialog(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // The loading indicator
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  // Some text
+                  Text('Loading...')
+                ],
+              ),
+            ),
+          );
+        });
     if (result == null) {
-      setState(() {
-        _isLoading = false;
-      });
+      Navigator.of(context).pop();
       return;
     }
     final photoUrl = await imageUpload(await result.first.file);
@@ -53,10 +75,8 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
         'avatar': photoUrl,
       }
     });
-    setState(() {
-      _isLoading = false;
-    });
     if (!mounted) return;
+    Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }
@@ -84,11 +104,10 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
             leading: Icon(
               Icons.camera_alt_outlined,
               size: 30,
-              color: Colors.white,
             ),
             title: Text(
               'Take Photo',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 18),
             ),
             onTap: () {},
           ),
@@ -96,11 +115,10 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
             leading: Icon(
               Icons.photo_library_outlined,
               size: 30,
-              color: Colors.white,
             ),
             title: Text(
               'Choose from Library',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 18),
             ),
             onTap: () => callRestorablePicker(auth),
           ),
@@ -112,9 +130,9 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
             ),
             title: Text(
               'Remove current picture',
-              style: TextStyle(fontSize: 16, color: Colors.red),
+              style: TextStyle(fontSize: 18, color: Colors.red),
             ),
-            onTap: () {
+            onTap: () async {
               widget.onUpdateUser({
                 ...auth.toJson(),
                 'user': {
@@ -124,6 +142,34 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
                 }
               });
               if (!mounted) return;
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (_) {
+                    return Dialog(
+                      // The background color
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // The loading indicator
+                            CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            // Some text
+                            Text('Loading...')
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+              await Future.delayed(const Duration(seconds: 1));
+              if (!mounted) return;
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },

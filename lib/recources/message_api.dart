@@ -16,9 +16,9 @@ class MessageApi {
     }
   }
 
-  Future<dynamic> getMessages(String userId, String token)  async {
+  Future<dynamic> getMessages(String conversationId, String token, int page, int limit)  async {
     try {
-      final res = await _repository.getApi('messages/$userId', token);
+      final res = await _repository.getApi('messages/$conversationId?page=$page&limit=$limit', token);
       return res.map((e) => Messages.fromJson(e)).toList();
     } catch(err) {
       return err.toString();
@@ -41,7 +41,7 @@ class MessageApi {
     }
   }
 
-  Future<dynamic> createMessage(Map<String, dynamic> data, String token) async {
+  Future<dynamic> createMessageText(Map<String, dynamic> data, String token) async {
     try {
       final res = await _repository.postApi('message', data, token);
       return Messages.fromJson(res['message']);

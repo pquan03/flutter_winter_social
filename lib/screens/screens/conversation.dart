@@ -9,6 +9,7 @@ import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/screens/screens/message.dart';
+import 'package:insta_node_app/screens/screens/search_user.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -21,11 +22,17 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  final TextEditingController _searchController = TextEditingController();
+  bool _isSearch = false;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void handleBack() {
+    setState(() {
+      _isSearch = false;
+    });
   }
 
   @override
@@ -35,160 +42,150 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return BlocProvider<ConversationBloc>(
       create: (context) =>
           ConversationBloc()..add(ConversationEventFectch(token: accessToken)),
-      child: LayoutScreen(
-        title: '${user.username}',
-        action: [
-          IconButton(
-            padding: const EdgeInsets.only(right: 10),
-            onPressed: () {},
-            icon: const Icon(
-              FontAwesomeIcons.video,
-              size: 25,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              FontAwesomeIcons.penToSquare,
-              size: 25,
-            ),
-          ),
-        ],
-        child: BlocBuilder<ConversationBloc, ConversationState>(
-            builder: (context, conversationState) {
-          if (conversationState is ConversationLoading) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  ...List.generate(
-                    2,
-                    (index) => buildTempMessage(),
-                  )
-                ],
-              ),
-            );
-          } else if (conversationState is ConversationError) {
-            return Center(
-              child: Text(conversationState.message),
-            );
-          } else if (conversationState is ConversationSuccess) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<ConversationBloc>().add(
-                      ConversationEventFectch(token: accessToken),
-                    );
-              },
-              child: ListView(
-                children: [
-                  Padding(padding: const EdgeInsets.only(top: 10)),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(8),
+      child: _isSearch
+          ? SearchUserScreen(
+              handleBack: handleBack,
+            )
+          : LayoutScreen(
+              title: '${user.username}',
+              action: [
+                IconButton(
+                  padding: const EdgeInsets.only(right: 10),
+                  onPressed: () {},
+                  icon: const Icon(
+                    FontAwesomeIcons.video,
+                    size: 25,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    FontAwesomeIcons.penToSquare,
+                    size: 25,
+                  ),
+                ),
+              ],
+              child: BlocBuilder<ConversationBloc, ConversationState>(
+                  builder: (context, conversationState) {
+                if (conversationState is ConversationLoading) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        ...List.generate(
+                          2,
+                          (index) => buildTempMessage(),
+                        )
+                      ],
                     ),
-                    child: TextField(
-                      controller: _searchController,
-                      autofocus: false,
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search, color: Colors.white),
-                        suffixIcon: _searchController.text != ''
-                            ? GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _searchController.text = '';
-                                  });
-                                },
-                                child: Icon(
-                                  Icons.clear,
-                                  color: Colors.white,
-                                  size: 20,
+                  );
+                } else if (conversationState is ConversationError) {
+                  return Center(
+                    child: Text(conversationState.message),
+                  );
+                } else if (conversationState is ConversationSuccess) {
+                  return RefreshIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    onRefresh: () async {
+                      context.read<ConversationBloc>().add(
+                            ConversationEventFectch(token: accessToken),
+                          );
+                    },
+                    child: ListView(
+                      children: [
+                        Padding(padding: const EdgeInsets.only(top: 10)),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer.withOpacity(.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextField(
+                            onTap: () => setState(() {
+                              _isSearch = true;
+                            }),
+                            autofocus: false,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: "Search",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'Messages',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        conversationState.listConversation!.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No message',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
                                 ),
                               )
-                            : null,
-                        hintText: "Search",
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                      ),
+                            : Column(
+                                children: <Widget>[
+                                  ...conversationState.listConversation!
+                                      .map((e) => GestureDetector(
+                                          onTap: () {
+                                            if (e.isRead == false) {
+                                              context
+                                                  .read<ConversationBloc>()
+                                                  .add(
+                                                    ConversationEventRead(
+                                                      token: widget.accessToken,
+                                                      conversationId: e.sId!,
+                                                    ),
+                                                  );
+                                            }
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MessageScreen(
+                                                          conversationId: e.sId,
+                                                          messages: e.messages!,
+                                                          user: user.sId ==
+                                                                  e.recipients![0]
+                                                                      .sId
+                                                              ? e.recipients![1]
+                                                              : e.recipients![0],
+                                                        )));
+                                          },
+                                          child: buildConverationCard(e)))
+                                      .toList()
+                                ],
+                              ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Messages',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  conversationState.listConversation!.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No message',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      :
-                    Column(
-                    children: <Widget>[
-                      ...conversationState.listConversation!
-                          .map((e) => GestureDetector(
-                            onTap: () {
-                              if (e.isRead == false) {
-                                context.read<ConversationBloc>().add(
-                                      ConversationEventRead(
-                                        token: widget.accessToken,
-                                        conversationId: e.sId!,
-                                      ),
-                                    );
-                              }
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => MessageScreen(
-                                        user: e.recipients![1],
-                                        conversationId: e.sId!,
-                                      )));
-                            },
-                            child: buildConverationCard(e)))
-                          .toList()
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }
-          return Container();
-        }),
-      ),
+                  );
+                }
+                return Container();
+              }),
+            ),
     );
   }
 
-  // void handleReadMessage(Conversations cv) async {
-  //   setState(() {
-  //     _conversations = _conversations.map((e) {
-  //       if (e.sId == cv.sId) {
-  //         e.isRead = true;
-  //       }
-  //       return e;
-  //     }).toList();
-  //   });
-  //   await MessageApi().readMessage(cv.sId!, widget.accessToken);
-  // }
-
   Widget buildConverationCard(Conversations cv) {
+    final user = Provider.of<AuthProvider>(context).auth.user!;
+    final recipient = user.sId == cv.recipients![0].sId
+        ? cv.recipients![1]
+        : cv.recipients![0];
     return Container(
       color: Colors.transparent,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -197,7 +194,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(cv.recipients![1].avatar!),
+            backgroundImage: NetworkImage(recipient.avatar!),
           ),
           const SizedBox(
             width: 16,
@@ -207,18 +204,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  cv.recipients![1].fullname!,
+                  recipient.fullname!,
                   style: TextStyle(
-                    color: Colors.white,
                     fontWeight:
                         cv.isRead! ? FontWeight.normal : FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 Text(
-                  '${cv.text!} · ${DateFormat.yMMMd().format(DateTime.parse(cv.createdAt!))}',
+                  '${cv.messages![0].text} · ${DateFormat.yMMMd().format(DateTime.parse(cv.createdAt!))}',
                   style: TextStyle(
-                      color: Colors.white,
                       fontSize: 14,
                       fontWeight:
                           cv.isRead! ? FontWeight.normal : FontWeight.bold),

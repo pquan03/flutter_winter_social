@@ -56,6 +56,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 )).toList()]
               )
               : RefreshIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 onRefresh: () async{
                   getNotifications();
                 },
@@ -90,15 +92,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                 .user!
                                                 .username!,
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: Theme.of(context)
+                                                    .colorScheme.secondary,
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 16),
+                                                fontSize: 18),
                                             children: [
                                           TextSpan(
                                               text:
                                                   ' ${_notifications[index].text!}',
                                               style: TextStyle(
-                                                  color: Colors.white,
                                                   fontWeight: FontWeight.normal))
                                         ])),
                                     const SizedBox(
@@ -109,7 +111,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           DateTime.parse(
                                               _notifications[index].createdAt!)),
                                       style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5)),
+                                          ),
                                     ),
                                   ],
                                 ),

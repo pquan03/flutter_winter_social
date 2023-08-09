@@ -18,6 +18,7 @@ class CommentModal extends StatefulWidget {
 
 class _CommentModalState extends State<CommentModal> {
   final TextEditingController _commentController = TextEditingController();
+  final FocusNode _commentFocus = FocusNode();
   double _ratio = 0.5;
   dynamic tag;
 
@@ -32,6 +33,7 @@ class _CommentModalState extends State<CommentModal> {
   }
 
   void handleClickReply(var data) {
+    _commentFocus.requestFocus();
     setState(() {
       tag = data;
     });
@@ -55,14 +57,13 @@ class _CommentModalState extends State<CommentModal> {
               Text(
                 'Comments',
                 style: TextStyle(
-                    color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600),
               ),
               const SizedBox(
                 height: 16,
               ),
-              Container(width: double.infinity, height: 1, color: Colors.white),
+              Container(width: double.infinity, height: 1, color: Theme.of(context).colorScheme.secondary),
               BlocBuilder<CommentBloc, CommentState>(
                   builder: (context, commentState) {
                 if (commentState is CommentStateLoading) {
@@ -70,7 +71,10 @@ class _CommentModalState extends State<CommentModal> {
                       padding: const EdgeInsets.only(top: 16),
                       child: Center(
                           child:
-                              CircularProgressIndicator(color: Colors.white)));
+                              CircularProgressIndicator(
+                                color: Theme.of(context).colorScheme.secondary,
+                              )
+                              ));
                 } else if (commentState is CommentStateSuccess) {
                   return Expanded(
                     flex: 1,
@@ -123,9 +127,9 @@ class _CommentModalState extends State<CommentModal> {
                                     }
                                   },
                                   controller: _commentController,
+                                  focusNode: _commentFocus,
                                   autofocus: false,
                                   style: TextStyle(
-                                      color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                   decoration: InputDecoration(
@@ -138,7 +142,7 @@ class _CommentModalState extends State<CommentModal> {
                                               child: Text(
                                                 '${tag.user.username}',
                                                 style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: Theme.of(context).colorScheme.secondary,
                                                     fontSize: 16),
                                               ),
                                             )
@@ -174,7 +178,6 @@ class _CommentModalState extends State<CommentModal> {
                                 },
                                 icon: Icon(
                                   Icons.send_outlined,
-                                  color: Colors.white,
                                 ),
                               )
                             ],

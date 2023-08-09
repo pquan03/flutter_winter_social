@@ -16,6 +16,7 @@ class User {
   List<String>? saved;
   String? createdAt;
   String? updatedAt;
+  int? countPosts;
   int? iV;
 
   User(
@@ -36,6 +37,7 @@ class User {
       this.saved,
       this.createdAt,
       this.updatedAt,
+      this.countPosts,
       this.iV});
 
   User.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class User {
     saved = json['saved'].cast<String>();
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    countPosts = json['countPosts'];
     iV = json['__v'];
   }
 
@@ -78,6 +81,7 @@ class User {
     data['saved'] = this.saved;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
+    data['countPosts'] = this.countPosts;
     data['__v'] = this.iV;
     return data;
   }

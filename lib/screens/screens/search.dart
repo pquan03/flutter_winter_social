@@ -3,10 +3,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/post.dart';
+import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
+import 'package:insta_node_app/screens/screens/explore_list_post.dart';
 import 'package:insta_node_app/screens/screens/other_profile.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   final String accessToken;
@@ -22,12 +25,12 @@ class _SearchScreenState extends State<SearchScreen> {
   final FocusNode _focusNode = FocusNode();
   bool _isLoading = false;
   bool _isLoadingShimmer = false;
-  List<ProfilePost> _posts = [];
+  List<Post> _posts = [];
   List<UserPost> users = [];
   bool _isSearch = false;
   bool _isLoadMore = true;
-  static int page = 1;
-  static const int limit = 15;
+  int page = 1;
+  int limit = 15;
 
   @override
   void initState() {
@@ -64,6 +67,11 @@ class _SearchScreenState extends State<SearchScreen> {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
+      if (res.length < limit) {
+        setState(() {
+          _isLoadMore = false;
+        });
+      }
       setState(() {
         _posts = [..._posts, ...res];
         page++;
@@ -75,35 +83,37 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
         appBar: AppBar(
-          backgroundColor: Colors.black,
           title: Row(
             children: [
               _isSearch
-                  ? GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isSearch = false;
-                          _searchController.clear();
-                          users = [];
-                          _focusNode.unfocus();
-                        });
-                      },
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                  ? Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isSearch = false;
+                              _searchController.clear();
+                              users = [];
+                              _focusNode.unfocus();
+                            });
+                          },
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
                     )
                   : Container(),
-              const SizedBox(width: 10),
               Expanded(
                 child: Container(
                   height: AppBar().preferredSize.height * 0.7,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: BorderRadius.circular(8),
+                  decoration: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(.3),
                   ),
                   child: TextField(
                     onChanged: (value) async {
@@ -138,11 +148,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                     controller: _searchController,
                     autofocus: false,
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
                     focusNode: _focusNode,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search, color: Colors.white),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        size: 25,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                       suffixIcon: _searchController.text != ''
                           ? GestureDetector(
                               onTap: () {
@@ -153,13 +165,12 @@ class _SearchScreenState extends State<SearchScreen> {
                               },
                               child: Icon(
                                 Icons.clear,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.secondary,
                                 size: 20,
                               ),
                             )
                           : null,
                       hintText: "Search",
-                      hintStyle: TextStyle(color: Colors.grey),
                       border: InputBorder.none,
                     ),
                   ),
@@ -171,7 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
         body: !_isSearch
             ? _isLoading
                 ? SingleChildScrollView(
-                  child: StaggeredGrid.count(
+                    child: StaggeredGrid.count(
                       crossAxisCount: 3,
                       mainAxisSpacing: 2,
                       crossAxisSpacing: 2,
@@ -188,7 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 color: Colors.grey,
                               ),
                             );
-                          } 
+                          }
                           return StaggeredGridTile.count(
                             crossAxisCellCount: 1,
                             mainAxisCellCount: 1,
@@ -199,54 +210,81 @@ class _SearchScreenState extends State<SearchScreen> {
                         })
                       ],
                     ),
-                )
+                  )
                 : RefreshIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     onRefresh: () async {
                       setState(() {
                         _posts = [];
                         page = 1;
-                        
                       });
                       getPostDiscover();
                     },
                     child: SingleChildScrollView(
                       controller: _scrollController,
-                  child: StaggeredGrid.count(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 2,
-                      crossAxisSpacing: 2,
-                      children: [...[..._posts, ProfilePost.fromJson({
-                        '_id': '1',
-                        'image': 'https://i.pinimg.com/originals/0f/6a/9e/0f6a9e2e2e2e2e2e2e2e2e2e2e2e2e2.jpg',
-                      })].asMap().entries.map((e) {
-                        if(e.key == 0 ||
-                              e.key == 7 ||
-                              (e.key >= 10 &&
-                                  (e.key % 10 == 0 || e.key % 10 == 6))) {
+                      child: StaggeredGrid.count(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 2,
+                        crossAxisSpacing: 2,
+                        children: [
+                          ...[
+                            ..._posts,
+                            ProfilePost.fromJson({
+                              '_id': '1',
+                              'image':
+                                  'https://i.pinimg.com/originals/0f/6a/9e/0f6a9e2e2e2e2e2e2e2e2e2e2e2e2e2.jpg',
+                            })
+                          ].asMap().entries.map((e) {
+                            if (e.key == 0 ||
+                                e.key == 7 ||
+                                (e.key >= 10 &&
+                                    (e.key % 10 == 0 || e.key % 10 == 6))) {
+                              return StaggeredGridTile.count(
+                                crossAxisCellCount: 1,
+                                mainAxisCellCount: 2,
+                                child: GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                ExploreListPostScreen(
+                                                    title: 'Explore',
+                                                    posts: _posts,
+                                                    accessToken:
+                                                        widget.accessToken))),
+                                    child: ImageHelper.loadImageNetWork(
+                                        _posts[e.key].images![0],
+                                        fit: BoxFit.cover)),
+                              );
+                            } else if (e.key == _posts.length) {
+                              return StaggeredGridTile.count(
+                                  crossAxisCellCount: 3,
+                                  mainAxisCellCount: 1,
+                                  child: Opacity(
+                                    opacity: _isLoadMore ? 1 : 0,
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  ));
+                            }
                             return StaggeredGridTile.count(
                               crossAxisCellCount: 1,
-                              mainAxisCellCount: 2,
-                              child: ImageHelper.loadImageNetWork(_posts[e.key].image!, fit: BoxFit.cover),
-                            );
-                          } else if(e.key == _posts.length) {
-                            return StaggeredGridTile.count(
-                              crossAxisCellCount: 3,
                               mainAxisCellCount: 1,
-                              child: Opacity(
-                                opacity: _isLoadMore ? 1  : 0,
-                                child: Center(
-                                  child: CircularProgressIndicator(color: Colors.white, valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
-                              )
+                              child: GestureDetector(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (_) => ExploreListPostScreen(
+                                              title: 'Explore',
+                                              posts: _posts,
+                                              accessToken:
+                                                  widget.accessToken))),
+                                  child: ImageHelper.loadImageNetWork(
+                                      _posts[e.key].images![0],
+                                      fit: BoxFit.cover)),
                             );
-                          }
-                          return StaggeredGridTile.count(
-                            crossAxisCellCount: 1,
-                            mainAxisCellCount: 1,
-                            child: ImageHelper.loadImageNetWork(_posts[e.key].image!, fit: BoxFit.cover),
-                          );
-                      }).toList()],
+                          }).toList()
+                        ],
+                      ),
                     ),
-                ),
                   )
             : _isLoadingShimmer
                 ? LoadingShimmer(
@@ -263,7 +301,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       return GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => OtherProfileScreen(userId: users[index].sId!, token: widget.accessToken,)));
+                              builder: (_) => OtherProfileScreen(
+                                    userId: users[index].sId!,
+                                    token: widget.accessToken,
+                                  )));
                         },
                         child: ListTile(
                           leading: CircleAvatar(
@@ -272,15 +313,11 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           title: Text(
                             users[index].username!,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
                             users[index].fullname!,
-                            style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600),
+                            style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
                       );
@@ -312,7 +349,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 width: MediaQuery.sizeOf(context).width * 0.5,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -323,7 +359,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 width: 100,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),

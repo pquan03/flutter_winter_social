@@ -4,10 +4,8 @@ import 'package:hexcolor/hexcolor.dart';
 void showModalBottomSheetCustom(
     BuildContext context, Widget child) {
   showModalBottomSheet<dynamic>(
-      backgroundColor: HexColor('#121212'),
       // isDismissible: true,
       isScrollControlled: true,
-      barrierColor:  Colors.white.withOpacity(.3),
       enableDrag: true,
       useSafeArea: true,
       showDragHandle: true,

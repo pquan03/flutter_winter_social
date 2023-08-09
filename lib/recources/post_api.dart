@@ -25,7 +25,7 @@ class PostApi {
     try {
       final res = await _repository.getApi('post_discover?page=$page&limit=$limit', token);
       return res.map((post)  {
-        return ProfilePost.fromJson(post);
+        return Post.fromJson(post);
       }).toList();
     } catch(err) {
       return err.toString();

@@ -47,7 +47,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -66,11 +65,11 @@ class _SplashPageState extends State<SplashPage> {
             flex: 1,
             child: Column(
               children: const [
-                Text('from', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w400),),
+                Text('from', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),),
                 SizedBox(
                   height: 4,
                 ),
-                Text('☂ Winter', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w600),),
+                Text('☂ Winter', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
               ],
             ),
           )

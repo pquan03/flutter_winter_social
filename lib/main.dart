@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/themes.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/screens/screens/splash.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => ThemeModel()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -14,37 +19,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider (
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ],
-      child: MaterialApp(
+    return MaterialApp(
+        themeAnimationCurve: Curves.easeInOut,
+        themeAnimationDuration: const Duration(milliseconds: 500),
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
-        theme: ThemeData(
-          primaryColor: Colors.white,
-          primaryIconTheme: const IconThemeData(color: Colors.black),
-          primaryTextTheme: const TextTheme(
-            headlineMedium: TextStyle(color: Colors.black, fontFamily: "Roboto"),
-          ),
-          textTheme: const TextTheme(
-            headlineMedium: TextStyle(color: Colors.black),
-          ),
-        ),
-        darkTheme: ThemeData(
-          primaryColor: Colors.black,
-          primaryIconTheme: const IconThemeData(color: Colors.white),
-          primaryTextTheme: const TextTheme(
-            headlineMedium: TextStyle(color: Colors.white, fontFamily: "Roboto"),
-          ),
-          textTheme: const TextTheme(
-            headlineMedium: TextStyle(color: Colors.white),
-          ),
-        ),
-        home: const SplashPage()
-      ),
-    );
+        themeMode: Provider.of<ThemeModel>(context).theme == 'system' ? ThemeMode.system : 
+          Provider.of<ThemeModel>(context).theme == 'light' ? ThemeMode.light : ThemeMode.dark
+        ,
+        theme: ThemeClass
+            .lightTheme, // applies this theme if the device theme is light mode
+        darkTheme: ThemeClass
+            .darkTheme, // applies this theme if the device theme is dark mode,
+        home: const SplashPage());
   }
 }
-

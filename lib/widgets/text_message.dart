@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 
 class TextMessageWidget extends StatelessWidget {
   final Color color;
@@ -9,27 +8,21 @@ class TextMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.7),
+      padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),
       decoration: ShapeDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[
-                HexColor('#bc1888').withRed(255),
-                Colors.deepOrangeAccent,
-                Colors.blueAccent,
-                Colors.blueAccent,
-                Colors.blueAccent,
-                                Colors.blueAccent,
-                                                Colors.blueAccent,
-              ]),
+          color: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
           )),
       child: Text(
         text,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16
+          ),
       ),
     );
   }
