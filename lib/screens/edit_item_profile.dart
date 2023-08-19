@@ -116,6 +116,8 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
                 border: Border(bottom: BorderSide(color: Colors.blue, width: 1))
               ),
               child: TextField(
+                maxLines: null,
+                cursorColor: Colors.green,
                 enabled: listCannotChange.contains(widget.label) ? false : true,
                 autofocus: true,
                 controller: _controller,

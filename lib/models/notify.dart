@@ -2,7 +2,6 @@ import 'package:insta_node_app/models/post.dart';
 
 class Notify {
   String? sId;
-  String? id;
   UserPost? user;
   List<String>? recipients;
   String? url;
@@ -16,7 +15,6 @@ class Notify {
 
   Notify(
       {this.sId,
-      this.id,
       this.user,
       this.recipients,
       this.url,
@@ -30,7 +28,6 @@ class Notify {
 
   Notify.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    id = json['id'];
     user = json['user'] != null ? new UserPost.fromJson(json['user']) : null;
     recipients = json['recipients'].cast<String>();
     url = json['url'];
@@ -46,7 +43,6 @@ class Notify {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
-    data['id'] = this.id;
     if (this.user != null) {
       data['user'] = this.user!.toJson();
     }

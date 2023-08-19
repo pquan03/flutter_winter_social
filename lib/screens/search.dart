@@ -109,9 +109,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Container(
                   height: AppBar().preferredSize.height * 0.7,
                   decoration: ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(.3),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withOpacity(.3),
                   ),
                   child: TextField(
                     onChanged: (value) async {
@@ -144,6 +147,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         _isSearch = true;
                       });
                     },
+                    cursorColor: Colors.green,
                     controller: _searchController,
                     autofocus: false,
                     focusNode: _focusNode,
@@ -220,6 +224,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       getPostDiscover();
                     },
                     child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       controller: _scrollController,
                       child: StaggeredGrid.count(
                         crossAxisCount: 3,
@@ -228,33 +233,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         children: [
                           ...[
                             ..._posts,
-                            ProfilePost.fromJson({
-                              '_id': '1',
-                              'image':
-                                  'https://i.pinimg.com/originals/0f/6a/9e/0f6a9e2e2e2e2e2e2e2e2e2e2e2e2e2.jpg',
-                            })
+                            ProfilePost.fromJson({})
                           ].asMap().entries.map((e) {
-                            if (e.key == 0 ||
-                                e.key == 7 ||
-                                (e.key >= 10 &&
-                                    (e.key % 10 == 0 || e.key % 10 == 6))) {
-                              return StaggeredGridTile.count(
-                                crossAxisCellCount: 1,
-                                mainAxisCellCount: 2,
-                                child: GestureDetector(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                ExploreListPostScreen(
-                                                    title: 'Explore',
-                                                    posts: _posts,
-                                                    accessToken:
-                                                        widget.accessToken))),
-                                    child: ImageHelper.loadImageNetWork(
-                                        _posts[e.key].images![0],
-                                        fit: BoxFit.cover)),
-                              );
-                            } else if (e.key == _posts.length) {
+                            if (e.key == _posts.length) {
                               return StaggeredGridTile.count(
                                   crossAxisCellCount: 3,
                                   mainAxisCellCount: 1,
@@ -263,26 +244,56 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Center(
                                         child: CircularProgressIndicator()),
                                   ));
-                            }
+                            } else if (e.key == 0 ||
+                                e.key == 7 ||
+                                (e.key >= 10 &&
+                                    (e.key % 10 == 0 || e.key % 10 == 6))) {
+                              return StaggeredGridTile.count(
+                                crossAxisCellCount: 1,
+                                mainAxisCellCount: 2,
+                                child: GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (_) {
+                                          final newListPost = [..._posts];
+                                          final tempPost = newListPost[e.key];
+                                          newListPost.removeAt(e.key);
+                                          newListPost.insert(0, tempPost);
+                                          return ExploreListPostScreen(
+                                              title: 'Explore',
+                                              posts: newListPost,
+                                              accessToken: widget.accessToken);
+                                        })),
+                                    child: ImageHelper.loadImageNetWork(
+                                        _posts[e.key].images![0],
+                                        fit: BoxFit.cover)),
+                              );
+                            } 
                             return StaggeredGridTile.count(
                               crossAxisCellCount: 1,
                               mainAxisCellCount: 1,
                               child: GestureDetector(
-                                  onTap: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (_) => ExploreListPostScreen(
-                                              title: 'Explore',
-                                              posts: _posts,
-                                              accessToken:
-                                                  widget.accessToken))),
+                                  onTap: () {
+                                    final newListPost = [..._posts];
+                                    final tempPost = newListPost[e.key];
+                                    newListPost.removeAt(e.key);
+                                    newListPost.insert(0, tempPost);
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                ExploreListPostScreen(
+                                                    title: 'Explore',
+                                                    posts: newListPost,
+                                                    accessToken:
+                                                        widget.accessToken)));
+                                  },
                                   child: ImageHelper.loadImageNetWork(
                                       _posts[e.key].images![0],
                                       fit: BoxFit.cover)),
                             );
-                          }).toList()
+                          }). toList()
                         ],
                       ),
-                    ),
+                    )
                   )
             : _isLoadingShimmer
                 ? LoadingShimmer(

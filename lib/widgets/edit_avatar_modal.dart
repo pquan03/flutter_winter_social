@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/utils/image_picker.dart';
+import 'package:insta_node_app/screens/media_gallery_avatar.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../models/auth.dart';
@@ -18,26 +19,10 @@ class EditAvatarModal extends StatefulWidget {
 }
 
 class _EditAvatarModalState extends State<EditAvatarModal> {
+
+
   Future<void> callRestorablePicker(Auth auth) async {
-    final List<AssetEntity>? result =
-        await InstaAssetPicker().restorableAssetsPicker(
-      context,
-      title: 'Change avatar',
-      closeOnComplete: true,
-      provider: DefaultAssetPickerProvider(maxAssets: 1),
-      pickerTheme:
-          InstaAssetPicker.themeData(Theme.of(context).colorScheme.secondary)
-              .copyWith(
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.blue,
-            disabledForegroundColor: Colors.red,
-          ),
-        ),
-        appBarTheme: const AppBarTheme(titleTextStyle: TextStyle(fontSize: 18)),
-      ),
-      onCompleted: (cropStream) {},
-    );
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => MediaImageScreen(maxCount: 5, requestType: RequestType.image, isChangeAvatar: true,)));
     if (!mounted) return;
     showDialog(
         barrierDismissible: false,
@@ -67,7 +52,7 @@ class _EditAvatarModalState extends State<EditAvatarModal> {
       Navigator.of(context).pop();
       return;
     }
-    final photoUrl = await imageUpload(await result.first.file);
+    final photoUrl = await imageUpload(await result, true);
     widget.onUpdateUser({
       ...auth.toJson(),
       'user': {

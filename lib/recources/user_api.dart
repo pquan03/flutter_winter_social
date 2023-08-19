@@ -1,5 +1,6 @@
 
 
+import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/recources/repository.dart';
@@ -10,6 +11,15 @@ class UserApi {
   Future<dynamic> searchUser(String username, String token) async {
     try {
       final res = await _repository.getApi('search?username=$username', token);
+      return res.map((e) => UserPost.fromJson(e)).toList();
+    } catch(err) {
+      return err.toString();
+    }
+  }
+
+  Future<dynamic> searchUserWithMessages(String username, String token) async {
+    try {
+      final res = await _repository.getApi('search_user_mess?username=$username', token);
       return res.map((e) => UserPost.fromJson(e)).toList();
     } catch(err) {
       return err.toString();
@@ -39,6 +49,7 @@ class UserApi {
       Map<String, dynamic> data = {
         'user': User.fromJson(res['user']),
         'posts': res['data'].map((ele) => Post.fromJson(ele)).toList(),
+        'messages': res['messages'].map((ele) => Messages.fromJson(ele)).toList(),
       };
       return data;
     } catch(err) {

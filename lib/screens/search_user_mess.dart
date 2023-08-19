@@ -29,9 +29,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
   Widget build(BuildContext context) {
     final accessToken = Provider.of<AuthProvider>(context).auth.accessToken!;
     return  Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         title: Row(
           children: [
@@ -42,7 +40,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
             const SizedBox(width: 16,),
             Expanded(
               child: TextField(
-                                    onChanged: (value) async {
+                    onChanged: (value) async {
                       setState(() {
                         users = [];
                       });
@@ -51,7 +49,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                           _isLoadingShimmer = true;
                         });
                         final res = await UserApi()
-                            .searchUser(value, accessToken);
+                            .searchUserWithMessages(value, accessToken);
                         if (res is String) {
                           if (!mounted) return;
                           showSnackBar(context, 'Error', res);
@@ -67,9 +65,10 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                         });
                       }
                     },
+                  cursorColor: Colors.green,
                 controller: _searchController,
                 autofocus: true,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 decoration: const InputDecoration(
                   hintText: 'Search',
                   hintStyle: TextStyle(color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold),
@@ -95,7 +94,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                       return GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => MessageScreen(user: users[index], messages: const [],)));
+                              builder: (_) => MessageScreen(user: users[index], firstListMessages: users[index].messages ?? [],)));
                         },
                         child: ListTile(
                           leading: CircleAvatar(
@@ -105,7 +104,6 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                           title: Text(
                             users[index].username!,
                             style: TextStyle(
-                                color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(

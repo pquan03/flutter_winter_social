@@ -19,17 +19,17 @@ Future<dynamic> pickImage(ImageSource source) async {
   }
 }
 
-Future<String> imageUpload(dynamic file) async {
+Future<String> imageUpload(dynamic file, bool isUint8List) async {
   CloudinaryContext.cloudinary =
       Cloudinary.fromCloudName(cloudName: 'noze-blog');
-  var data = await upload(file);
+  var data = await upload(isUint8List ? file : file.readAsBytesSync());
   return data['url'];
 }
 
-Future<dynamic> imagePostUpload(dynamic file) async {
+Future<dynamic> imagePostUpload(dynamic file, bool isUint8List) async {
   CloudinaryContext.cloudinary =
       Cloudinary.fromCloudName(cloudName: 'noze-blog');
-  var data = await upload(file);
+  var data = await upload(isUint8List ? file : file.readAsBytesSync());
   return {
     'url': data['url'],
     'public_id': data['public_id'],
@@ -37,7 +37,7 @@ Future<dynamic> imagePostUpload(dynamic file) async {
 }
 
 Future<dynamic> upload(dynamic file) async {
-  final base64Img = base64Encode(file.readAsBytesSync());
+  final base64Img = base64Encode(file);
   final res = await http.post(
       Uri.parse('https://api.cloudinary.com/v1_1/noze-blog/upload'),
       body: {

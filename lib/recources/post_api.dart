@@ -1,6 +1,4 @@
-
-
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:insta_node_app/models/post.dart' as model;
 import 'package:insta_node_app/models/post.dart';
@@ -72,18 +70,31 @@ class PostApi {
     }
   }  
 
-  Future<dynamic> createPost(String caption, List<File> files, String token) async {
+  Future<dynamic> createPost(String caption, List<Uint8List> files, String token) async {
     try {
       List<Images> images = [];
       for(int i = 0; i < files.length; i++) {
-        final res = await imagePostUpload(files[i]);
+        final res = await imagePostUpload(files[i], true);
         images.add(Images.fromJson(res));
       }
       final res = await _repository.postApi('posts', {
         'content': caption,
         'images': images
       }, token);
+
+
       return model.Post.fromJson(res);
+    } catch(err) {
+      return err.toString();
+    }
+  }
+
+  Future<dynamic> getSavedPosts(String token) async {
+    try {
+      final res = await _repository.getApi('saved_posts', token);
+      return res.map((post)  {
+        return model.Post.fromJson(post);
+      }).toList();
     } catch(err) {
       return err.toString();
     }

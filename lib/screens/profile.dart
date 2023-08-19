@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/user.dart' as model;
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
+import 'package:insta_node_app/screens/add_post.dart';
 import 'package:insta_node_app/screens/edit_profile.dart';
 import 'package:insta_node_app/screens/explore_list_post.dart';
 import 'package:insta_node_app/screens/follow_user.dart';
@@ -15,7 +15,6 @@ import 'package:insta_node_app/screens/preview.dart';
 import 'package:insta_node_app/screens/settings.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
-import 'package:insta_node_app/widgets/picker_crop_result_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -57,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void getPostProfile() async {
     if (_posts.isNotEmpty && _posts.length % limit != 0) {
-      print('no more');
       setState(() {
         _isLoadMore = false;
       });
@@ -109,30 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           actions: [
             GestureDetector(
                 onTap: () {
-                  InstaAssetPicker.pickAssets(
-                    context,
-                    title: 'New post',
-                    pickerTheme: InstaAssetPicker.themeData(
-                            Theme.of(context).colorScheme.secondary)
-                        .copyWith(
-                      textButtonTheme: TextButtonThemeData(
-                        style: TextButton.styleFrom(
-                                  foregroundColor: Colors.blue,
-                                disabledForegroundColor: Colors.red,
-                        ),
-                      ),
-                    ),
-                    maxAssets: 5,
-                    onCompleted: (cropStream) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PickerCropResultScreen(
-                            cropStream: cropStream,
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                  Navigator.of(context).push(createRoute(AddPostScreen()));
                 },
                 child: Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -377,15 +352,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             crossAxisCellCount: 1,
                                             mainAxisCellCount: 1,
                                             child: GestureDetector(
-                                              onTap: () => Navigator.of(context)
+                                              onTap: ()  {
+                                                // remove current post and move this post to first
+                                                final newListPost = [..._posts];
+                                                final tempPost = newListPost[e.key];
+                                                newListPost.removeAt(e.key);
+                                                newListPost.insert(0, tempPost);
+                                                Navigator.of(context)
                                                   .push(MaterialPageRoute(
                                                       builder: (_) =>
                                                           ExploreListPostScreen(
                                                               title: 'Posts',
-                                                              posts: _posts,
+                                                              posts: newListPost,
                                                               accessToken:
                                                                   widget
-                                                                      .token))),
+                                                                      .token)));},
                                               child:
                                                   ImageHelper.loadImageNetWork(
                                                       _posts[e.key].images![0],

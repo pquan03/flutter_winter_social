@@ -90,9 +90,7 @@ class _FollowUserScreenState extends State<FollowUserScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: Row(
@@ -103,7 +101,6 @@ class _FollowUserScreenState extends State<FollowUserScreen>
               },
               child: Icon(
                 Icons.arrow_back,
-                color: Colors.white,
               ),
             ),
             const SizedBox(
@@ -112,24 +109,23 @@ class _FollowUserScreenState extends State<FollowUserScreen>
             Text(
               widget.username,
               style: TextStyle(
-                color: Colors.white,
                 fontSize: 20,
+                color: Theme.of(context).colorScheme.secondary,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
         bottom: TabBar(
-          indicatorColor: Colors.white,
           controller: _tabController,
           tabs: <Widget>[
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.followers.length.toString(), style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text(widget.followers.length.toString(), style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
                   const SizedBox(width: 8,),
-                  Text('Followers', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text('Followers', style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
                 ],
               ),
             ),
@@ -137,9 +133,9 @@ class _FollowUserScreenState extends State<FollowUserScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.following.length.toString(), style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text(widget.following.length.toString(), style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
                   const SizedBox(width: 8,),
-                  Text('Following', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text('Following', style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
                 ],
               ),
             ),

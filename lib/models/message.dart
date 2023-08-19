@@ -1,14 +1,13 @@
 import 'package:insta_node_app/models/conversation.dart';
-import 'package:insta_node_app/models/post.dart';
 
 class Messages {
   String? sId;
   String? conversationId;
   String? senderId;
   String? recipientId;
-  String? linkPost;
+  // String? linkPost;
   String? text;
-  List<Images>? media;
+  List<String>? media;
   String? createdAt;
   String? updatedAt;
   Call? call;
@@ -19,7 +18,7 @@ class Messages {
       this.senderId,
       this.recipientId,
       this.text,
-      this.linkPost,
+      // this.linkPost,
       this.media,
       this.createdAt,
       this.updatedAt,
@@ -31,14 +30,9 @@ class Messages {
     conversationId = json['conversationId'];
     senderId = json['senderId'];
     recipientId = json['recipientId'];
-    text = json['text'];
-    linkPost = json['linkPost'];
-    if (json['media'] != null) {
-      media = [];
-      json['media'].forEach((v) {
-        media!.add(new Images.fromJson(v));
-      });
-    } 
+    text = json['text'] ?? '';
+    // linkPost = json['linkPost'] ?? '';
+    media = json['media'].cast<String>();
     call = json['call'] != null ? new Call.fromJson(json['call']) : null;
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -51,10 +45,8 @@ class Messages {
     data['senderId'] = this.senderId;
     data['recipientId'] = this.recipientId;
     data['text'] = this.text;
-    data['linkPost'] = this.linkPost;
-    if (this.media != null) {
-      data['media'] = this.media!.map((v) => v.toJson()).toList();
-    }
+    // data['linkPost'] = this.linkPost;
+    data['media'] = this.media;
     if (this.call != null) {
       data['call'] = this.call!.toJson();
     }

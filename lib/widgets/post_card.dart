@@ -4,6 +4,7 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
+import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/screens/other_profile.dart';
 import 'package:insta_node_app/screens/profile.dart';
@@ -54,6 +55,10 @@ class _PostCardState extends State<PostCard> {
         setState(() {
           widget.post.likes!.remove(uId);
         });
+        if (widget.post.userPost!.sId! != widget.auth.user!.sId!) {
+          await NotifiApi().deleteNotification(
+              widget.auth.user!.sId!, widget.post.sId!, widget.auth.accessToken!);
+        }
       }
     } else {
       final res =
@@ -65,6 +70,21 @@ class _PostCardState extends State<PostCard> {
         setState(() {
           widget.post.likes!.add(uId);
         });
+        if (widget.post.userPost!.sId! != widget.auth.user!.sId!) {
+          final msg = {
+            'text': 'like your post',
+            'recipients': [widget.post.userPost!.sId!],
+            'url': widget.post.sId,
+            'content': widget.post.content,
+            'image': widget.post.images![0],
+            'user': {
+              'sId': widget.auth.user!.sId,
+              'username': widget.auth.user!.username,
+              'avatar': widget.auth.user!.avatar,
+            },
+          };
+          await NotifiApi().createNotification(msg, widget.auth.accessToken!);
+        }
       }
     }
   }
@@ -135,8 +155,8 @@ class _PostCardState extends State<PostCard> {
                           child: Text(
                             widget.post.userPost!.username!,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                ),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -289,7 +309,7 @@ class _PostCardState extends State<PostCard> {
                       context,
                       CommentModal(
                         ratio: 1,
-                        postId: widget.post.sId!,
+                        post: widget.post,
                       ),
                     );
                   },
@@ -301,7 +321,29 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(
                     Icons.send_outlined,
                   )),
-              Spacer(),
+                  widget.post.images!.length > 1 ? 
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // list dot from image
+                    children: List.generate(
+                      widget.post.images!.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: _currentImage == index + 1
+                                ? Colors.orange
+                                : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    )
+                  ),
+                ) : Spacer(),
               LikeAnimation(
                 isAnimating:
                     widget.auth.user!.saved!.contains(widget.post.sId), // [1
@@ -329,8 +371,7 @@ class _PostCardState extends State<PostCard> {
                   width: double.infinity,
                   child: Text(
                     '${widget.post.likes!.length} likes',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(
@@ -338,7 +379,9 @@ class _PostCardState extends State<PostCard> {
                 ),
                 RichText(
                   text: TextSpan(
-                      style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyText1!.color),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodyText1!.color),
                       children: [
                         TextSpan(
                           text: widget.post.userPost!.username!,
@@ -354,19 +397,20 @@ class _PostCardState extends State<PostCard> {
                 const SizedBox(
                   height: 4,
                 ),
+                if(widget.post.comments!.isNotEmpty)
                 GestureDetector(
                   onTap: () {
                     showModalBottomSheetCustom(
                       context,
                       CommentModal(
                         ratio: 0.5,
-                        postId: widget.post.sId!,
+                        post: widget.post,
                       ),
                     );
                   },
                   child: Text(
                     'View all ${widget.post.comments!.length} comments',
-                    style: TextStyle( fontSize: 16),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
                 const SizedBox(

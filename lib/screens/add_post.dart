@@ -1,18 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
-import 'package:insta_node_app/common_widgets/layout_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
-import 'package:insta_node_app/screens/preview.dart';
-import 'package:insta_node_app/utils/animate_route.dart';
+import 'package:insta_node_app/screens/add_post_caption.dart';
+import 'package:insta_node_app/screens/media_gallery_post.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class AddPostScreen extends StatefulWidget {
-  final List<File> croppedFiles;
-  const AddPostScreen({super.key, required this.croppedFiles});
+  const AddPostScreen({super.key});
 
   @override
   State<AddPostScreen> createState() => _AddPostScreenState();
@@ -20,103 +16,76 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   bool _isLoading = false;
+  final PageController _pageController = PageController();
   final TextEditingController _captionController = TextEditingController();
+  List<Uint8List> imageList = [];
+  int _currentIndex = 0;
 
   @override
   void dispose() {
     super.dispose();
     _captionController.dispose();
+    _pageController.dispose();
   }
 
-  void handleCreatePost(String token) async {
+  void handleChangeImageList(List<Uint8List> newImageList) {
+    setState(() {
+      imageList = newImageList;
+    });
+  }
+
+  void handleCreatePost() async {
     setState(() {
       _isLoading = true;
     });
-    final res = await PostApi()
-        .createPost(_captionController.text, widget.croppedFiles, token);
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res =
+        await PostApi().createPost(_captionController.text, imageList, token);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
       if (!mounted) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.pop(context, res);
     }
     setState(() {
       _isLoading = false;
     });
   }
 
+  void navigationNextTapped() {
+    _pageController.jumpToPage(_currentIndex + 1);
+  }
+
+  void navigationPreTapped() {
+    _pageController.jumpToPage(_currentIndex - 1);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final accessToken = Provider.of<AuthProvider>(context).auth.accessToken!;
-    return LayoutScreen(
-      title: 'New Post',
-      action: [
-        _isLoading
-            ? Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              ),
-            )
-            : IconButton(
-                icon: const Icon(
-                  Icons.arrow_forward,
-                  size: 30,
-                  color: Colors.blue,
-                ),
-                onPressed: () => handleCreatePost(accessToken),
-              )
-      ],
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey.shade700,
-              width: 1,
-            ),
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (value) {
+          setState(() {
+            _currentIndex = value;
+          });
+        },
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          MediaGalleryPostScreen(
+              navigationTapped: navigationNextTapped,
+              imageList: imageList,
+              handleChangeImageList: handleChangeImageList),
+          AddPostCaptionScreen(
+            navigationPreTapped: navigationPreTapped,
+            isLoading: _isLoading,
+            handleCreatePost: handleCreatePost,
+            imageList: imageList,
+            controller: _captionController,
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                  createRoute(PreviewScreen(imagesFile: widget.croppedFiles))),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: ImageHelper.loadImageFile(widget.croppedFiles[0],
-                    height: 70, fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            Expanded(
-              child: TextField(
-                controller: _captionController,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                maxLines: null,
-                textDirection: TextDirection.ltr,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(right: 10),
-                  hintText: 'Write a caption...',
-                  alignLabelWithHint: true,
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                  ),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

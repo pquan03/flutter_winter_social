@@ -2,7 +2,9 @@
 
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
+import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/repository.dart';
+import 'package:insta_node_app/utils/socket_config.dart';
 
 class MessageApi {
   final Repository _repository = Repository();
@@ -44,7 +46,26 @@ class MessageApi {
   Future<dynamic> createMessageText(Map<String, dynamic> data, String token) async {
     try {
       final res = await _repository.postApi('message', data, token);
-      return Messages.fromJson(res['message']);
+      SocketConfig.createMessage(res['message']);
+      final newData = data as dynamic;
+          final text = newData['media'].isNotEmpty ? 'send ${newData['media'].length} photo' : 
+          newData['text'];
+          final msg = {
+            'text': text,
+            'recipients': [
+              newData['recipientId']
+            ],
+            'url': newData['conversationId'],
+            'content': 'notification',
+            'image': '',
+            'user': {
+              'sId': newData['senderId'],
+              'username': newData['username'],
+              'avatar': newData['avatar'],
+            },
+          };
+        await NotifiApi().createNotification(msg, token);
+      return res;
     } catch(err) {
       return err.toString();
     }

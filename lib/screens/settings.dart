@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/screens/dark_mode.dart';
+import 'package:insta_node_app/screens/saved_post.dart';
 import 'package:insta_node_app/screens/splash.dart';
 import 'package:insta_node_app/widgets/setting_item_card.dart';
 
@@ -41,8 +42,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icon(FontAwesomeIcons.lock),
                   title: 'Privacy'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.photoFilm),
-                  title: 'Suggested content'),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedPostScreen())),
+                  icon: Icon(FontAwesomeIcons.bookmark),
+                  title: 'Saved'),
               SettingItemCard(
                   icon: Icon(FontAwesomeIcons.circleUser),
                   title: 'Preferences'),
@@ -96,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Cancel')),
+                                  child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.secondary))),
                               TextButton(
                                   onPressed: () async {
                                     await AuthApi().logoutUser();

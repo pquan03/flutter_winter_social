@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/providers/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DarkModeScreen extends StatefulWidget {
   const DarkModeScreen({super.key});
@@ -21,7 +22,11 @@ class _DarkModeScreenState extends State<DarkModeScreen> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async{
+                    final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+                    final SharedPreferences prefs = await asynPrefs;
+                    prefs.setString('themeMode', 'dark');
+                    if(!mounted) return;
                       Provider.of<ThemeModel>(context, listen: false)
                           .toggleTheme('dark');
                   },
@@ -51,7 +56,11 @@ class _DarkModeScreenState extends State<DarkModeScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async{
+                    final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+                    final SharedPreferences prefs = await asynPrefs;
+                    prefs.setString('themeMode', 'light');
+                    if(!mounted) return;
                       Provider.of<ThemeModel>(context, listen: false)
                           .toggleTheme('light');
                   },
@@ -81,7 +90,11 @@ class _DarkModeScreenState extends State<DarkModeScreen> {
                   ),
                 ),
                                 GestureDetector(
-                  onTap: () {
+                  onTap: () async{
+                                        final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+                    final SharedPreferences prefs = await asynPrefs;
+                    prefs.setString('themeMode', 'system');
+                    if(!mounted) return;
                       Provider.of<ThemeModel>(context, listen: false)
                           .toggleTheme('system');
                   },

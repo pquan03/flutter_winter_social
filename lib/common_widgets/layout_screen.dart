@@ -7,7 +7,8 @@ class LayoutScreen extends StatefulWidget {
   final Widget? child;
   final Function? onPressed;
   final List<Widget>? action;
-  const LayoutScreen({super.key, required this.title, required this.child , this.action, this.isClose = false, this.onPressed});
+  final Widget? floatingActionButton;
+  const LayoutScreen({super.key, required this.title, required this.child , this.action, this.isClose = false, this.onPressed, this.floatingActionButton});
 
   @override
   State<LayoutScreen> createState() => _LayoutScreenState();
@@ -48,6 +49,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         ),
       ),
       body: widget.child,
+      floatingActionButton: widget.floatingActionButton,
     );
   }
 }

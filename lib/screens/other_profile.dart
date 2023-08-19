@@ -3,12 +3,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/models/auth.dart';
+import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/user.dart' as model;
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/screens/explore_list_post.dart';
 import 'package:insta_node_app/screens/follow_user.dart';
+import 'package:insta_node_app/screens/message.dart';
 import 'package:insta_node_app/screens/preview.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
@@ -31,6 +34,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
   bool _isLoading = false;
   bool _isLoadMore = true;
   List<Post> _posts = [];
+  List<Messages> _messages = [];
   model.User user = model.User();
   static const int limit = 12;
   final ScrollController _scrollController = ScrollController();
@@ -71,6 +75,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
       setState(() {
         user = res['user'];
         _posts = [...res['posts']];
+        _messages = [...res['messages']];
         _isLoading = false;
       });
     }
@@ -121,6 +126,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
         setState(() {
           user.followers!.removeWhere((element) => element == auth.user!.sId);
         });
+        await NotifiApi().deleteNotification(user.sId!, auth.user!.sId!, auth.accessToken!);
       }
     } else {
       final res = await UserApi().followUser(user.sId!, widget.token);
@@ -141,6 +147,21 @@ class _ProfileScreenState extends State<OtherProfileScreen>
           user.followers!.add(auth.user!.sId!);
         });
       }
+          final msg = {
+            'text': 'started following you.',
+            'recipients': [
+              user.sId,
+            ],
+            'url': auth.user!.sId,
+            'content': 'notification',
+            'image': '',
+            'user': {
+              'sId': auth.user!.sId,
+              'username': auth.user!.username,
+              'avatar': auth.user!.avatar,
+            },
+          };
+          await NotifiApi().createNotification(msg, auth.accessToken!);
     }
   }
 
@@ -153,6 +174,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
             ),
             body: Center(
                 child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
             )),
           )
         : Scaffold(
@@ -280,7 +302,14 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => MessageScreen(user: UserPost.fromJson({
+                              '_id': user.sId,
+                              'username': user.username,
+                              'avatar': user.avatar,
+                              'fullname': user.fullname,
+                            }), firstListMessages: _messages)));
+                          },
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             alignment: Alignment.center,

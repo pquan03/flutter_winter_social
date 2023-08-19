@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
-import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/utils/image_picker.dart';
 import 'package:insta_node_app/widgets/grid_icon.dart';
-import 'package:provider/provider.dart';
+import 'package:insta_node_app/widgets/input_message_gallery.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class InputMessageWidget extends StatefulWidget {
+  final List<String> media;
   final String recipientId;
   final TextEditingController controller;
   final VoidCallback handleCreateMessage;
@@ -16,7 +15,8 @@ class InputMessageWidget extends StatefulWidget {
       {super.key,
       required this.controller,
       required this.recipientId,
-      required this.handleCreateMessage});
+      required this.handleCreateMessage,
+      required this.media});
 
   @override
   State<InputMessageWidget> createState() => _InputMessageWidgetState();
@@ -31,40 +31,7 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
     });
   }
 
-
-
-  Future<void> callRestorablePicker() async {
-    final accessToken = Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
-    final List<AssetEntity>? result =
-        await InstaAssetPicker().restorableAssetsPicker(
-      context,
-      title: 'Choose image',
-      closeOnComplete: true,
-      provider: DefaultAssetPickerProvider(maxAssets: 5),
-      pickerTheme: InstaAssetPicker.themeData(Theme.of(context).primaryColor).copyWith(
-        textTheme: TextTheme(
-          bodyText1: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-        ),
-        iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.blue,
-            disabledForegroundColor: Colors.red,
-            backgroundColor: Theme.of(context).primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-        ),
-      appBarTheme: const AppBarTheme(
-        titleTextStyle: TextStyle(fontSize: 18)),
-  ),
-      onCompleted: (cropStream) {},
-    );
+  Future<void> callRestorablePicker(List<AssetEntity> assetList) async {
     if (!mounted) return;
     showDialog(
         barrierDismissible: false,
@@ -76,9 +43,11 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   // The loading indicator
-                  CircularProgressIndicator(),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   SizedBox(
                     height: 15,
                   ),
@@ -89,11 +58,23 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
             ),
           );
         });
-    if (result == null) {
+    if (assetList == null) {
+      Navigator.of(context).pop();
       Navigator.of(context).pop();
       return;
     }
-    final photoUrl = await imageUpload(await result.first.file);
+    List<String> images = [];
+    for (int i = 0; i < assetList.length; i++) {
+      final res = await imageUpload(await assetList[i].file, false);
+      images.add(res);
+    }
+    setState(() {
+      widget.media.addAll(images);
+    });
+    widget.handleCreateMessage();
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 
   @override
@@ -139,6 +120,7 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
             ),
             Expanded(
               child: TextField(
+                cursorColor: Colors.green,
                 onChanged: (value) => setState(() {}),
                 controller: widget.controller,
                 decoration: InputDecoration(
@@ -160,7 +142,14 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
                     ))
                 : IconButton(
                     onPressed: () {
-                      callRestorablePicker();
+                      // callRestorablePicker();
+                      showModalBottomSheetCustom(
+                          context,
+                          InputMessageMedia(
+                            onSend: callRestorablePicker,
+                            maxCount: 5,
+                            requestType: RequestType.image,
+                          ));
                     },
                     icon: Icon(
                       FontAwesomeIcons.image,

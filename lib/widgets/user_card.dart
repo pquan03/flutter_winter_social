@@ -25,7 +25,7 @@ class UserCardWidget extends StatelessWidget {
         leading: CircleAvatar(
           backgroundImage: NetworkImage(user.avatar!),
         ),
-        title: Text(user.username!, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+        title: Text(user.username!, style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
         subtitle: Text(user.fullname!, style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600),),
       ),
     );

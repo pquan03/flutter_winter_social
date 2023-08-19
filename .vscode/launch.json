@@ -16,16 +16,22 @@
             "deviceId": "D8BA5074-930C-40C4-AA6D-047A69535A5A"
         },
         {
-            "name":  "Android",
+            "name":  "Android1",
             "request": "launch",
             "type": "dart",
             "deviceId": "7621658b"
+        },
+        {
+            "name":  "Android2",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
         },
     ],
     "compounds": [
         {
             "name": "All Devices",
-            "configurations": ["iPhone11", "Android"]
+            "configurations": ["iPhone11", "Android1", "Android2"]
         }
     ]
 }

@@ -15,7 +15,9 @@ class SettingItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap!(),
+      onTap: () {
+        if(onTap != null) onTap!();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         color: Colors.transparent,

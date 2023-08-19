@@ -1,24 +1,31 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/socket_config.dart';
+import 'package:insta_node_app/utils/video_call.dart';
 import 'package:insta_node_app/widgets/call_message.dart';
 import 'package:insta_node_app/widgets/input_message.dart';
 import 'package:insta_node_app/widgets/media_message.dart';
 import 'package:insta_node_app/widgets/text_message.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MessageScreen extends StatefulWidget {
   final String? conversationId;
   final UserPost user;
-  final List<Messages> messages;
+  final List<Messages> firstListMessages;
   const MessageScreen(
       {super.key,
       required this.user,
-      required this.messages,
+      required this.firstListMessages,
       this.conversationId});
 
   @override
@@ -28,17 +35,27 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final List<Messages> messages = [];
+  late IO.Socket socket;
   List<String> media = [];
   bool _isLoadMore = true;
+  Conversations? conversation;
   int page = 2;
   int limit = 20;
 
   @override
   void initState() {
     super.initState();
-    messages.addAll(widget.messages);
-    _isLoadMore = messages.length < (limit - 1) ? false : true;
+    SocketConfig.socket.on('addMessageToClient', (data) {
+      if (!mounted) return;
+      setState(() {
+        // widget.firstListMessages.insert(0, Messages.fromJson(data));
+      });
+    });
+    if(widget.firstListMessages.length < limit) {
+      setState(() {
+        _isLoadMore = false;
+      });
+    }
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -57,20 +74,21 @@ class _MessageScreenState extends State<MessageScreen> {
   void _handleLoadMoreMessage() async {
     final accessToken =
         Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    if (messages.isNotEmpty &&( messages.length + page - 1) % limit != 0) {
+    if (widget.firstListMessages.isNotEmpty &&
+        widget.firstListMessages.length % limit != 0) {
       setState(() {
         _isLoadMore = false;
       });
       return;
     }
     final res = await MessageApi()
-        .getMessages(widget.conversationId!, accessToken, page, limit);
+        .getMessages(widget.conversationId != null ? widget.conversationId! : widget.user.sId!, accessToken, page, limit);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        messages.addAll([...res]);
+        widget.firstListMessages.addAll([...res]);
         page++;
       });
     }
@@ -82,6 +100,9 @@ class _MessageScreenState extends State<MessageScreen> {
     final currentUser =
         Provider.of<AuthProvider>(context, listen: false).auth.user!;
     final message = {
+      'conversationId': widget.conversationId ?? widget.user.sId,
+      'avatar': currentUser.avatar,
+      'username': currentUser.username,
       'text': _messageController.text,
       'senderId': currentUser.sId,
       'recipientId': widget.user.sId,
@@ -94,9 +115,16 @@ class _MessageScreenState extends State<MessageScreen> {
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        messages.insert(0, res);
+        widget.firstListMessages.insert(0, Messages.fromJson(res['message']));
+        conversation = Conversations.fromJson({
+          ...res['conversation'],
+          'messages': [res['message']]
+        });
       });
-      _messageController.clear();
+        setState(() {
+          media = [];
+          _messageController.clear();
+        });
     }
   }
 
@@ -110,7 +138,17 @@ class _MessageScreenState extends State<MessageScreen> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              final msg = {
+                'sender': currentUser.sId!,
+                'recipient': widget.user.sId,
+                'avatar': currentUser.avatar,
+                'fullname': currentUser.fullname,
+              };
+              SocketConfig.callUser(msg);
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
+            },
             icon: Icon(
               FontAwesomeIcons.phone,
             ),
@@ -119,7 +157,10 @@ class _MessageScreenState extends State<MessageScreen> {
             width: 10,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              AudioPlayer player = AudioPlayer();
+              player.play(AssetSource(AssetHelper.soundCall));
+            },
             icon: Icon(FontAwesomeIcons.video),
           ),
         ],
@@ -127,7 +168,7 @@ class _MessageScreenState extends State<MessageScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context, conversation);
               },
               child: const Icon(
                 Icons.arrow_back,
@@ -179,13 +220,13 @@ class _MessageScreenState extends State<MessageScreen> {
           child: Column(
             children: [
               Expanded(
-                child: messages.isNotEmpty
+                child: widget.firstListMessages.isNotEmpty
                     ? ListView.builder(
                         controller: _scrollController,
                         reverse: true,
-                        itemCount: messages.length + 1,
+                        itemCount: widget.firstListMessages.length + 1,
                         itemBuilder: (context, index) {
-                          if (index == messages.length) {
+                          if (index == widget.firstListMessages.length) {
                             return SizedBox(
                                 height: 70,
                                 child: Opacity(
@@ -197,13 +238,18 @@ class _MessageScreenState extends State<MessageScreen> {
                                           .secondary,
                                     ))));
                           }
-                          return buildMessageCard(
-                              messages[index], currentUser.sId!);
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 24.0),
+                            child: buildMessageCard(
+                                widget.firstListMessages[index],
+                                currentUser.sId!),
+                          );
                         },
                       )
                     : Container(),
               ),
               InputMessageWidget(
+                  media: media,
                   handleCreateMessage: handleCreateMessage,
                   controller: _messageController,
                   recipientId: widget.user.sId!)
@@ -224,37 +270,48 @@ class _MessageScreenState extends State<MessageScreen> {
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
 
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        isShowAvatar
-            ? CircleAvatar(
-                radius: 16,
-                backgroundImage: NetworkImage(widget.user.avatar!),
-              )
-            : Container(),
-        const SizedBox(
-          width: 10,
-        ),
-        Column(
-          crossAxisAlignment: crossAxisAliment,
-          children: [
-            message.text != ''
-                ? TextMessageWidget(color: color, text: message.text!)
-                : Container(),
-            // Image
-            message.media!.isNotEmpty
-                ? MediaMessageWidget(media: message.media!)
-                : Container(),
-            // call
-            message.call != null
-                ? CallMessageWidget(
-                    call: message.call!, createAt: message.createdAt!)
-                : Container()
-          ],
-        ),
-      ],
+    return SizedBox(
+      width: MediaQuery.sizeOf(context).width * 0.7,
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isShowAvatar
+              ? CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage(widget.user.avatar!),
+                )
+              : Container(),
+          const SizedBox(
+            width: 10,
+          ),
+          Column(
+            crossAxisAlignment: crossAxisAliment,
+            children: [
+              message.text != ''
+                  ? TextMessageWidget(color: color, text: message.text!)
+                  : Container(),
+              // Image
+              message.media!.isNotEmpty
+                  ? MediaMessageWidget(media: message.media!, crossAxisAlignment: crossAxisAliment)
+                  : Container(),
+              // call
+              message.call != null
+                  ? CallMessageWidget(
+                      call: message.call!, createAt: message.createdAt!)
+                  : Container(),
+              Text(
+                  DateFormat('dd/MM/yyyy hh:mm a')
+                      .format(DateTime.parse(message.createdAt!)),
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  )),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
