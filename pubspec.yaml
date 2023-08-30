@@ -59,6 +59,8 @@ dependencies:
   photo_manager: ^2.7.1
   insta_assets_crop: ^0.0.2
   image_editor_plus: ^0.2.5
+  visibility_detector: ^0.4.0+2
+  image_picker: ^1.0.2
 
 dev_dependencies:
   flutter_test:

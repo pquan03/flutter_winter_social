@@ -4,6 +4,7 @@ class Reel {
   String? sId;
   String? content;
   String? videoUrl;
+  String? backgroundUrl;
   List<String>? comments;
   UserPost? user;
   List<String>? likes;
@@ -14,6 +15,7 @@ class Reel {
       {this.sId,
       this.content,
       this.videoUrl,
+      this.backgroundUrl,
       this.comments,
       this.user,
       this.likes,
@@ -24,6 +26,7 @@ class Reel {
     sId = json['_id'];
     content = json['content'];
     videoUrl = json['videoUrl'];
+    backgroundUrl = json['backgroundUrl'];
     comments = json['comments'].cast<String>();
     user = json['user'] != null ? new UserPost.fromJson(json['user']) : null;
     likes = json['likes'].cast<String>();
@@ -36,6 +39,7 @@ class Reel {
     data['_id'] = this.sId;
     data['content'] = this.content;
     data['videoUrl'] = this.videoUrl;
+    data['backgroundUrl'] = this.backgroundUrl;
     data['comments'] = this.comments;
     if (this.user != null) {
       data['user'] = this.user!.toJson();

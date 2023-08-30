@@ -4,9 +4,18 @@ import 'package:insta_node_app/recources/repository.dart';
 class CommentApi {
   final Repository _repository = Repository();
 
-  Future<dynamic> getCommentsByPostId(String postId) async {
+  Future<dynamic> getCommentsByPostId(String postId, String token) async {
     try {
-      final res = await _repository.getApi('post_comments/$postId', null);
+      final res = await _repository.postApi('post_comments/$postId', {}, token);
+      return res.map((ele) => Comment.fromJson(ele)).toList();
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+    Future<dynamic> getCommentsByReelId(String reelId, String token) async {
+    try {
+      final res = await _repository.postApi('reel_comments/$reelId', {}, token);
       return res.map((ele) => Comment.fromJson(ele)).toList();
     } catch (err) {
       return err.toString();
@@ -23,9 +32,18 @@ class CommentApi {
     }
   }
 
-  Future<dynamic> createComment(Map<String, dynamic> data, String token) async {
+  Future<dynamic> createCommentPost(Map<String, dynamic> data, String token) async {
     try {
-      final res = await _repository.postApi('comment', data, token);
+      final res = await _repository.postApi('comment_post', data, token);
+      return Comment.fromJson(res);
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  Future<dynamic> createCommentReel(Map<String, dynamic> data, String token) async {
+    try {
+      final res = await _repository.postApi('comment_reel', data, token);
       return Comment.fromJson(res);
     } catch (err) {
       return err.toString();

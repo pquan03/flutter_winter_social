@@ -1,8 +1,9 @@
+import 'package:insta_node_app/recources/repository.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConfig {
   static IO.Socket socket = IO.io(
-      'http://192.168.110.101:5000',
+      Repository.baseUrl,
       IO.OptionBuilder()
           .setTransports(['websocket']) // for Flutter or Dart VM
           .disableAutoConnect() // disable auto-connection

@@ -11,7 +11,9 @@ class ThemeClass {
     iconTheme: const IconThemeData(color: Colors.black),
     brightness: Brightness.light,
     primaryColor: Colors.white,
+    scaffoldBackgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
+      titleTextStyle: TextStyle(color: Colors.black),
       backgroundColor: Colors.transparent,
       iconTheme: IconThemeData(color: Colors.black),
       elevation: 0,
@@ -27,7 +29,9 @@ class ThemeClass {
     iconTheme: const IconThemeData(color: Colors.white),
     brightness: Brightness.dark,
     primaryColor: Colors.black,
+    scaffoldBackgroundColor: Colors.black,
     appBarTheme: const AppBarTheme(
+      titleTextStyle: TextStyle(color: Colors.white),
       backgroundColor: Colors.transparent,
       iconTheme: IconThemeData(color: Colors.white),
       elevation: 0,
