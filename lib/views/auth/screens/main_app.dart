@@ -1,13 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/notify.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/views/add/screens/add.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/noti_bloc/noti_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/noti_bloc/noti_event.dart';
 import 'package:insta_node_app/views/message/screens/calling.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
 import 'package:insta_node_app/views/post/screens/feed.dart';
@@ -36,9 +32,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
     _currentIndex = widget.initPage;
     _pageController = PageController(initialPage: widget.initPage);
     SocketConfig.socket.on('createNotifyToClient', (data) {
+      print('hi');
       final newNotify = Notify.fromJson(data);
-      final chatBloc = BlocProvider.of<ChatBloc>(context);
-      
+      // final chatBloc = BlocProvider.of<ChatBloc>(context);
       NotificationService().showNotification(
         title: newNotify.user!.username!,
         body: newNotify.text!,

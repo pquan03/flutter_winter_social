@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/models/story.dart';
 import 'package:insta_node_app/views/post/widgets/story_card.dart';
-import 'package:provider/provider.dart';
+import 'package:insta_node_app/views/story/screens/story.dart';
 
 class StoryListWidget extends StatefulWidget {
-  const StoryListWidget({super.key});
+  final List<Story> stories;
+  const StoryListWidget({super.key, required this.stories});
 
   @override
   State<StoryListWidget> createState() => _StoryListWidgetState();
@@ -13,12 +14,18 @@ class StoryListWidget extends StatefulWidget {
 class _StoryListWidgetState extends State<StoryListWidget> {
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context).auth.user!;
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: 10,
+      itemCount: widget.stories.length,
       itemBuilder: (context, index) {
-        return StoryCardWidget(avatar: user.avatar!,);
+        return InkWell(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => StoryScreen(story: widget.stories[index]))),
+            child: StoryCardWidget(
+              showIconAdd: index == 0,
+              avatar: widget.stories[index].user!.avatar!,
+              name: widget.stories[index].user!.username!,
+            ));
       },
     );
   }

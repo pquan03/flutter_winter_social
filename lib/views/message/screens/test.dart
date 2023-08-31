@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
+import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/utils/socket_config.dart';
 import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_event.dart';
 import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_state.dart';
@@ -22,6 +24,14 @@ class _TestConversationScreenState extends State<TestConversationScreen> {
 
   @override
   void initState() {
+          SocketConfig.socket.on('addMessageToClient', (data) {
+      if (!mounted) return;
+      setState(() {
+        final message = Messages.fromJson(data);
+        final chatBloc = BlocProvider.of<ChatBloc>(context);
+        chatBloc.add(ChatEventAddMessage(message: message));
+      });
+    });
     super.initState();
     fetchChatData();
   }

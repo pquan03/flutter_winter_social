@@ -6,9 +6,14 @@ import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
+import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/recources/story_api.dart';
+import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
+import 'package:insta_node_app/views/add/widgets/preview_video_edit.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
   const MediaGalleryStoryScreen({super.key});
@@ -32,7 +37,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
 
   @override
   void initState() {
-    MediaServices().loadAlbums(RequestType.image, 1).then((value) {
+    MediaServices().loadAlbums(RequestType.all, 1).then((value) {
       setState(() {
         albumList = value;
         selectedAlbum = value[0];
@@ -46,7 +51,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-            print('load more');
+        print('load more');
         MediaServices()
             .loadAssets(selectedAlbum!, _currentPage + 1)
             .then((value) {
@@ -99,11 +104,9 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
       // convert List<ImageItem> to List<Uint8List>
       final newListImage = (imageEditor as List<ImageItem>)
           .map((e) => Uint8List.fromList(e.image))
-          .toList();
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => AddPostCaptionScreen(
-                imageList: newListImage,
-              )));
+          .toList();  
+      final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+      await StoryApi().createStory(newListImage, token);
     }
   }
 
@@ -164,7 +167,10 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 alignment: Alignment.center,
                 child: Text(
                   'Add to story',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -239,13 +245,15 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                       backgroundColor: Colors.grey[900],
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10))),
-                  child: !_isSelectOne ?  
-                  const Text('Cancel', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
-                  : const Text(
-                    'Select',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
+                  child: !_isSelectOne
+                      ? const Text('Cancel',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold))
+                      : const Text(
+                          'Select',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                 ),
               ],
             ),
@@ -324,82 +332,83 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                     ],
                   ),
                 ),
-                if(selectedAssetList.isNotEmpty)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    height: MediaQuery.sizeOf(context).height * 0.1,
-                    color: Colors.black87,
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 100),
-                          child: Row(
-                            children: [
-                              Expanded(child: ListView.builder(
-                                controller: _scrollController2,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedAssetList.length,
-                                itemBuilder: (context, index) {
-                                  AssetEntity assetEntity = assetList[index];
-                                  return Container(
-                                    margin: const EdgeInsets.only(right: 16),
-                                    width: 50,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: AssetEntityImage(
-                                        assetEntity,
-                                        isOriginal: false,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return const Center(child: Text('Error'));
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          right: 5,
-                          bottom: 5,
-                          child:                             ElevatedButton(
-                              onPressed: () {
-                                handleChooseMedia();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  fixedSize: const Size(100, 50),
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50))),
-                              child: const Text(
-                                'Next >',
-                                style: TextStyle(
+                if (selectedAssetList.isNotEmpty)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      height: MediaQuery.sizeOf(context).height * 0.1,
+                      color: Colors.black87,
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: ListView.builder(
+                            controller: _scrollController2,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: selectedAssetList.length,
+                            itemBuilder: (context, index) {
+                              AssetEntity assetEntity =
+                                  selectedAssetList[index];
+                              return Container(
+                                margin: const EdgeInsets.only(right: 16),
+                                width: 50,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: AssetEntityImage(
+                                    assetEntity,
+                                    isOriginal: false,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Center(child: Text('Error'));
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          )),
+                          ElevatedButton(
+                            onPressed: () {
+                              handleChooseMedia();
+                            },
+                            style: ElevatedButton.styleFrom(
+                                fixedSize: const Size(100, 50),
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50))),
+                            child: const Text(
+                              'Next >',
+                              style: TextStyle(
                                   fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                              ),
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500),
                             ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
     );
   }
 
   Widget assetWidget(AssetEntity assetEntity, int index) {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
     if (_isSelectOne) {
       return InkWell(
           onTap: () async {
             final imageFile = await assetEntity.originFile;
+            if(assetEntity.type == AssetType.video) {
+              // convert file to uint8list
+              final newImageFile = Uint8List.fromList(imageFile!.readAsBytesSync());
+              if(!mounted) return;
+              await StoryApi().createStory([newImageFile], token);
+              return;
+            }
             final newImageFile =
                 Uint8List.fromList(imageFile!.readAsBytesSync());
             if (!mounted) return;
@@ -424,6 +433,10 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 ),
               ),
             );
+            if (imageEditor != null) {
+              if (!mounted) return;
+              await StoryApi().createStory([imageEditor], token);
+            }
           },
           child: Stack(
             children: [
@@ -451,17 +464,25 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
             ],
           ));
     } else {
-      int index =
+      int idx =
           selectedAssetList.indexWhere((element) => element == assetEntity);
       return GestureDetector(
         onTap: () {
           //  scroll to bottom
-          if(selectedAssetList.length > 3) {
+          if (selectedAssetList.length > 3) {
             _scrollController2.animateTo(
               _scrollController2.position.maxScrollExtent,
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeOut,
             );
+          }
+          if (selectedAssetList.length > 4) {
+            return showAboutDialog(
+                context: context,
+                applicationName: 'Insta Node',
+                applicationVersion: '1.0.0',
+                applicationIcon: const Icon(Icons.info),
+                children: [const Text('You can only select 5 images')]);
           }
           setState(() {
             if (selectedAssetList.contains(assetEntity)) {
@@ -491,23 +512,33 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 width: 32,
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: index == -1 ? Colors.transparent : Colors.lightBlue,
+                  color: idx == -1 ? Colors.transparent : Colors.lightBlue,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Colors.white,
                     width: 2,
                   ),
                 ),
-                child: index == -1
+                child: idx == -1
                     ? Container()
                     : Text(
-                        (index + 1).toString(),
+                        (idx + 1).toString(),
                         style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
               ),
-            )
+            ),
+            if (assetEntity.type == AssetType.video)
+              Positioned(
+                bottom: 5,
+                right: 5,
+                child: Text(
+                  // convert to 00:00
+                  convertDuration(assetEntity.videoDuration),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              )
           ],
         ),
       );

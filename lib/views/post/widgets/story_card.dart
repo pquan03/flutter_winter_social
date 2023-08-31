@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
 
 class StoryCardWidget extends StatelessWidget {
+  final bool showIconAdd;
+  final String name;
   final String avatar;
-  const StoryCardWidget({super.key, required this.avatar});
+  const StoryCardWidget({super.key, required this.avatar, required this.name, required this.showIconAdd});
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +17,20 @@ class StoryCardWidget extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage: NetworkImage(avatar),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    // boder color instagram
+                    border: Border.all(color: Colors.pink, width: 4),
+                  ),
+                  child: CircleAvatar(
+                    radius: 35,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage: NetworkImage(avatar),
+                  ),
                 ),
+                if(showIconAdd == true)
                 Positioned(
                   right: -2,
                   bottom: 5,
@@ -45,7 +56,7 @@ class StoryCardWidget extends StatelessWidget {
           SizedBox(height: 5),
           SizedBox(
             child: Text(
-              'Your Story',
+              name,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
             ),

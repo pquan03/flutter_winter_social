@@ -154,14 +154,17 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                       }).toList(),
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          )),
-                      child: const Icon(Icons.camera_alt_outlined),
+                    InkWell(
+                      onTap: handleRecordVideo,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: ShapeDecoration(
+                          color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            )),
+                        child: const Icon(Icons.camera_alt_outlined),
+                      ),
                     ),
                   ],
                 ),
