@@ -9,7 +9,7 @@ import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/story_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/message/screens/test.dart';
-import 'package:insta_node_app/views/notification/screens/test.dart';
+import 'package:insta_node_app/views/notification/screens/notifications.dart';
 import 'package:insta_node_app/views/post/widgets/post_card.dart';
 import 'package:insta_node_app/views/post/widgets/story_list.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Post> _posts = [];
-  List<Story> _stories = [];
+  List<Stories> _stories = [];
   int page = 1;
   int limit = 8;
   bool _isLoadMore = true;
@@ -54,13 +54,31 @@ class _HomeScreenState extends State<HomeScreen> {
       if(!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
+      List<Stories> temp = [...res];
       if(!mounted) return;
       final user = Provider.of<AuthProvider>(context, listen: false).auth.user!;
-      List<Story> temp = [...res];
-      final story = temp.firstWhere((element) => element.user!.sId == user.sId);
-      story.user!.username = 'Your Story';
-      temp.removeWhere((element) => element.sId == story.sId);
-      temp.insert(0, story);
+      final tempStories = temp.firstWhere((element) => element.user!.sId == user.sId, orElse: () => Stories(
+        stories: [],
+        user: UserPost.fromJson({
+          '_id': user.sId,
+          'username': 'Your Story',
+          'avatar': user.avatar,
+        })
+      ));
+      // remove old story
+      temp.removeWhere((element) => element.user!.sId == user.sId);
+      if(tempStories.user!.username != 'Your Story') {
+        final newStories = Stories.fromJson({
+          ...tempStories.toJson(),
+          'user': {
+            ...tempStories.user!.toJson(),
+            'username': 'Your Story',
+          }
+        });
+        temp.insert(0, newStories);
+      } else {
+        temp.insert(0, tempStories);
+      }
       setState(() {
         _stories = [...temp];
       });
@@ -165,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 child: Column(
                   children: [
-                    Expanded(child: StoryListWidget(stories: _stories,)),
+                    Expanded(child: StoryListWidget(stories: [..._stories],)),
                     const SizedBox(height: 10),
                     Divider(
                       height: 0.5,

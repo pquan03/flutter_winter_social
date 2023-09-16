@@ -87,6 +87,8 @@ class _CallingScreenState extends State<CallingScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    // turn off sound
+                    audioPlayer.stop();
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
                   },
                   child: Container(

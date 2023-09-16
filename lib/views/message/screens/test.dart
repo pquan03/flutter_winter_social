@@ -33,14 +33,8 @@ class _TestConversationScreenState extends State<TestConversationScreen> {
       });
     });
     super.initState();
-    fetchChatData();
   }
 
-  void fetchChatData() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final chatBloc = BlocProvider.of<ChatBloc>(context);
-    chatBloc.add(ChatEventFetch(token: token));
-  }
 
   void handleBack() {
     setState(() {
@@ -75,7 +69,7 @@ class _TestConversationScreenState extends State<TestConversationScreen> {
                 ),
               ),
             ],
-            child:
+            child: 
                 BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
               if (chatState is ChatStateLoading) {
                 return Center(

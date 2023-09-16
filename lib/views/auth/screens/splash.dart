@@ -41,7 +41,9 @@ class _SplashPageState extends State<SplashPage> {
     }
     if(accessToken != null && refreshToken != null) {
       final res = await AuthApi().refreshTokenUser(refreshToken);
-      SocketConfig.joinUser(res.user);
+      if(!mounted)return;
+      SocketConfig.joinUser( context,res.user);
+      SocketConfig.checkUserOnline(res.user);
       if(!mounted) return;
       Provider.of<AuthProvider>(context, listen: false).setAuth(res);
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainAppScreen()));

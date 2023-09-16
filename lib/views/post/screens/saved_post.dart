@@ -79,23 +79,8 @@ class _SavedScreenState extends State<SavedScreen>
     });
   }
 
-  void _deletePost(String postId) async {
-    final accessToken =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
-    final res = await PostApi().deletePost(postId, accessToken!);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _posts.removeWhere((post) => post.sId == postId);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context, listen: false).auth;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -173,8 +158,8 @@ class _SavedScreenState extends State<SavedScreen>
                                 newListPost.insert(0, tempPost);
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (_) => ExploreListPostScreen(
-                                        title: 'Posts',
-                                        posts: newListPost,
+                                          title: 'Posts',
+                                          posts: newListPost,
                                         )));
                               },
                               child: ImageHelper.loadImageNetWork(
@@ -216,14 +201,11 @@ class _SavedScreenState extends State<SavedScreen>
                           mainAxisCellCount: 2,
                           child: GestureDetector(
                               onTap: () {
-                                final newListPost = [..._reels];
-                                final tempPost = newListPost[e.key];
-                                newListPost.removeAt(e.key);
-                                newListPost.insert(0, tempPost);
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (_) => ExploreListReelScreen(
-                                        reels: _reels,
-                                        accessToken: auth.accessToken!)));
+                                          initpage: e.key,
+                                          reels: _reels,
+                                        )));
                               },
                               child: ImageHelper.loadImageNetWork(
                                   _reels[e.key].backgroundUrl!,

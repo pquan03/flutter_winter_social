@@ -1,6 +1,5 @@
 
 
-import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/recources/repository.dart';
@@ -49,7 +48,6 @@ class UserApi {
       Map<String, dynamic> data = {
         'user': User.fromJson(res['user']),
         'posts': res['data'].map((ele) => Post.fromJson(ele)).toList(),
-        'messages': res['messages'].map((ele) => Messages.fromJson(ele)).toList(),
       };
       return data;
     } catch(err) {

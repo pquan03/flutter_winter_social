@@ -5,7 +5,6 @@ import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
-import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:insta_node_app/views/message/widgets/card_converastion.dart';
 import 'package:insta_node_app/views/message/widgets/temp_shimmer_card_conversation.dart';
 import 'package:insta_node_app/views/message/screens/search_user_mess.dart';
@@ -38,7 +37,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         final message = Messages.fromJson(data);
         final conversation = _conversations.firstWhere(
             (element) => element.sId == message.conversationId);
-        conversation.isRead = false;
+        conversation.isRead = ['${message.senderId}'];
         conversation.messages!.insert(0, message);
         _conversations.removeWhere(
             (element) => element.sId == message.conversationId);
@@ -77,6 +76,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _isSearch = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -180,29 +180,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             : Column(
                                 children: <Widget>[
                                   ..._conversations
-                                      .map((e) => GestureDetector(
-                                          onTap: () async {
-                                            // if (e.isRead == false) {
-                                            //   await MessageApi().readMessage(e.sId!, widget.accessToken);
-                                            // }
-                                            // if(!mounted) return;
-                                            Navigator.of(context)
-                                                    .push(MaterialPageRoute(
-                                                        builder:
-                                                            (context) =>
-                                                                MessageScreen(
-                                                                  conversationId:
-                                                                      e.sId,
-                                                                  firstListMessages:
-                                                                      e.messages!,
-                                                                  user: user.sId ==
-                                                                          e.recipients![0]
-                                                                              .sId
-                                                                      ? e.recipients![1]
-                                                                      : e.recipients![0],
-                                                                )));
-                                          },
-                                          child: CardConversationWidget(conversation: e,)))
+                                      .map((e) => CardConversationWidget(conversation: e,))
                                       .toList()
                                 ],
                               ),

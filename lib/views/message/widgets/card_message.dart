@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/views/message/widgets/call_message.dart';
 import 'package:insta_node_app/views/message/widgets/media_message.dart';
 import 'package:insta_node_app/views/message/widgets/text_message.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CardMessageWidget extends StatelessWidget {
@@ -56,14 +56,13 @@ class CardMessageWidget extends StatelessWidget {
                   ? CallMessageWidget(
                       call: message.call!, createAt: message.createdAt!)
                   : Container(),
-              Text(
-                  DateFormat('dd/MM/yyyy hh:mm a')
-                      .format(DateTime.parse(message.createdAt!)),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  )),
+              // Text(
+              //     convertTimeAgo(message.createdAt!),
+              //     style: TextStyle(
+              //       color: Colors.black54,
+              //       fontSize: 12,
+              //       fontWeight: FontWeight.w400,
+              //     )),
             ],
           ),
         ],

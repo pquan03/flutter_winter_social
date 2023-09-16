@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/conversation.dart';
-import 'package:intl/intl.dart';
 
 class CallMessageWidget extends StatelessWidget {
   final Call call;
@@ -113,7 +112,7 @@ class CallMessageWidget extends StatelessWidget {
             ? 'Video chat'
             : 'Audio Call';
     String time = call.times == 0
-        ? DateFormat.H().format(DateTime.parse(createAt))
+        ? 'Today'
         : formatTime(call.times!);
     return Row(
       children: [

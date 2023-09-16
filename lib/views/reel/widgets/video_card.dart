@@ -8,8 +8,16 @@ class VideoCardWidget extends StatefulWidget {
   final File? videoFile;
   final String? videoUrl;
   final String? backgroundUrl;
+  final bool? isShowProgess;
+  final bool? isLooping;
   const VideoCardWidget(
-      {super.key, this.videoFile, this.videoUrl, this.backgroundUrl});
+      {super.key,
+      this.videoFile,
+      this.videoUrl,
+      this.backgroundUrl,
+      this.isLooping = true,
+      this.isShowProgess = true,
+      });
 
   @override
   State<VideoCardWidget> createState() => _VideoCardWidgetState();
@@ -29,7 +37,7 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
           VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl!));
     }
     _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(true);
+    _controller.setLooping(widget.isLooping!);
     _controller.play();
   }
 
@@ -49,36 +57,32 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
           future: _initializeVideoPlayerFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return GestureDetector(
-                  onTap: () => _controller.value.isPlaying
-                      ? _controller.pause()
-                      : _controller.play(),
-                  child: Container(
-                      width: size.width,
-                      height: size.height,
-                      decoration: BoxDecoration(color: Colors.black),
-                      child: VisibilityDetector(
-                        key: Key("unique key"),
-                        onVisibilityChanged: (VisibilityInfo info) {
-                          debugPrint(
-                              "${info.visibleFraction} of my widget is visible");
-                          if(!mounted) return;
-                          if (info.visibleFraction == 1) {
-                            if (info.visibleFraction == 0) {
-                              _controller.pause();
-                            } else {
-                              _controller.play();
-                            }
-                          } else {
-                            if (info.visibleFraction == 1) {
-                              _controller.play();
-                            } else {
-                              _controller.pause();
-                            }
-                          }
-                        },
-                        child: VideoPlayer(_controller),
-                      )));
+              return Container(
+                  width: size.width,
+                  height: size.height,
+                  decoration: BoxDecoration(color: Colors.black),
+                  child: VisibilityDetector(
+                    key: Key("unique key"),
+                    onVisibilityChanged: (VisibilityInfo info) {
+                      debugPrint(
+                          "${info.visibleFraction} of my widget is visible");
+                      if (!mounted) return;
+                      if (info.visibleFraction == 1) {
+                        if (info.visibleFraction == 0) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      } else {
+                        if (info.visibleFraction == 1) {
+                          _controller.play();
+                        } else {
+                          _controller.pause();
+                        }
+                      }
+                    },
+                    child: VideoPlayer(_controller),
+                  ));
             } else {
               return widget.backgroundUrl == null
                   ? Center(
@@ -94,11 +98,12 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
             }
           },
         ),
-        VideoProgressIndicator(
-          _controller,
-          allowScrubbing: true,
-          colors: VideoProgressColors(playedColor: Colors.white),
-        ),
+        if (widget.isShowProgess == true)
+          VideoProgressIndicator(
+            _controller,
+            allowScrubbing: true,
+            colors: VideoProgressColors(playedColor: Colors.white),
+          ),
       ],
     );
   }

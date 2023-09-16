@@ -69,6 +69,7 @@ class _MediaImageScreenState extends State<MediaImageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
-import 'package:insta_node_app/views/add/widgets/preview.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
+import 'package:insta_node_app/views/add/screens/widgets/preview.dart';
 
 class MediaMessageWidget extends StatelessWidget {
   final List<String> media;
@@ -17,12 +17,21 @@ class MediaMessageWidget extends StatelessWidget {
         children: <Widget>[
           ...media
               .map((e) => GestureDetector(
-                onTap: () => Navigator.of(context).push(createRoute(PreviewScreen(imagesString: media,))),
+                onTap: () {
+                  // open popup render image
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => PreviewScreen(imagesString: media, initpage: media.indexOf(e),))
+                  );
+                },
                 child: Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: ImageHelper.loadImageNetWork(e,
-                        fit: BoxFit.contain,
-                        borderRadius: BorderRadius.circular(10))),
+                    child: Hero(
+                      tag: e,
+                      child: ImageHelper.loadImageNetWork(e,
+                          fit: BoxFit.contain,
+                          borderRadius: BorderRadius.circular(10)),
+                    )),
               ))
               .toList()
         ],

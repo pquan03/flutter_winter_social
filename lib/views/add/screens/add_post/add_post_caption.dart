@@ -5,7 +5,7 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
 import 'package:insta_node_app/views/auth/screens/main_app.dart';
-import 'package:insta_node_app/views/add/widgets/preview.dart';
+import 'package:insta_node_app/views/add/screens/widgets/preview.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';

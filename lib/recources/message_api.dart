@@ -51,12 +51,12 @@ class MessageApi {
           final text = newData['media'].isNotEmpty ? 'send ${newData['media'].length} photo' : 
           newData['text'];
           final msg = {
-            'text': text,
+            'text': 'Send you a messsage: $text',
             'recipients': [
               newData['recipientId']
             ],
             'url': newData['conversationId'],
-            'content': 'notification',
+            'content': newData['text'],
             'image': '',
             'user': {
               'sId': newData['senderId'],

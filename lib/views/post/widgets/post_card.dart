@@ -1,11 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/common_widgets/circle_avatar.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/post_api.dart';
+import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/views/post/screens/likes_post.dart';
 import 'package:insta_node_app/views/post/widgets/post_send_mess_modal.dart';
 import 'package:insta_node_app/views/profile/screens/other_profile.dart';
@@ -14,7 +16,6 @@ import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/comment/comment_modal_post.dart';
 import 'package:insta_node_app/common_widgets/like_animation.dart';
 import 'package:insta_node_app/views/post/widgets/post_modal.dart';
-import 'package:intl/intl.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -58,8 +59,8 @@ class _PostCardState extends State<PostCard> {
           widget.post.likes!.remove(uId);
         });
         if (widget.post.userPost!.sId! != widget.auth.user!.sId!) {
-          await NotifiApi().deleteNotification(
-              widget.auth.user!.sId!, widget.post.sId!, widget.auth.accessToken!);
+          await NotifiApi().deleteNotification(widget.auth.user!.sId!,
+              widget.post.sId!, widget.auth.accessToken!);
         }
       }
     } else {
@@ -132,12 +133,12 @@ class _PostCardState extends State<PostCard> {
                 GestureDetector(
                   onTap: () {
                     if (widget.post.userPost!.sId! == widget.auth.user!.sId!) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => ProfileScreen()));
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => ProfileScreen()));
                     } else {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (_) => OtherProfileScreen(
-                              userId: widget.post.userPost!.sId!,
+                                userId: widget.post.userPost!.sId!,
                               )));
                     }
                   },
@@ -145,11 +146,7 @@ class _PostCardState extends State<PostCard> {
                     color: Colors.transparent,
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(widget.post.userPost!.avatar!),
-                          radius: 16,
-                        ),
+                        CircleAvatarWidget(imageUrl: widget.post.userPost!.avatar, radius: 16),
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
@@ -326,29 +323,30 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(
                     Icons.send_outlined,
                   )),
-                  widget.post.images!.length > 1 ? 
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    // list dot from image
-                    children: List.generate(
-                      widget.post.images!.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: _currentImage == index + 1
-                                ? Colors.orange
-                                : Colors.grey,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
+              widget.post.images!.length > 1
+                  ? Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          // list dot from image
+                          children: List.generate(
+                            widget.post.images!.length,
+                            (index) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Container(
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color: _currentImage == index + 1
+                                      ? Colors.orange
+                                      : Colors.grey,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          )),
                     )
-                  ),
-                ) : Spacer(),
+                  : Spacer(),
               LikeAnimation(
                 isAnimating:
                     widget.auth.user!.saved!.contains(widget.post.sId), // [1
@@ -374,16 +372,19 @@ class _PostCardState extends State<PostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.post.likes!.isNotEmpty)
-                InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LikesPostScreen(likes: widget.post.likes!,))),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      '${widget.post.likes!.length} likes',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  InkWell(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => LikesPostScreen(
+                              likes: widget.post.likes!,
+                            ))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        '${widget.post.likes!.length} likes',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
                 RichText(
                   text: TextSpan(
                       style: TextStyle(
@@ -404,28 +405,27 @@ class _PostCardState extends State<PostCard> {
                 const SizedBox(
                   height: 4,
                 ),
-                if(widget.post.comments!.isNotEmpty)
-                GestureDetector(
-                  onTap: () {
-                    showModalBottomSheetCustom(
-                      context,
-                      CommentModal(
-                        ratio: 0.5,
-                        post: widget.post,
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'View all ${widget.post.comments!.length} comments',
-                    style: TextStyle(fontSize: 16),
+                if (widget.post.comments!.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheetCustom(
+                        context,
+                        CommentModal(
+                          ratio: 0.5,
+                          post: widget.post,
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'View all ${widget.post.comments!.length} comments',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                ),
                 const SizedBox(
                   height: 4,
                 ),
                 Text(
-                    DateFormat.yMMMd()
-                        .format(DateTime.parse(widget.post.createdAt!)),
+                    convertTimeAgo(widget.post.createdAt!),
                     style: TextStyle(fontSize: 16))
               ],
             ),

@@ -6,11 +6,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:insta_node_app/constants/themes.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/providers/theme.dart';
-import 'package:insta_node_app/views/auth/screens/splash.dart';
 import 'package:insta_node_app/utils/notifi_config.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
+import 'package:insta_node_app/views/auth/screens/splash.dart';
 import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/views/comment/bloc/noti_bloc/noti_bloc.dart';
+import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
 import 'package:insta_node_app/views/comment/bloc/simple_bloc_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,8 @@ void main() {
   ], child: MultiBlocProvider(
     providers: [
       BlocProvider(create: (_) => NotiBloc()),
-      BlocProvider(create: (_) => ChatBloc())
+      BlocProvider(create: (_) => ChatBloc()),
+      BlocProvider(create: (_) => OnlineBloc()),
     ],
     child: const MyApp(),
   )));
@@ -59,6 +61,6 @@ class MyApp extends StatelessWidget {
             .lightTheme, // applies this theme if the device theme is light mode
         darkTheme: ThemeClass
             .darkTheme, 
-        home: const SplashPage());
+        home:  SplashPage());
   }
 }

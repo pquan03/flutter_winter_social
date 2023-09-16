@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:image_editor_plus/data/image_item.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
-import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/recources/story_api.dart';
-import 'package:insta_node_app/utils/animate_route.dart';
+import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
-import 'package:insta_node_app/views/add/widgets/preview_video_edit.dart';
+import 'package:insta_node_app/views/add/screens/add_story/show_stories.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:provider/provider.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
-  const MediaGalleryStoryScreen({super.key});
+  final Function? handleHideAddPostButton;
+  const MediaGalleryStoryScreen({super.key, this.handleHideAddPostButton});
 
   @override
   State<MediaGalleryStoryScreen> createState() =>
@@ -49,9 +45,9 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
       });
     });
     _scrollController.addListener(() {
+      // widget.handleHideAddPostButton!();
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        print('load more');
         MediaServices()
             .loadAssets(selectedAlbum!, _currentPage + 1)
             .then((value) {
@@ -69,45 +65,6 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-  }
-
-  void handleChooseMedia() async {
-    final imageFiles = await Future.wait(
-        selectedAssetList.map((e) async => await e.originFile));
-    final newImageFiles = imageFiles
-        .map((e) => Uint8List.fromList(e!.readAsBytesSync()))
-        .toList();
-    if (!mounted) return;
-    var imageEditor = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ImageEditor(
-          images: newImageFiles,
-          allowMultiple: true,
-          features: const ImageEditorFeatures(
-            pickFromGallery: false,
-            captureFromCamera: false,
-            crop: true,
-            blur: true,
-            brush: true,
-            emoji: true,
-            filters: true,
-            flip: true,
-            rotate: true,
-            text: true,
-          ),
-        ),
-      ),
-    );
-    if (imageEditor != null) {
-      if (!mounted) return;
-      // convert List<ImageItem> to List<Uint8List>
-      final newListImage = (imageEditor as List<ImageItem>)
-          .map((e) => Uint8List.fromList(e.image))
-          .toList();  
-      final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-      await StoryApi().createStory(newListImage, token);
-    }
   }
 
   void handleCapturePhoto() async {
@@ -371,7 +328,10 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                           )),
                           ElevatedButton(
                             onPressed: () {
-                              handleChooseMedia();
+                              // handleChooseMedia();
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => ShowStoriesScreen(
+                                      assets: selectedAssetList)));
                             },
                             style: ElevatedButton.styleFrom(
                                 fixedSize: const Size(100, 50),
@@ -396,46 +356,53 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
   }
 
   Widget assetWidget(AssetEntity assetEntity, int index) {
-    final token =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
     if (_isSelectOne) {
       return InkWell(
           onTap: () async {
-            final imageFile = await assetEntity.originFile;
-            if(assetEntity.type == AssetType.video) {
-              // convert file to uint8list
-              final newImageFile = Uint8List.fromList(imageFile!.readAsBytesSync());
-              if(!mounted) return;
-              await StoryApi().createStory([newImageFile], token);
-              return;
-            }
-            final newImageFile =
-                Uint8List.fromList(imageFile!.readAsBytesSync());
-            if (!mounted) return;
-            var imageEditor = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ImageEditor(
-                  image: newImageFile,
-                  allowMultiple: true,
-                  features: const ImageEditorFeatures(
-                    pickFromGallery: false,
-                    captureFromCamera: false,
-                    crop: true,
-                    blur: true,
-                    brush: true,
-                    emoji: true,
-                    filters: true,
-                    flip: true,
-                    rotate: true,
-                    text: true,
+            if (assetEntity.type == AssetType.video) {
+              if (assetEntity.videoDuration.inSeconds > 30) {
+                return showAboutDialog(
+                    context: context,
+                    applicationName: 'Insta Node',
+                    applicationVersion: '1.0.0',
+                    applicationIcon: const Icon(Icons.info),
+                    children: [
+                      const Text(
+                        'You can only select video less than 15 seconds',
+                        style: TextStyle(color: Colors.black),
+                      )
+                    ]);
+              }
+            } else {
+              final newImageFile =
+                  await convertAssetEntityToUint8List(assetEntity);
+              if (!mounted) return;
+              var imageEditor = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ImageEditor(
+                    image: newImageFile,
+                    allowMultiple: true,
+                    features: const ImageEditorFeatures(
+                      pickFromGallery: false,
+                      captureFromCamera: false,
+                      crop: true,
+                      blur: true,
+                      brush: true,
+                      emoji: true,
+                      filters: true,
+                      flip: true,
+                      rotate: true,
+                      text: true,
+                    ),
                   ),
                 ),
-              ),
-            );
-            if (imageEditor != null) {
-              if (!mounted) return;
-              await StoryApi().createStory([imageEditor], token);
+              );
+              if (imageEditor != null) {
+                if (!mounted) return;
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => ShowStoriesScreen(assets: [assetEntity])));
+              }
             }
           },
           child: Stack(
@@ -468,6 +435,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
           selectedAssetList.indexWhere((element) => element == assetEntity);
       return GestureDetector(
         onTap: () {
+          // widget.handleHideAddPostButton!();
           //  scroll to bottom
           if (selectedAssetList.length > 3) {
             _scrollController2.animateTo(
@@ -482,7 +450,28 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 applicationName: 'Insta Node',
                 applicationVersion: '1.0.0',
                 applicationIcon: const Icon(Icons.info),
-                children: [const Text('You can only select 5 images')]);
+                children: [
+                  const Text(
+                    'You can only select 5 images',
+                    style: TextStyle(color: Colors.black),
+                  )
+                ]);
+          }
+          //  get duration of video
+          if (assetEntity.type == AssetType.video) {
+            if (assetEntity.videoDuration.inSeconds > 30) {
+              return showAboutDialog(
+                  context: context,
+                  applicationName: 'Insta Node',
+                  applicationVersion: '1.0.0',
+                  applicationIcon: const Icon(Icons.info),
+                  children: [
+                    const Text(
+                      'You can only select video less than 15 seconds',
+                      style: TextStyle(color: Colors.black),
+                    )
+                  ]);
+            }
           }
           setState(() {
             if (selectedAssetList.contains(assetEntity)) {

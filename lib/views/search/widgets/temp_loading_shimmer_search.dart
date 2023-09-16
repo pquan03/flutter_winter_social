@@ -13,7 +13,7 @@ class CardLoadingShimmerSearchWdiget extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor: Colors.grey,
+            backgroundColor: Colors.black,
           ),
           SizedBox(
             width: 10,

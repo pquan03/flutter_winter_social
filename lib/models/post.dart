@@ -1,5 +1,4 @@
 
-import 'package:insta_node_app/models/message.dart';
 
 class Images {
   String? publicId;
@@ -25,17 +24,15 @@ class UserPost {
   String? username;
   String? avatar;
   String? fullname;
-  List<Messages>? messages;
 
 
-  UserPost({this.sId, this.username, this.avatar, this.fullname = '', this.messages});
+  UserPost({this.sId, this.username, this.avatar, this.fullname = ''});
 
   UserPost.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     username = json['username'];
     fullname = json['fullname'] ?? '';
     avatar = json['avatar'];
-    messages = json['messages'] != null ? (json['messages'] as List).map((i) => Messages.fromJson(i)).toList() : [];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,7 +41,6 @@ class UserPost {
     data['username'] = this.username;
     data['fullname'] = this.fullname ?? '';
     data['avatar'] = this.avatar;
-    data['messages'] = this.messages ?? [];
     return data;
   }
 }

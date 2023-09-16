@@ -4,7 +4,7 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/comment_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/common_widgets/like_animation.dart';
-import 'package:intl/intl.dart';
+import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:provider/provider.dart';
 
 class CommentCard extends StatefulWidget {
@@ -152,8 +152,7 @@ class _CommentCardState extends State<CommentCard> {
                 Row(
                   children: [
                     Text(
-                      DateFormat.yMMMd()
-                          .format(DateTime.parse(widget.comment.createdAt!)),
+                      convertTimeAgo(widget.comment.createdAt!),
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,

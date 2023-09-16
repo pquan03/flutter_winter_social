@@ -4,14 +4,17 @@ import 'package:image_editor_plus/data/image_item.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:insta_assets_crop/insta_assets_crop.dart';
+import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
-import 'package:insta_node_app/views/reel/widgets/video_card.dart';
+import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
+import 'package:insta_node_app/views/add/screens/widgets/show_select_image_post.dart';
+import 'package:insta_node_app/views/add/screens/widgets/sliver_appbar_delegate.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryPostScreen extends StatefulWidget {
-  const MediaGalleryPostScreen({super.key});
+  final Function? handleHideAddPostButton;
+  const MediaGalleryPostScreen({super.key, this.handleHideAddPostButton});
 
   @override
   State<MediaGalleryPostScreen> createState() => _MediaGalleryPostScreenState();
@@ -19,21 +22,19 @@ class MediaGalleryPostScreen extends StatefulWidget {
 
 class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
   final ScrollController _scrollController = ScrollController();
-  final cropKey = GlobalKey<CropState>();
   AssetPathEntity? selectedAlbum;
   List<AssetPathEntity> albumList = [];
   List<AssetEntity> assetList = [];
   List<AssetEntity> selectedAssetList = [];
   AssetEntity? selectedAsset;
   bool _isSelectOne = true;
-  double aspectRatio = 1;
   int _currentPage = 1;
 
   @override
   void initState() {
     MediaServices().loadAlbums(RequestType.image, 1).then((value) {
       setState(() {
-        albumList = value;
+        albumList = [...value];
         selectedAlbum = value[0];
       });
       MediaServices().loadAssets(selectedAlbum!, 1).then((value) {
@@ -72,8 +73,7 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
 
   void handleChooseMedia() async {
     if (_isSelectOne) {
-      final imageFile = await selectedAsset!.originFile;
-      final newImageFile = Uint8List.fromList(imageFile!.readAsBytesSync());
+      final newImageFile = await convertAssetEntityToUint8List(selectedAsset!);
       if (!mounted) return;
       var imageEditor = await Navigator.push(
         context,
@@ -104,8 +104,8 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
       }
     } else {
       if (selectedAssetList.isEmpty || selectedAssetList.length == 1) {
-        final imageFile = await selectedAsset!.originFile;
-        final newImageFile = Uint8List.fromList(imageFile!.readAsBytesSync());
+        final newImageFile =
+            await convertAssetEntityToUint8List(selectedAsset!);
         if (!mounted) return;
         var imageEditor = await Navigator.push(
           context,
@@ -135,12 +135,9 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                   )));
         }
         return;
-      } 
-      final imageFiles = await Future.wait(
-          selectedAssetList.map((e) async => await e.originFile));
-      final newImageFiles = imageFiles
-          .map((e) => Uint8List.fromList(e!.readAsBytesSync()))
-          .toList();
+      }
+      final newImageFiles = await Future.wait(
+          selectedAssetList.map((e) => convertAssetEntityToUint8List(e)));
       if (!mounted) return;
       var imageEditor = await Navigator.push(
         context,
@@ -165,7 +162,6 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
       );
       if (imageEditor != null) {
         if (!mounted) return;
-        // convert List<ImageItem> to List<Uint8List>
         final newListImage = (imageEditor as List<ImageItem>)
             .map((e) => Uint8List.fromList(e.image))
             .toList();
@@ -211,6 +207,7 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -241,89 +238,32 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
               ),
               GestureDetector(
                 onTap: handleChooseMedia,
-                child: Text('Next', style: TextStyle(color: Colors.blue, fontSize: 16, fontWeight: FontWeight.w500),),
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
+                ),
               )
             ],
           ),
         ),
         body: NestedScrollView(
           controller: _scrollController,
-          floatHeaderSlivers: true,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverToBoxAdapter(
-                child: selectedAsset == null
-                    ? Container(
-                        height: 400,
-                        width: double.infinity,
-                        color: Colors.grey,
-                      )
-                    : SizedBox(
-                        height: 400,
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: FutureBuilder(
-                                future: selectedAsset!.originFile,
-                                builder: (context, snapShot) {
-                                  if (snapShot.connectionState ==
-                                      ConnectionState.done) {
-                                    return
-                                        // check type video and image
-                                        selectedAsset!.type == AssetType.video
-                                            // auto play video
-                                            ? VideoCardWidget(
-                                                videoFile: snapShot.data!,
-                                              )
-                                            : Crop(
-                                                alwaysShowGrid: true,
-                                                aspectRatio: aspectRatio,
-                                                key: cropKey,
-                                                image: AssetEntityImageProvider(
-                                                  selectedAsset!,
-                                                  isOriginal: false,
-                                                  thumbnailSize:
-                                                      const ThumbnailSize
-                                                          .square(1000),
-                                                ),
-                                              );
-                                  } else {
-                                    return Container(
-                                      color: Colors.grey,
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                            Positioned(
-                              left: 10,
-                              bottom: 10,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    aspectRatio = aspectRatio == 1 ? 4 / 5 : 1;
-                                  });
-                                },
-                                child: Container(
-                                    height: 32,
-                                    width: 32,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.grey),
-                                    child: const Icon(Icons.crop)),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                child: ShowSelectImagePostWidget(selectedAsset: selectedAsset),
               ),
               SliverPersistentHeader(
                   pinned: true,
                   floating: true,
-                  delegate: _SliverAppBarDelegate(
+                  delegate: SliverAppBarDelegate(
                     AppBar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       automaticallyImplyLeading: false,
+                      primary: false,
                       centerTitle: false,
                       title: Row(
                         children: [
@@ -347,30 +287,31 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                               });
                             },
                             items: albumList
-                                .map<DropdownMenuItem<AssetPathEntity>>(
-                                    (AssetPathEntity album) {
-                              return DropdownMenuItem<AssetPathEntity>(
-                                value: album,
-                                child: Row(
-                                  children: [
-                                    Text(album.name),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    FutureBuilder(
-                                      future: album.assetCountAsync,
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Text(snapshot.data.toString());
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      },
-                                    )
-                                  ],
-                                ),
-                              );
-                            }).toList(),
+                                    .map<DropdownMenuItem<AssetPathEntity>>(
+                                        (AssetPathEntity album) {
+                                    return DropdownMenuItem<AssetPathEntity>(
+                                      value: album,
+                                      child: Row(
+                                        children: [
+                                          Text(album.name),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          FutureBuilder(
+                                            future: album.assetCountAsync,
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Text(
+                                                    snapshot.data.toString());
+                                              } else {
+                                                return const Text('haghaha');
+                                              }
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
                           ),
                         ],
                       ),
@@ -379,14 +320,15 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                             onPressed: () {
                               if (_isSelectOne) {
                                 setState(() {
+                                  _isSelectOne = !_isSelectOne;
                                   selectedAssetList.add(selectedAsset!);
                                 });
+                              } else {
+                                setState(() {
+                                  _isSelectOne = !_isSelectOne;
+                                  selectedAssetList.clear();
+                                });
                               }
-                              setState(() {
-                                _isSelectOne = !_isSelectOne;
-                                selectedAssetList.clear();
-                                selectedAssetList.add(selectedAsset!);
-                              });
                             },
                             icon: Icon(
                               Icons.select_all_rounded,
@@ -429,16 +371,17 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                   ),
                   itemBuilder: (context, index) {
                     AssetEntity assetEntity = assetList[index];
-                    return assetWidget(assetEntity, index);
+                    return assetWidget(assetEntity);
                   },
                 ),
         ));
   }
 
-  Widget assetWidget(AssetEntity assetEntity, int index) {
+  Widget assetWidget(AssetEntity assetEntity) {
     if (_isSelectOne) {
       return GestureDetector(
           onTap: () {
+            if (selectedAsset == assetEntity) return;
             setState(() {
               selectedAsset = assetEntity;
             });
@@ -472,18 +415,30 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                 ],
               )));
     } else {
-      int index =
-          selectedAssetList.indexWhere((element) => element == assetEntity);
+      final index = selectedAssetList.indexOf(assetEntity);
       return GestureDetector(
         onTap: () {
-          setState(() {
-            selectedAsset = assetEntity;
-            if (selectedAssetList.contains(assetEntity)) {
-              selectedAssetList.remove(assetEntity);
-            } else {
+          if (index == -1) {
+            setState(() {
               selectedAssetList.add(assetEntity);
+              selectedAsset = assetEntity;
+            });
+          } else {
+            if (selectedAsset == assetEntity) {
+              setState(() {
+                selectedAssetList.remove(assetEntity);
+                if (selectedAssetList.isEmpty) {
+                  return;
+                } else {
+                  selectedAsset = selectedAssetList.last;
+                }
+              });
+            } else {
+              setState(() {
+                selectedAsset = assetEntity;
+              });
             }
-          });
+          }
         },
         child: Stack(
           children: [
@@ -529,34 +484,5 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
         ),
       );
     }
-  }
-}
-
-String convertDuration(Duration duration) {
-  String twoDigits(int n) => n.toString().padLeft(2, "0");
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  return "$twoDigitMinutes:$twoDigitSeconds";
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-  final AppBar _tabBar;
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Colors.white,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }

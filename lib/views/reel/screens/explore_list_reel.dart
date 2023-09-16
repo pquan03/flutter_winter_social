@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 
 class ExploreListReelScreen extends StatefulWidget {
   final List<Reel> reels;
-  final String accessToken;
+  final initpage;
   const ExploreListReelScreen(
       {super.key,
       required this.reels,
-      required this.accessToken,
+      required this.initpage
       });
 
   @override
@@ -22,11 +22,12 @@ class ExploreListReelScreen extends StatefulWidget {
 class _ExploreListReelScreenState extends State<ExploreListReelScreen> {
   bool _isLoading = false;
   List<Reel> _reels = [];
-  final PageController _pageController = PageController();
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: widget.initpage);
     _reels = [...widget.reels];
   }
 

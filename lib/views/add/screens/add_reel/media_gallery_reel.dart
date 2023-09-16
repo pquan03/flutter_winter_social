@@ -3,15 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
-import 'package:insta_node_app/views/add/widgets/preview_video_edit.dart';
+import 'package:insta_node_app/views/add/screens/widgets/preview_video_edit.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryReelScreen extends StatefulWidget {
-  const MediaGalleryReelScreen({
-    Key? key,
-  }) : super(key: key);
+  final Function? handleHideAddPostButton;
+  const MediaGalleryReelScreen({super.key, this.handleHideAddPostButton});
   @override
   State<MediaGalleryReelScreen> createState() => _MediaGalleryReelScreenState();
 }
@@ -38,6 +37,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
       });
     });
     _scrollController.addListener(() {
+      widget.handleHideAddPostButton!();
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
             print('load more');

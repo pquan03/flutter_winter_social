@@ -6,7 +6,7 @@ class Conversations {
   String? createdAt;
   List<UserPost>? recipients;
   List<Messages>? messages;
-  bool? isRead;
+  List<String>? isRead;
   String? updatedAt;
 
   Conversations(
@@ -33,7 +33,7 @@ class Conversations {
         messages!.add(new Messages.fromJson(v));
       });
     }
-    isRead = json['isRead'];
+    isRead = json['isRead'].cast<String>();
     updatedAt = json['updatedAt'];
   }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
@@ -10,12 +9,12 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/views/add/screens/add_post/media_gallery_post.dart';
-import 'package:insta_node_app/views/post/screens/explore_list_post.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/profile/screens/follow_user.dart';
 import 'package:insta_node_app/views/profile/widgets/choose_account_modal.dart';
 import 'package:insta_node_app/views/profile/widgets/edit_profile.dart';
-import 'package:insta_node_app/views/reel/screens/explore_list_reel.dart';
+import 'package:insta_node_app/views/profile/widgets/list_post.dart';
+import 'package:insta_node_app/views/profile/widgets/list_reel.dart';
 import 'package:insta_node_app/views/setting/screens/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -28,65 +27,43 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   bool _isLoading = false;
   bool _isLoadMore = true;
   List<Post> _posts = [];
   List<Reel> _reels = [];
-  int page = 1;
-  int limit = 12;
   final ScrollController _scrollController = ScrollController();
-  late TabController _tabController;
+  int limit = 12;
+  int pagePost = 1;
+  int pageReel = 1;
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
     getPostProfile();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        print('load more');
-        getPostProfile();
-      }
-    });
     _tabController.addListener(() {
-      print('haha');
-      if (_tabController.index == 1 && _reels.isEmpty) {
+      if (_reels.isEmpty && _tabController.index == 1) {
         getReelProfile();
       }
     });
+    _scrollController.addListener(() { 
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (_tabController.index == 0) {
+          getPostProfile();
+        } else {
+          getReelProfile();
+        }
+      }
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
     _scrollController.dispose();
-  }
-
-  void getReelProfile() async {
-    if (_reels.isNotEmpty && _reels.length % limit != 0) {
-      setState(() {
-        _isLoadMore = false;
-      });
-      return;
-    }
-    if (_reels.isEmpty) {
-      setState(() {
-        _isLoading = true;
-      });
-    }
-    final auth = Provider.of<AuthProvider>(context, listen: false).auth;
-    final res = await ReelApi()
-        .getUserReel(auth.user!.sId!, auth.accessToken!, page, limit);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _reels = [..._reels, ...res];
-        _isLoading = false;
-      });
-    }
+    _tabController.dispose();
   }
 
   void getPostProfile() async {
@@ -103,14 +80,42 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
     final auth = Provider.of<AuthProvider>(context, listen: false).auth;
     final res = await UserApi()
-        .getPostProfile(auth.user!.sId!, auth.accessToken!, page, limit);
+        .getPostProfile(auth.user!.sId!, auth.accessToken!, pagePost, limit);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
         _posts = [..._posts, ...res];
-        page++;
+        pagePost++;
+        _isLoading = false;
+      });
+    }
+  }
+
+
+    void getReelProfile() async {
+    if (_reels.isNotEmpty && _reels.length % limit != 0) {
+      setState(() {
+        _isLoadMore = false;
+      });
+      return;
+    }
+    if (_reels.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+    final auth = Provider.of<AuthProvider>(context, listen: false).auth;
+    final res = await ReelApi()
+        .getUserReel(auth.user!.sId!, auth.accessToken!,pageReel, limit);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _reels = [..._reels, ...res];
+        pageReel++;
         _isLoading = false;
       });
     }
@@ -132,7 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
-    final accessToken = Provider.of<AuthProvider>(context).auth.accessToken;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -145,9 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               Text(
                 user.username!,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               SizedBox(
                 width: 12,
@@ -239,8 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             child: const Text(
                               'Edit profile',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600),
+                              style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
@@ -257,8 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                             ),
                             child: const Text('Share profile',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600)),
+                                style: TextStyle(fontWeight: FontWeight.w600)),
                           ),
                         ),
                       ],
@@ -293,136 +293,17 @@ class _ProfileScreenState extends State<ProfileScreen>
           controller: _tabController,
           children: [
             // tab 1
-            Builder(builder: (context) {
-              return _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ))
-                  : _posts.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No Post',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      : SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  // controller: _scrollController,
-                  child: StaggeredGrid.count(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                    children: [
-                      ...[..._posts, {}]
-                          .asMap()
-                          .entries
-                          .map((e) {
-                        if (e.key == _posts.length) {
-                          return StaggeredGridTile.count(
-                              crossAxisCellCount: 3,
-                              mainAxisCellCount: 1,
-                              child: Opacity(
-                                opacity: _isLoadMore ? 1 : 0,
-                                child:
-                                    Center(child: CircularProgressIndicator(
-                                      color: Colors.blue,
-                                    )),
-                              ));
-                        }
-                        return StaggeredGridTile.count(
-                          crossAxisCellCount: 1,
-                          mainAxisCellCount: 1,
-                          child: GestureDetector(
-                              onTap: () {
-                                final newListPost = [..._posts];
-                                final tempPost = newListPost[e.key];
-                                newListPost.removeAt(e.key);
-                                newListPost.insert(0, tempPost);
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => ExploreListPostScreen(
-                                        posts: newListPost,
-                                        title: 'Posts',
-                                        )));
-                              },
-                              child: ImageHelper.loadImageNetWork(
-                                  _posts[e.key].images![0],
-                                  fit: BoxFit.cover)
-                                  ),
-                        );
-                      }).toList()
-                    ],
-                  ),
-                );
-            }),
+            ListPostProfileWiget(
+              isLoadMore: _isLoadMore,
+              isLoading: _isLoading,
+              posts: _posts,
+            ),
             // tab 2
-            Builder(builder: (context) {
-              return _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ))
-                  : _reels.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No Reels',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )
-                      : SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  // controller: _scrollController,
-                  child: StaggeredGrid.count(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                    children: [
-                      ...[..._reels, {}]
-                          .asMap()
-                          .entries
-                          .map((e) {
-                        if (e.key == _reels.length) {
-                          return StaggeredGridTile.count(
-                              crossAxisCellCount: 3,
-                              mainAxisCellCount: 1,
-                              child: Opacity(
-                                opacity: _isLoadMore ? 1 : 0,
-                                child:
-                                    Center(child: CircularProgressIndicator(
-                                      color: Colors.blue,
-                                    )),
-                              ));
-                        }
-                        return StaggeredGridTile.count(
-                          crossAxisCellCount: 1,
-                          mainAxisCellCount: 2,
-                          child: GestureDetector(
-                              onTap: () {
-                                final newListPost = [..._reels];
-                                final tempPost = newListPost[e.key];
-                                newListPost.removeAt(e.key);
-                                newListPost.insert(0, tempPost);
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => ExploreListReelScreen(
-                                        reels: newListPost,
-                                        accessToken: accessToken!)));
-                              },
-                              child: ImageHelper.loadImageNetWork(
-                                  _reels[e.key].backgroundUrl!,
-                                  fit: BoxFit.cover)
-                                  ),
-                        );
-                      }).toList()
-                    ],
-                  ),
-                );
-            }),
+            ListReelProfileWidget(
+              isLoadMore: _isLoadMore,
+              isLoading: _isLoading,
+              reels: _reels,
+            ),
           ],
         ),
       ),
@@ -450,11 +331,19 @@ class _ProfileScreenState extends State<ProfileScreen>
               }),
               startColumnItem(user.followers!.length, 'Followers', () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(initIndex: 0, username: user.username!, followers: user.followers!, following: user.following!)));
+                    builder: (_) => FollowUserScreen(
+                        initIndex: 0,
+                        username: user.username!,
+                        followers: user.followers!,
+                        following: user.following!)));
               }),
               startColumnItem(user.following!.length, 'Following', () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(initIndex: 1, username: user.username!, followers: user.followers!, following: user.following!)));
+                    builder: (_) => FollowUserScreen(
+                        initIndex: 1,
+                        username: user.username!,
+                        followers: user.followers!,
+                        following: user.following!)));
               }),
             ],
           ),

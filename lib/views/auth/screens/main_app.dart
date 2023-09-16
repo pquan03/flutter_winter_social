@@ -1,9 +1,14 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/notify.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/views/add/screens/add.dart';
+import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_event.dart';
+import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
+import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_event.dart';
 import 'package:insta_node_app/views/message/screens/calling.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
 import 'package:insta_node_app/views/post/screens/feed.dart';
@@ -31,10 +36,22 @@ class _MainAppScreenState extends State<MainAppScreen> {
     super.initState();
     _currentIndex = widget.initPage;
     _pageController = PageController(initialPage: widget.initPage);
+    fetchChatDataMessage();
+    SocketConfig.socket.on('checkUserOnlineToMe', (data) {
+      final onlineBloc = BlocProvider.of<OnlineBloc>(context);
+      final state = onlineBloc.state;
+      state.forEach((element) { 
+        if(!data.contains(element)) {
+            onlineBloc.add(OnlineEventFetch(listUserId: [element]));
+        }
+      });
+    });
+    SocketConfig.socket.on('checkUserOnlineToClient', (data) {
+      final onlineBloc = BlocProvider.of<OnlineBloc>(context);
+      onlineBloc.add(OnlineEventFetch(listUserId: [...data]));
+    });
     SocketConfig.socket.on('createNotifyToClient', (data) {
-      print('hi');
       final newNotify = Notify.fromJson(data);
-      // final chatBloc = BlocProvider.of<ChatBloc>(context);
       NotificationService().showNotification(
         title: newNotify.user!.username!,
         body: newNotify.text!,
@@ -48,11 +65,20 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 data: data,
               )));
     });
+
+    
   }
 
 
 
 
+
+  void fetchChatDataMessage() async {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final chatBloc = BlocProvider.of<ChatBloc>(context);
+    chatBloc.add(ChatEventFetch(token: token));
+  }
 
   @override
   void dispose() {

@@ -37,7 +37,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final listConversation = [...state.listConversation];
       final conversation = listConversation.firstWhere(
           (element) => element.sId == event.message.conversationId);
-      conversation.isRead = false;
+      conversation.isRead = ['${event.message.senderId}'];
       conversation.messages!.insert(0, event.message);
       listConversation.removeWhere(
           (element) => element.sId == event.message.conversationId);

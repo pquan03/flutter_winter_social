@@ -132,7 +132,6 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
             widget.controller.text != ''
                 ? TextButton(
                     onPressed: () {
-                      print('hi');
                       widget.handleCreateMessage();
                     },
                     child: Text(

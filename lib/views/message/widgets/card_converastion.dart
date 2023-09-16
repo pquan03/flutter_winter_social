@@ -1,23 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/recources/message_api.dart';
+import 'package:insta_node_app/utils/time_ago_custom.dart';
+import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class CardConversationWidget extends StatelessWidget {
+class CardConversationWidget extends StatefulWidget {
   const CardConversationWidget({super.key, required this.conversation});
   final Conversations conversation;
 
   @override
+  State<CardConversationWidget> createState() => _CardConversationWidgetState();
+}
+
+class _CardConversationWidgetState extends State<CardConversationWidget> {
+
+  void handleReadMessage(String userId, String token) async {
+            if(widget.conversation.isRead!.contains(userId) == false) {
+          await MessageApi().readMessage(widget.conversation.sId!, token);
+          if(!mounted) return;
+          setState(() {
+            widget.conversation.isRead!.add(userId);
+          });
+        }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
-    final recipient = user.sId == conversation.recipients![0].sId
-        ? conversation.recipients![1]
-        : conversation.recipients![0];
+    final token = Provider.of<AuthProvider>(context).auth.accessToken!;
+    final recipient = user.sId == widget.conversation.recipients![0].sId
+        ? widget.conversation.recipients![1]
+        : widget.conversation.recipients![0];
+    final fontWeight = widget.conversation.isRead!.contains(user.sId) ? FontWeight.normal : FontWeight.bold;
+    final isOnline = OnlineBloc().state.contains(recipient.sId);
     return InkWell(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => MessageScreen(user: recipient, firstListMessages: conversation.messages!)));
+      onTap: () async{
+        handleReadMessage(user.sId!, token);
+        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => MessageScreen(user: recipient, firstListMessages: widget.conversation.messages!)));
       },
       child: Container(
         color: Colors.transparent,
@@ -25,9 +48,29 @@ class CardConversationWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 1),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundImage: NetworkImage(recipient.avatar!),
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(recipient.avatar!),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 15,
+                    height: 15,
+                    decoration: BoxDecoration(
+                      color: isOnline ? Colors.green : Colors.grey,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
             const SizedBox(
               width: 16,
@@ -39,100 +82,82 @@ class CardConversationWidget extends StatelessWidget {
                   Text(
                     recipient.fullname!,
                     style: TextStyle(
-                      fontWeight:
-                          conversation.isRead! ? FontWeight.normal : FontWeight.bold,
+                      fontWeight: fontWeight,
                       fontSize: 16,
                     ),
                   ),
                   Row(
                     children: [
-                      if (user.sId == conversation.messages!.first.senderId)
+                      if (user.sId == widget.conversation.messages!.first.senderId)
                         Row(
                           children: [
                             Text(
                               'You: ',
                               style: TextStyle(
-                                fontWeight: conversation.isRead!
-                                    ? FontWeight.normal
-                                    : FontWeight.bold,
+                                fontWeight: fontWeight,
                               ),
                             ),
-                            if (conversation.messages!.first.call != null)
+                            if (widget.conversation.messages!.first.call != null)
                               Text(
-                                'You called ${conversation.messages!.first.call!.times} times',
+                                'You called ${widget.conversation.messages!.first.call!.times} times',
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
                               ),
-                            if (conversation.messages!.first.text != null)
+                            if (widget.conversation.messages!.first.text != null)
                               Text(
-                                conversation.messages!.first.text!.length > 20 ? '${conversation.messages!.first.text!.substring(0, 20)}...' :
-                                conversation.messages!.first.text!,
+                                widget.conversation.messages!.first.text!.length > 20 ? '${widget.conversation.messages!.first.text!.substring(0, 20)}...' :
+                                widget.conversation.messages!.first.text!,
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
                               ),
-                            if (conversation.messages!.first.media!.isNotEmpty)
+                            if (widget.conversation.messages!.first.media!.isNotEmpty)
                               Text(
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
-                                'sent ${conversation.messages!.first.media!.length} images',
+                                'sent ${widget.conversation.messages!.first.media!.length} images',
                               )
                           ],
                         ),
-                      if (user.sId != conversation.messages!.first.senderId)
+                      if (user.sId != widget.conversation.messages!.first.senderId)
                         Row(
                           children: [
                             Text(
                               '${recipient.username}: ',
                               style: TextStyle(
-                                fontWeight: conversation.isRead!
-                                    ? FontWeight.normal
-                                    : FontWeight.bold,
+                                fontWeight: fontWeight,
                               ),
                             ),
-                            if (conversation.messages!.first.call != null)
+                            if (widget.conversation.messages!.first.call != null)
                               Text(
-                                'called ${conversation.messages!.first.call!.times} times',
+                                'called ${widget.conversation.messages!.first.call!.times} times',
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
                               ),
-                            if (conversation.messages!.first.text != null)
+                            if (widget.conversation.messages!.first.text != null)
                               Text(
-                                '${conversation.messages!.first.text}',
+                                '${widget.conversation.messages!.first.text}',
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
                               ),
-                            if (conversation.messages!.first.media!.isNotEmpty)
+                            if (widget.conversation.messages!.first.media!.isNotEmpty)
                               Text(
-                                'sent ${conversation.messages!.first.media!.length} images',
+                                'sent ${widget.conversation.messages!.first.media!.length} images',
                                 style: TextStyle(
-                                  fontWeight: conversation.isRead!
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
+                                  fontWeight: fontWeight,
                                 ),
                               )
                           ],
                         ),
                       Text(
-                        '· ${DateFormat.yMMMd().format(DateTime.parse(conversation.createdAt!))}',
+                        '· ${convertTimeAgo(widget.conversation.messages!.first.createdAt!)}',
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight:
-                                conversation.isRead! ? FontWeight.normal : FontWeight.bold),
+                            fontWeight: fontWeight),
                       ),
                     ],
                   ),
