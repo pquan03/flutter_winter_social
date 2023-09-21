@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/views/add/screens/add_post/media_gallery_post.dart';
 import 'package:insta_node_app/views/add/screens/add_reel/media_gallery_reel.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
+import 'package:insta_node_app/views/add/screens/widgets/button_add_post.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -44,7 +45,7 @@ class _AddScreenState extends State<AddScreen> {
         children: [
           Positioned.fill(
             child: PageView(
-              // physics: const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
                 MediaGalleryPostScreen(
@@ -59,14 +60,14 @@ class _AddScreenState extends State<AddScreen> {
               ],
             ),
           ),
-          // Positioned(
-          //   right: 30,
-          //   bottom: 30,
-          //   child: AnimatedOpacity(
-          //       duration: const Duration(milliseconds: 250),
-          //       opacity: _isShowTypeAdd ? 0.0 : 1.0,
-          //       child: AddPostButton(handleChangeType: navigationTapped)),
-          // )
+          Positioned(
+            right: 30,
+            bottom: 30,
+            child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 250),
+                opacity: _isShowTypeAdd ? 0.0 : 1.0,
+                child: AddPostButton(handleChangeType: navigationTapped)),
+          )
         ],
       ),
     );

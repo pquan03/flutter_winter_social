@@ -21,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  // bool _isLoading = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -32,22 +32,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _loginUser() async {
     try {
-      // setState(() {
-      //   _isLoading = true;
-      // });
+      setState(() {
+        _isLoading = true;
+      });
       final res = await AuthApi()
-          .loginUser(
-              _accountController.text, _passwordController.text
-          );
-      if(!mounted) return;
+          .loginUser(_accountController.text, _passwordController.text);
+      if (!mounted) return;
       Provider.of<AuthProvider>(context, listen: false).setAuth(res);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MainAppScreen()));
-      // setState(() {
-      //   _isLoading = false;
-      // });
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainAppScreen()));
     } catch (err) {
       showSnackBar(context, 'Error', 'Email or password is incorrect');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -55,19 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.black,
         body: Container(
           padding: const EdgeInsets.all(16),
           child: ListView(
             shrinkWrap: true,
             children: [
               Container(
-                  padding: EdgeInsets.symmetric(vertical: MediaQuery.sizeOf(context).height * 0.1),
+                  padding: EdgeInsets.symmetric(
+                      vertical: MediaQuery.sizeOf(context).height * 0.12),
                   alignment: Alignment.bottomCenter,
                   child: ImageHelper.loadImageAsset(AssetHelper.icLogo,
                       height: 60, width: 60)),
               Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.sizeOf(context).height * 0.1),
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.sizeOf(context).height * 0.12),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -81,10 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 12,
                     ),
                     ButtonWidget(
-                      isHasLoading: true,
+                      isLoading: _isLoading,
                       text: 'Log in',
                       backgroundColor: Colors.blue,
-                      textColor: Colors.white,
                       onPressed: _loginUser,
                     ),
                     const SizedBox(
@@ -100,38 +99,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: Text(
                           "Forgot password?",
-                          style: TextStyle(color: Colors.white),
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                child: Column(
-                  children: [
-                    ButtonWidget(
-                      text: 'Create new account',
-                      backgroundColor: Colors.black,
-                      textColor: Colors.blue,
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const SignUpScreen()));
-                      },
-                      borderColor: Colors.blue,
+              Column(
+                children: [
+                  ButtonWidget(
+                    text: 'Create new account',
+                    textColor: Colors.black,
+                    backgroundColor: Colors.transparent,
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()));
+                    },
+                    borderColor: Colors.blue,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    '☂ Winter',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      '☂ Winter',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    )
-                  ],
-                ),
+                  )
+                ],
               )
             ],
           ),

@@ -12,10 +12,10 @@ import 'package:provider/provider.dart';
 
 class AddPostCaptionScreen extends StatefulWidget {
   final List<Uint8List> imageList;
-  const AddPostCaptionScreen(
-      {super.key,
-      required this.imageList,
-      });
+  const AddPostCaptionScreen({
+    super.key,
+    required this.imageList,
+  });
 
   @override
   State<AddPostCaptionScreen> createState() => _AddPostCaptionScreenState();
@@ -31,26 +31,31 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
     super.dispose();
   }
 
-
   void handleCreatePost() async {
     setState(() {
       _isLoading = true;
     });
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final res = await PostApi().createPost(_captionController.text, widget.imageList, token);
-    if(res is String) {
-      if(!mounted) return;
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res = await PostApi()
+        .createPost(_captionController.text, widget.imageList, token);
+    if (res is String) {
+      if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
-      if(!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => KeepAlivePage(child: MainAppScreen(initPage: 0,))), (route) => false);
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (_) => KeepAlivePage(
+                      child: MainAppScreen(
+                    initPage: 0,
+                  ))),
+          (route) => false);
     }
     setState(() {
       _isLoading = false;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +124,7 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
               child: TextField(
                 controller: _captionController,
                 style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                 maxLines: null,
                 textDirection: TextDirection.ltr,
                 cursorColor: Colors.green,

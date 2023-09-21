@@ -140,8 +140,8 @@ class _MessageScreenState extends State<MessageScreen> {
                   'fullname': currentUser.fullname,
                 };
                 SocketConfig.callUser(msg);
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
+                // Navigator.of(context)
+                //     .push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
               },
               icon: Icon(
                 FontAwesomeIcons.phone,

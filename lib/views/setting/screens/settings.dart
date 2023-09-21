@@ -28,35 +28,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Instagram settings',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                   )),
               SettingItemCard(
                   icon: Icon(FontAwesomeIcons.userPlus),
                   title: 'Follow and Invite Friends'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.bell),
-                  title: 'Notifications'),
+                  icon: Icon(FontAwesomeIcons.bell), title: 'Notifications'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.lock),
-                  title: 'Privacy'),
+                  icon: Icon(FontAwesomeIcons.lock), title: 'Privacy'),
               SettingItemCard(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SavedScreen())),
+                  onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SavedScreen())),
                   icon: Icon(FontAwesomeIcons.bookmark),
                   title: 'Saved'),
               SettingItemCard(
                   icon: Icon(FontAwesomeIcons.circleUser),
                   title: 'Preferences'),
               SettingItemCard(
-                  icon:
-                      Icon(FontAwesomeIcons.solidLifeRing),
-                  title: 'Help'),
+                  icon: Icon(FontAwesomeIcons.solidLifeRing), title: 'Help'),
               SettingItemCard(
-                  icon: Icon(FontAwesomeIcons.circleInfo),
-                  title: 'About'),
+                  icon: Icon(FontAwesomeIcons.circleInfo), title: 'About'),
               SettingItemCard(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DarkModeScreen())), 
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const DarkModeScreen())),
                   icon: Icon(FontAwesomeIcons.moon),
                   title: 'Dark mode'),
               Container(
@@ -64,9 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Logins',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                   )),
               GestureDetector(
                 onTap: () {
@@ -91,26 +84,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       context: context,
                       builder: (context) => AlertDialog(
                             title: const Text('Log out'),
-                            content: const Text(
-                                'Are you sure you want to log out?'),
+                            content:
+                                const Text('Are you sure you want to log out?'),
                             actions: [
                               TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.secondary))),
+                                  child: Text('Cancel',
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary))),
                               TextButton(
                                   onPressed: () async {
                                     await AuthApi().logoutUser();
                                     if (!mounted) return;
                                     Navigator.pop(context);
-                                    Navigator.pushReplacement(
-                                        context,
+                                    // push and remove all screen
+                                    Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
-                                            builder: (_) =>
-                                                const SplashPage()));
+                                            builder: (_) => const SplashPage()),
+                                        (route) => false);
                                   },
-                                  child: const Text('Log out', style: TextStyle(color: Colors.blue),)),
+                                  child: const Text(
+                                    'Log out',
+                                    style: TextStyle(color: Colors.blue),
+                                  )),
                             ],
                           ));
                 },

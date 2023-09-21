@@ -19,6 +19,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   int _currentIndex = 0;
   var user = {};
   final PageController _pageController = PageController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -30,10 +31,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void navigationTapped(int page) async {
-    _pageController.animateToPage(page, duration: const Duration(milliseconds: 200), curve: Curves.fastLinearToSlowEaseIn);
+    _pageController.animateToPage(page,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.fastLinearToSlowEaseIn);
   }
 
   void findAccont() async {
+    setState(() {
+      _isLoading = true;
+    });
     final res = await AuthApi().forgotPassword(_accountController.text);
     if (!mounted) return;
     if (res is String) {
@@ -44,15 +50,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         user = res;
       });
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void resetPassword() async {
-    if(_newPasswordController.text != _confirmPasswordController.text) {
+    if (_newPasswordController.text != _confirmPasswordController.text) {
       showSnackBar(context, 'Error', 'Password and confirm password not match');
     }
-    final res = await AuthApi().resetPassword(user['_id'] ?? '', _newPasswordController.text);
-    if(!mounted) return;
-    if(res == 'OK') {
+    final res = await AuthApi()
+        .resetPassword(user['_id'] ?? '', _newPasswordController.text);
+    if (!mounted) return;
+    if (res == 'OK') {
       showSnackBar(context, 'Success', 'Reset password successfully');
       Navigator.pop(context);
     } else {
@@ -63,30 +73,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: PageView(
-      controller: _pageController,
-      onPageChanged: (value){
-        setState(() {
-          _currentIndex = value;
-        });
-      },
-      children: [
-        screen1(),
-        screen2()
-      ],
+        child: Scaffold(
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (value) {
+          setState(() {
+            _currentIndex = value;
+          });
+        },
+        children: [screen1(), screen2()],
+      ),
     ));
   }
 
   Widget screen2() {
     return Scaffold(
-        backgroundColor: Colors.black,
         appBar: AppBar(
-            backgroundColor: Colors.black,
             automaticallyImplyLeading: false,
             centerTitle: false,
             title: GestureDetector(
                 onTap: () {
-                  if(_currentIndex > 0) {
+                  if (_currentIndex > 0) {
                     navigationTapped(_currentIndex - 1);
                   } else {
                     Navigator.pop(context);
@@ -94,7 +102,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
                 child: Icon(
                   Icons.arrow_back,
-                  color: Colors.white,
                   size: 30,
                 ))),
         body: Padding(
@@ -115,9 +122,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       user['username'] ?? '',
                       style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(
                       height: 8,
@@ -125,9 +132,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       'Reset passowrd to be can log in',
                       style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -137,11 +144,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               Column(
                 children: [
-                  TextFormIntput(controller: _newPasswordController, label: 'New password'),
+                  TextFormIntput(
+                      controller: _newPasswordController,
+                      label: 'New password'),
                   const SizedBox(
                     height: 16,
                   ),
-                  TextFormIntput(controller: _confirmPasswordController, label: 'Confirm password',),
+                  TextFormIntput(
+                    controller: _confirmPasswordController,
+                    label: 'Confirm password',
+                  ),
                 ],
               ),
             ],
@@ -150,6 +162,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         bottomNavigationBar: GestureDetector(
           onTap: resetPassword,
           child: Container(
+            margin: const EdgeInsets.only(bottom: 16, right: 10, left: 10),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.blue,
@@ -170,9 +183,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget screen1() {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-          backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
           centerTitle: false,
           title: GestureDetector(
@@ -181,7 +192,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               },
               child: Icon(
                 Icons.arrow_back,
-                color: Colors.white,
                 size: 30,
               ))),
       body: Padding(
@@ -192,20 +202,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Find Your Account',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 )),
             Container(
                 padding: const EdgeInsets.only(top: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Enter your username, email or phone number',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 )),
             const SizedBox(
               height: 16,
@@ -218,10 +222,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               height: 16,
             ),
             ButtonWidget(
-              isHasLoading: true,
+              isLoading: _isLoading,
               text: 'Find Account',
               backgroundColor: Colors.blue,
-              textColor: Colors.white,
               onPressed: findAccont,
             )
           ],

@@ -13,7 +13,7 @@ class CallingScreen extends StatefulWidget {
 }
 
 class _CallingScreenState extends State<CallingScreen> {
-    AudioPlayer audioPlayer = AudioPlayer();
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -27,12 +27,10 @@ class _CallingScreenState extends State<CallingScreen> {
     audioPlayer.dispose();
   }
 
-
   void hanldePlaySound() {
     print('object');
     audioPlayer.play(AssetSource(AssetHelper.soundCall));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +87,7 @@ class _CallingScreenState extends State<CallingScreen> {
                   onTap: () {
                     // turn off sound
                     audioPlayer.stop();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
+                    // Navigator.of(context).push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
                   },
                   child: Container(
                     height: 60,

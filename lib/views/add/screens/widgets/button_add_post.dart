@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/models/story.dart';
 import 'package:insta_node_app/views/add/screens/widgets/circular_add_post_button.dart';
 
 class AddPostButton extends StatefulWidget {
@@ -16,6 +17,7 @@ class _AddPostButtonState extends State<AddPostButton>
       degTwoTranslationAnimation,
       degThreeTranslationAnimation;
   late Animation rotationAnimation;
+  bool _isAnimating = false;
   Map<String, dynamic> selected = {
     'text': 'Post',
     'icon': Icons.add_box_outlined,
@@ -87,93 +89,123 @@ class _AddPostButtonState extends State<AddPostButton>
       children: <Widget>[
         TapRegion(
           onTapOutside: (tap) {
-            if (animationController.isCompleted) {
-              animationController.reverse();
+            // check tap this button
+            if (tap.position.dx - (MediaQuery.sizeOf(context).width - 80) >=
+                    0 &&
+                tap.position.dy - (MediaQuery.sizeOf(context).height - 80) >=
+                    0) {
+              return;
+            } else {
+              if (animationController.isCompleted) {
+                animationController.reverse();
+                setState(() {
+                  _isAnimating = false;
+                });
+              }
             }
           },
           child: IgnorePointer(
             child: Container(
               color: Colors.transparent,
-              height: 300.0,
-              width: 300.0,
+              height: MediaQuery.sizeOf(context).height,
+              width: MediaQuery.sizeOf(context).width,
             ),
           ),
         ),
         Transform.translate(
           offset: Offset.fromDirection(getRadiansFromDegree(270),
               degOneTranslationAnimation.value * 150),
-          child: CircularButton(
-            color: Colors.blue,
-            width: 120,
-            height: 50,
-            text: 'Reels',
-            icon: Icon(
-              Icons.video_collection_outlined,
-              color: Colors.white,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 250),
+            opacity: _isAnimating ? 1 : 0,
+            child: CircularButton(
+              color: Colors.blue,
+              width: 120,
+              height: 50,
+              text: 'Reels',
+              icon: Icon(
+                Icons.video_collection_outlined,
+                color: Colors.white,
+              ),
+              onClick: () {
+                setState(() {
+                  selected = listSelect[1];
+                });
+                widget.handleChangeType(2);
+              },
             ),
-            onClick: () {
-              setState(() {
-                selected = listSelect[1];
-              });
-              widget.handleChangeType(2);
-            },
           ),
         ),
         Transform.translate(
           offset: Offset.fromDirection(getRadiansFromDegree(215),
               degTwoTranslationAnimation.value * 150),
-          child: CircularButton(
-            color: Colors.black,
-            width: 120,
-            height: 50,
-            text: 'Story',
-            icon: Icon(
-              Icons.book_online_outlined,
-              color: Colors.white,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: _isAnimating ? 1 : 0,
+            child: CircularButton(
+              color: Colors.black,
+              width: 120,
+              height: 50,
+              text: 'Story',
+              icon: Icon(
+                Icons.book_online_outlined,
+                color: Colors.white,
+              ),
+              onClick: () {
+                setState(() {
+                  selected = listSelect[2];
+                });
+                widget.handleChangeType(1);
+              },
             ),
-            onClick: () {
-              setState(() {
-                selected = listSelect[2];
-              });
-              widget.handleChangeType(1);
-            },
           ),
         ),
         Transform.translate(
           offset: Offset.fromDirection(getRadiansFromDegree(180),
               degThreeTranslationAnimation.value * 150),
-          child: CircularButton(
-            color: Colors.orangeAccent,
-            width: 120,
-            height: 50,
-            text: 'Post',
-            icon: Icon(
-              Icons.add_box_outlined,
-              color: Colors.white,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 250),
+            opacity: _isAnimating ? 1 : 0,
+            child: CircularButton(
+              color: Colors.orangeAccent,
+              width: 120,
+              height: 50,
+              text: 'Post',
+              icon: Icon(
+                Icons.add_box_outlined,
+                color: Colors.white,
+              ),
+              onClick: () {
+                setState(() {
+                  selected = listSelect[0];
+                });
+                widget.handleChangeType(0);
+              },
             ),
-            onClick: () {
-              setState(() {
-                selected = listSelect[0];
-              });
-              widget.handleChangeType(0);
-            },
           ),
         ),
         CircularButton(
           color: selected['color'],
-          width: 120,
+          width: 50,
           height: 50,
-          icon: Icon(
-            selected['icon'],
-            color: Colors.white,
-          ),
-          text: selected['text'],
+          icon: _isAnimating
+              ? Icon(Icons.close, color: Colors.white)
+              : Icon(
+                  selected['icon'],
+                  color: Colors.white,
+                ),
           onClick: () {
-              // animationController.reverse();
-            // if (animationController.isCompleted) {
-            // } else {
-              animationController.forward();
-            // }
+            if (animationController.isCompleted) {
+              animationController.reverse();
+              setState(() {
+                _isAnimating = false;
+              });
+              return;
+            }
+            animationController.forward();
+            setState(() {
+              _isAnimating = true;
+            });
           },
         )
       ],
