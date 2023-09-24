@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_event.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_state.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_event.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_bloc.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_state.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/views/comment/comment_card.dart';
 import 'package:provider/provider.dart';
 
 class CommentModal extends StatefulWidget {
   final Post post;
   final double ratio;
-  const CommentModal(
-      {super.key,
-      required this.ratio,
-      required this.post,
-      });
+  const CommentModal({
+    super.key,
+    required this.ratio,
+    required this.post,
+  });
 
   @override
   State<CommentModal> createState() => _CommentModalState();
@@ -50,8 +49,9 @@ class _CommentModalState extends State<CommentModal> {
     final user = Provider.of<AuthProvider>(context).auth.user!;
     final accessToken = Provider.of<AuthProvider>(context).auth.accessToken!;
     return BlocProvider<CommentBloc>(
-      create: (context) =>
-          CommentBloc()..add(CommentEventFetch(postId: widget.post.sId!, token: accessToken, type: 'post')),
+      create: (context) => CommentBloc()
+        ..add(CommentEventFetch(
+            postId: widget.post.sId!, token: accessToken, type: 'post')),
       child: AnimatedSize(
         duration: Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -161,7 +161,7 @@ class _CommentModalState extends State<CommentModal> {
                                 ),
                               )),
                               IconButton(
-                                onPressed: () async{
+                                onPressed: () async {
                                   if (tag != null) {
                                     context.read<CommentBloc>().add(
                                         CreateReplyEvent(
@@ -176,22 +176,22 @@ class _CommentModalState extends State<CommentModal> {
                                       tag = null;
                                     });
                                   } else {
-                                    final msg = {
-                                      'text': 'has commented on your post',
-                                      'recipients': [
-                                        widget.post.userPost!.sId!
-                                      ],
-                                      'url': widget.post.sId,
-                                      'content': '',
-                                      'image': widget.post.images![0],
-                                      'user': {
-                                        'sId': user.sId,
-                                        'username': user.username,
-                                        'avatar': user.avatar,
-                                      },
-                                    };
-                                    await NotifiApi().createNotification(msg, accessToken);
-                                    if(!mounted) return;
+                                    // final msg = {
+                                    //   'text': 'has commented on your post',
+                                    //   'recipients': [
+                                    //     widget.post.userPost!.sId!
+                                    //   ],
+                                    //   'url': widget.post.sId,
+                                    //   'content': '',
+                                    //   'image': widget.post.images![0],
+                                    //   'user': {
+                                    //     'sId': user.sId,
+                                    //     'username': user.username,
+                                    //     'avatar': user.avatar,
+                                    //   },
+                                    // };
+                                    // await NotifiApi().createNotification(msg, accessToken);
+                                    // if(!mounted) return;
                                     context.read<CommentBloc>().add(
                                         CreateCommentEvent(
                                             type: 'post',

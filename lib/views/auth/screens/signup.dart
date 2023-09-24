@@ -28,7 +28,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _pageController.dispose();
   }
 
-  void navigationBackTapped() {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      onPageChanged: (page) {
+        setState(() {
+          _currentIndex = page;
+        });
+      },
+      children: [
+        SignUpLayout(
+          controller: _fullNameController,
+          text: 'What\'s your name',
+          label: 'Full Name',
+          backButtonPressed: navigationBackTapped,
+          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
+        ),
+        SignUpLayout(
+          controller: _usernameController,
+          text: 'Create a username',
+          label: 'Username',
+          description:
+              'Add a username or use our suggestion. You can change this at any time.',
+          backButtonPressed: navigationBackTapped,
+          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
+        ),
+        SignUpLayout(
+          controller: _emailController,
+          text: 'What\'s your email',
+          label: 'Email',
+          description:
+              'Enter the email where you can be contacted. No one will see this on your profile.',
+          backButtonPressed: navigationBackTapped,
+          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
+        ),
+        SignUpLayout(
+          controller: _passwordController,
+          text: 'Create a password',
+          label: 'Password',
+          description:
+              'Create a passowrd with at least 6 letters or numbers.It should be something others can\'t guess.',
+          backButtonPressed: navigationBackTapped,
+          nextButtonPressed: signUpUser,
+        ),
+      ],
+    );
+  }
+
+   void navigationBackTapped() {
     if (_currentIndex > 0) {
       _pageController.jumpToPage(_currentIndex - 1);
     } else {
@@ -79,55 +130,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else {
       signUpUser();
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: PageView(
-      controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(),
-      onPageChanged: (page) {
-        setState(() {
-          _currentIndex = page;
-        });
-      },
-      children: [
-        SignUpLayout(
-          controller: _fullNameController,
-          text: 'What\'s your name',
-          label: 'Full Name',
-          backButtonPressed: navigationBackTapped,
-          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
-        ),
-        SignUpLayout(
-          controller: _usernameController,
-          text: 'Create a username',
-          label: 'Username',
-          description:
-              'Add a username or use our suggestion. You can change this at any time.',
-          backButtonPressed: navigationBackTapped,
-          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
-        ),
-        SignUpLayout(
-          controller: _emailController,
-          text: 'What\'s your email',
-          label: 'Email',
-          description:
-              'Enter the email where you can be contacted. No one will see this on your profile.',
-          backButtonPressed: navigationBackTapped,
-          nextButtonPressed: () => navigationTapped(_currentIndex + 1),
-        ),
-        SignUpLayout(
-          controller: _passwordController,
-          text: 'Create a password',
-          label: 'Password',
-          description:
-              'Create a passowrd with at least 6 letters or numbers.It should be something others can\'t guess.',
-          backButtonPressed: navigationBackTapped,
-          nextButtonPressed: signUpUser,
-        ),
-      ],
-    ));
   }
 }

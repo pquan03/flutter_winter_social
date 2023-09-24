@@ -8,8 +8,7 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
-import 'package:insta_node_app/views/message/screens/video_call.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
 import 'package:insta_node_app/views/message/widgets/card_message.dart';
 import 'package:insta_node_app/views/message/widgets/input_message.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +46,7 @@ class _MessageScreenState extends State<MessageScreen> {
         // widget.firstListMessages.insert(0, Messages.fromJson(data));
       });
     });
-    if(widget.firstListMessages.length < limit) {
+    if (widget.firstListMessages.length < limit) {
       setState(() {
         _isLoadMore = false;
       });
@@ -67,6 +66,158 @@ class _MessageScreenState extends State<MessageScreen> {
     _scrollController.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final currentUser =
+        Provider.of<AuthProvider>(context, listen: false).auth.user!;
+    final isOnline = OnlineBloc().state.contains(widget.user.sId);
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        toolbarHeight: 50,
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              final msg = {
+                'sender': currentUser.sId!,
+                'recipient': widget.user.sId,
+                'avatar': currentUser.avatar,
+                'fullname': currentUser.fullname,
+              };
+              SocketConfig.callUser(msg);
+              // Navigator.of(context)
+              //     .push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
+            },
+            icon: Icon(
+              FontAwesomeIcons.phone,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          IconButton(
+            onPressed: () {
+              AudioPlayer player = AudioPlayer();
+              player.play(AssetSource(AssetHelper.soundCall));
+            },
+            icon: Icon(FontAwesomeIcons.video),
+          ),
+        ],
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(
+                Icons.arrow_back,
+                size: 30,
+              ),
+            ),
+            const SizedBox(
+              width: 24,
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(widget.user.avatar!),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: 15,
+                          height: 15,
+                          decoration: BoxDecoration(
+                            color: isOnline ? Colors.green : Colors.grey,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.user.fullname!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        isOnline ? 'Active now' : 'Offline',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      body: Container(
+          padding: const EdgeInsets.only(bottom: 20, right: 10, left: 10),
+          child: Column(
+            children: [
+              Expanded(
+                child: widget.firstListMessages.isNotEmpty
+                    ? ListView.builder(
+                        controller: _scrollController,
+                        reverse: true,
+                        itemCount: widget.firstListMessages.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == widget.firstListMessages.length) {
+                            return SizedBox(
+                                height: 70,
+                                child: Opacity(
+                                    opacity: _isLoadMore ? 1 : 0,
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ))));
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 24.0),
+                            child: CardMessageWidget(
+                                message: widget.firstListMessages[index],
+                                userAvatar: widget.user.avatar!),
+                          );
+                        },
+                      )
+                    : Container(),
+              ),
+              InputMessageWidget(
+                  media: media,
+                  handleCreateMessage: handleCreateMessage,
+                  controller: _messageController,
+                  recipientId: widget.user.sId!)
+            ],
+          )),
+    );
+  }
+
   void _handleLoadMoreMessage() async {
     final accessToken =
         Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
@@ -77,8 +228,13 @@ class _MessageScreenState extends State<MessageScreen> {
     //   });
     //   return;
     // }
-    final res = await MessageApi()
-        .getMessages(widget.conversationId != null ? widget.conversationId! : widget.user.sId!, accessToken, page, limit);
+    final res = await MessageApi().getMessages(
+        widget.conversationId != null
+            ? widget.conversationId!
+            : widget.user.sId!,
+        accessToken,
+        page,
+        limit);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
@@ -111,164 +267,12 @@ class _MessageScreenState extends State<MessageScreen> {
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        widget.firstListMessages.insert(0, Messages.fromJson(res['message']));
+        widget.firstListMessages.insert(0, Messages.fromJson(res));
       });
-        setState(() {
-          media = [];
-          _messageController.clear();
-        });
+      setState(() {
+        media = [];
+        _messageController.clear();
+      });
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final currentUser =
-        Provider.of<AuthProvider>(context, listen: false).auth.user!;
-  final isOnline = OnlineBloc().state.contains(widget.user.sId);
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          actions: <Widget>[
-            IconButton(
-              onPressed: () {
-                final msg = {
-                  'sender': currentUser.sId!,
-                  'recipient': widget.user.sId,
-                  'avatar': currentUser.avatar,
-                  'fullname': currentUser.fullname,
-                };
-                SocketConfig.callUser(msg);
-                // Navigator.of(context)
-                //     .push(MaterialPageRoute(builder: (_) => VideoCallScreen()));
-              },
-              icon: Icon(
-                FontAwesomeIcons.phone,
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            IconButton(
-              onPressed: () {
-                AudioPlayer player = AudioPlayer();
-                player.play(AssetSource(AssetHelper.soundCall));
-              },
-              icon: Icon(FontAwesomeIcons.video),
-            ),
-          ],
-          title: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 30,
-                ),
-              ),
-              const SizedBox(
-                width: 24,
-              ),
-              Expanded(
-                child: Row(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(widget.user.avatar!),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: isOnline ? Colors.green : Colors.grey,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.user.fullname!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          isOnline ? 'Active now' :
-                          'Offline',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        body: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            child: Column(
-              children: [
-                Expanded(
-                  child: widget.firstListMessages.isNotEmpty
-                      ? ListView.builder(
-                          controller: _scrollController,
-                          reverse: true,
-                          itemCount: widget.firstListMessages.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == widget.firstListMessages.length) {
-                              return SizedBox(
-                                  height: 70,
-                                  child: Opacity(
-                                      opacity: _isLoadMore ? 1 : 0,
-                                      child: Center(
-                                          child: CircularProgressIndicator(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ))));
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 24.0),
-                              child: CardMessageWidget(message: widget.firstListMessages[index],  userAvatar: widget.user.avatar!),
-                            );
-                          },
-                        )
-                      : Container(),
-                ),
-                InputMessageWidget(
-                    media: media,
-                    handleCreateMessage: handleCreateMessage,
-                    controller: _messageController,
-                    recipientId: widget.user.sId!)
-              ],
-            )),
-      ),
-    );
   }
 }

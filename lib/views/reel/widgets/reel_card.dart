@@ -72,6 +72,7 @@ class _ReelCardWidgetState extends State<ReelCardWidget> {
             'recipients': [widget.reel.user!.sId!],
             'url': widget.reel.sId,
             'content': widget.reel.content,
+            'type': 'reel',
             'image': widget.reel.backgroundUrl,
             'user': {
               'sId': user.sId,

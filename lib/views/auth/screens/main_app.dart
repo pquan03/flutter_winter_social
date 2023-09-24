@@ -5,10 +5,12 @@ import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/notify.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/views/add/screens/add.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_event.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_event.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
+import 'package:insta_node_app/bloc/noti_bloc/noti_bloc.dart';
+import 'package:insta_node_app/bloc/noti_bloc/noti_event.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_event.dart';
 import 'package:insta_node_app/views/message/screens/calling.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
 import 'package:insta_node_app/views/post/screens/feed.dart';
@@ -29,20 +31,23 @@ class MainAppScreen extends StatefulWidget {
 
 class _MainAppScreenState extends State<MainAppScreen> {
   late int _currentIndex;
+  late PageController _pageControllerWithAdd;
   late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initPage;
+    _pageControllerWithAdd = PageController(initialPage: 1);
     _pageController = PageController(initialPage: widget.initPage);
     fetchChatDataMessage();
+    fetchNotificationData();
     SocketConfig.socket.on('checkUserOnlineToMe', (data) {
       final onlineBloc = BlocProvider.of<OnlineBloc>(context);
       final state = onlineBloc.state;
-      state.forEach((element) { 
-        if(!data.contains(element)) {
-            onlineBloc.add(OnlineEventFetch(listUserId: [element]));
+      state.forEach((element) {
+        if (!data.contains(element)) {
+          onlineBloc.add(OnlineEventFetch(listUserId: [element]));
         }
       });
     });
@@ -65,13 +70,76 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 data: data,
               )));
     });
-
-    
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
 
-
-
+  @override
+  Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context).auth;
+    return PageView(
+      controller: _pageControllerWithAdd,
+      children: [
+        AddScreen(
+          handleNaviTapped: () => handleNaviTapped(1),
+        ),
+        Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          body: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            children: <Widget>[..._screens(auth).map((e) => e).toList()],
+          ),
+          bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: CurvedNavigationBar(
+                animationDuration: const Duration(milliseconds: 300),
+                index: _currentIndex,
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+                letIndexChange: (value) {
+                  if (value == 2) {
+                    handleNaviTapped(0);
+                    return false;
+                  }
+                  return true;
+                },
+                onTap: navigationTapped,
+                items: [
+                  iconWidget(0, Icons.home, Icons.home_outlined),
+                  iconWidget(1, Icons.search, Icons.search_outlined),
+                  iconWidget(2, Icons.add_box, Icons.add_box_outlined),
+                  iconWidget(
+                      3, Icons.movie_filter, Icons.movie_filter_outlined),
+                  Container(
+                    height: 35,
+                    width: 35,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(auth.user!.avatar!),
+                      radius: 12,
+                    ),
+                  ),
+                ],
+              )),
+        ),
+      ],
+    );
+  }
 
   void fetchChatDataMessage() async {
     final token =
@@ -80,10 +148,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
     chatBloc.add(ChatEventFetch(token: token));
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _pageController.dispose();
+    void fetchNotificationData() async {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final notifiBloc = BlocProvider.of<NotiBloc>(context);
+    notifiBloc.add(NotiEventFetch(token: token));
   }
 
   void navigationTapped(int page) {
@@ -96,61 +165,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
     });
   }
 
-  void handleNaviAddPost() async {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddScreen()));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context).auth;
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        children: <Widget>[..._screens(auth).map((e) => e).toList()],
-      ),
-      bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                width: 1,
-              ),
-            ),
-          ),
-          child: CurvedNavigationBar(
-            animationDuration: const Duration(milliseconds: 300),
-            index: _currentIndex,
-            color: Theme.of(context).colorScheme.primary,
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            buttonBackgroundColor: Theme.of(context).colorScheme.primary,
-            letIndexChange: (value) {
-              if (value == 2) {
-                handleNaviAddPost();
-                return false;
-              }
-              return true;
-            },
-            onTap: navigationTapped,
-            items: [
-              iconWidget(0, Icons.home, Icons.home_outlined),
-              iconWidget(1, Icons.search, Icons.search_outlined),
-              iconWidget(2, Icons.add_box, Icons.add_box_outlined),
-              iconWidget(3, Icons.movie_filter, Icons.movie_filter_outlined),
-              Container(
-                height: 35,
-                width: 35,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(auth.user!.avatar!),
-                  radius: 12,
-                ),
-              ),
-            ],
-          )),
+  void handleNaviTapped(int index) {
+    _pageControllerWithAdd.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -166,12 +185,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
         Container(),
         KeepAlivePage(child: ReelsScreen()),
         KeepAlivePage(child: ProfileScreen()),
-        // KeepAlivePage(
-        //   child: ProfileScreen(
-        //     token: auth.accessToken!,
-        //     userId: auth.user!.sId!,
-        //   ),
-        // ),
       ];
 
   Widget iconWidget(int index, IconData iconActive, IconData iconInactive) {

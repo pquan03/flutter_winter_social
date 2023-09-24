@@ -1,10 +1,6 @@
-
-
-
 import 'package:flutter/material.dart';
 
 showSnackBar(BuildContext context, String label, String content) {
-
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       showCloseIcon: true,
@@ -33,7 +29,7 @@ showSnackBar(BuildContext context, String label, String content) {
           ),
         ],
       ),
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 10),
     ),
   );
 }

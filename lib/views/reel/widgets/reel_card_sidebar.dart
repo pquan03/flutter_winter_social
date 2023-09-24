@@ -4,18 +4,18 @@ import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/views/comment/comment_model_reel.dart';
-import 'package:insta_node_app/views/post/widgets/post_send_mess_modal.dart';
+import 'package:insta_node_app/views/reel/widgets/post_send_reel_modal.dart';
 import 'package:insta_node_app/views/reel/widgets/reel_modal.dart';
 import 'package:provider/provider.dart';
 
 class ReelCardSideBarWidget extends StatelessWidget {
-  const ReelCardSideBarWidget(
-      {super.key,
-      required this.reel,
-      required this.handleLikeReel,
-      required this.handleSaveReel,
-      required this.handleDelelteReel,
-      });
+  const ReelCardSideBarWidget({
+    super.key,
+    required this.reel,
+    required this.handleLikeReel,
+    required this.handleSaveReel,
+    required this.handleDelelteReel,
+  });
   final Reel reel;
   final Function handleLikeReel;
   final Function handleSaveReel;
@@ -89,7 +89,10 @@ class ReelCardSideBarWidget extends StatelessWidget {
         Column(
           children: [
             InkWell(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => PostSendMessModal())),
+              onTap: () {
+                showModalBottomSheetCustom(
+                    context, ReelSendMessModal(reel: reel));
+              },
               child: Icon(
                 Icons.send,
                 color: Colors.white,

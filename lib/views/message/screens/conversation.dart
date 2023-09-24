@@ -1,82 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
-import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/recources/message_api.dart';
-import 'package:insta_node_app/views/message/widgets/card_converastion.dart';
-import 'package:insta_node_app/views/message/widgets/temp_shimmer_card_conversation.dart';
-import 'package:insta_node_app/views/message/screens/search_user_mess.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/views/message/screens/search_user_mess.dart';
+import 'package:insta_node_app/views/message/widgets/card_converastion.dart';
 import 'package:provider/provider.dart';
 
-class ConversationScreen extends StatefulWidget {
-  final String accessToken;
-  final List<Conversations> conversations;
-  const ConversationScreen({super.key, required this.accessToken, required this.conversations});
+class Conversation extends StatefulWidget {
+  const Conversation({super.key});
 
   @override
-  State<ConversationScreen> createState() => _ConversationScreenState();
+  State<Conversation> createState() => _ConversationState();
 }
 
-class _ConversationScreenState extends State<ConversationScreen> {
-  List<Conversations> _conversations = [];
+class _ConversationState extends State<Conversation> {
   bool _isSearch = false;
-  bool _isLoading = false;
-
-  
 
   @override
   void initState() {
-    super.initState();
-      SocketConfig.socket.on('addMessageToClient', (data) {
+          SocketConfig.socket.on('addMessageToClient', (data) {
       if (!mounted) return;
       setState(() {
         final message = Messages.fromJson(data);
-        final conversation = _conversations.firstWhere(
-            (element) => element.sId == message.conversationId);
-        conversation.isRead = ['${message.senderId}'];
-        conversation.messages!.insert(0, message);
-        _conversations.removeWhere(
-            (element) => element.sId == message.conversationId);
-        _conversations.insert(0, conversation);
+        final chatBloc = BlocProvider.of<ChatBloc>(context);
+        chatBloc.add(ChatEventAddMessage(message: message));
       });
     });
-    if(widget.conversations.isEmpty) {
-      handleLoadConversation();
-    } else {
-      setState(() {
-        _conversations = widget.conversations;
-        _isLoading = false;
-      });
-    }
+    super.initState();
   }
 
-  void handleLoadConversation() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final res = await MessageApi().getConversations(widget.accessToken);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      if (!mounted) return;
-      setState(() {
-        _conversations = [..._conversations, ...res];
-        _isLoading = false;
-      });
-    }
-  }
 
   void handleBack() {
     setState(() {
       _isSearch = false;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +50,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             handleBack: handleBack,
           )
         : LayoutScreen(
-            onPressed: () => Navigator.pop(context, _conversations),
+            onPressed: () => Navigator.pop(context),
             title: '${user.username}',
             action: [
               IconButton(
@@ -105,27 +69,29 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ),
               ),
             ],
-            child: _isLoading
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        ...List.generate(
-                          2,
-                          (index) => CardTempConversation(),
-                        )
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
+            child: 
+                BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
+              if (chatState is ChatStateLoading) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.green,
+                  ),
+                );
+              } else if (chatState is ChatStateError) {
+                return Center(
+                  child: Text(chatState.error),
+                );
+              } else if (chatState is ChatStateSuccess) {
+                return RefreshIndicator(
                     color: Theme.of(context).colorScheme.secondary,
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     onRefresh: () async {
-                      setState(() {
-                        _conversations = [];
-                        _isLoading = true;
-                      });
-                      handleLoadConversation();
+                      final token =
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .auth
+                              .accessToken!;
+                      final chatBloc = BlocProvider.of<ChatBloc>(context);
+                      chatBloc.add(ChatEventFetch(token: token, isRefresh: true));
                     },
                     child: ListView(
                       children: [
@@ -168,26 +134,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         const SizedBox(
                           height: 16,
                         ),
-                        _conversations.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'No message',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
-                              )
-                            : Column(
-                                children: <Widget>[
-                                  ..._conversations
-                                      .map((e) => CardConversationWidget(conversation: e,))
-                                      .toList()
-                                ],
-                              ),
+                        Column(
+                          children: chatState.listConversation
+                              .map((e) =>
+                                  CardConversationWidget(conversation: e))
+                              .toList(),
+                        )
                       ],
-                    ),
-                  ),
-          );
+                    ));
+              } else {
+                return Center(
+                  child: Text('Something went wrong'),
+                );
+              }
+            }));
   }
-
 }

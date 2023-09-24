@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/recources/message_api.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_event.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc() : super(ChatStateInitial()) {
@@ -35,8 +35,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final state = this.state;
     if (state is ChatStateSuccess) {
       final listConversation = [...state.listConversation];
-      final conversation = listConversation.firstWhere(
-          (element) => element.sId == event.message.conversationId);
+      final conversation = listConversation
+          .firstWhere((element) => element.sId == event.message.conversationId);
       conversation.isRead = ['${event.message.senderId}'];
       conversation.messages!.insert(0, event.message);
       listConversation.removeWhere(

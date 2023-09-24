@@ -224,76 +224,82 @@ class _SearchScreenState extends State<SearchScreen> {
                       });
                       getPostDiscover();
                     },
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      controller: _scrollController,
-                      child: StaggeredGrid.count(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 2,
-                        crossAxisSpacing: 2,
-                        children: [
-                          ...[
-                            ..._posts,
-                            ProfilePost.fromJson({})
-                          ].asMap().entries.map((e) {
-                            if (e.key == _posts.length) {
-                              return StaggeredGridTile.count(
-                                  crossAxisCellCount: 3,
-                                  mainAxisCellCount: 1,
-                                  child: Opacity(
-                                    opacity: _isLoadMore ? 1 : 0,
-                                    child: Center(
-                                        child: CircularProgressIndicator()),
-                                  ));
-                            } else if (e.key == 0 ||
-                                e.key == 7 ||
-                                (e.key >= 10 &&
-                                    (e.key % 10 == 0 || e.key % 10 == 6))) {
-                              return StaggeredGridTile.count(
-                                crossAxisCellCount: 1,
-                                mainAxisCellCount: 2,
-                                child: GestureDetector(
-                                    onTap: () => Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (_) {
+                    child: _posts.isEmpty
+                        ? Center(child: Text('No post'))
+                        : SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            controller: _scrollController,
+                            child: StaggeredGrid.count(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 2,
+                              crossAxisSpacing: 2,
+                              children: [
+                                ...[..._posts, ProfilePost.fromJson({})]
+                                    .asMap()
+                                    .entries
+                                    .map((e) {
+                                  if (e.key == _posts.length) {
+                                    return StaggeredGridTile.count(
+                                        crossAxisCellCount: 3,
+                                        mainAxisCellCount: 1,
+                                        child: Opacity(
+                                          opacity: _isLoadMore ? 1 : 0,
+                                          child: Center(
+                                              child:
+                                                  CircularProgressIndicator()),
+                                        ));
+                                  } else if (e.key == 0 ||
+                                      e.key == 7 ||
+                                      (e.key >= 10 &&
+                                          (e.key % 10 == 0 ||
+                                              e.key % 10 == 6))) {
+                                    return StaggeredGridTile.count(
+                                      crossAxisCellCount: 1,
+                                      mainAxisCellCount: 2,
+                                      child: GestureDetector(
+                                          onTap: () => Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (_) {
+                                                final newListPost = [..._posts];
+                                                final tempPost =
+                                                    newListPost[e.key];
+                                                newListPost.removeAt(e.key);
+                                                newListPost.insert(0, tempPost);
+                                                return ExploreListPostScreen(
+                                                  title: 'Explore',
+                                                  posts: newListPost,
+                                                );
+                                              })),
+                                          child: ImageHelper.loadImageNetWork(
+                                              _posts[e.key].images![0],
+                                              fit: BoxFit.cover)),
+                                    );
+                                  }
+                                  return StaggeredGridTile.count(
+                                    crossAxisCellCount: 1,
+                                    mainAxisCellCount: 1,
+                                    child: GestureDetector(
+                                        onTap: () {
                                           final newListPost = [..._posts];
                                           final tempPost = newListPost[e.key];
                                           newListPost.removeAt(e.key);
                                           newListPost.insert(0, tempPost);
-                                          return ExploreListPostScreen(
-                                              title: 'Explore',
-                                              posts: newListPost,
-                                              );
-                                        })),
-                                    child: ImageHelper.loadImageNetWork(
-                                        _posts[e.key].images![0],
-                                        fit: BoxFit.cover)),
-                              );
-                            } 
-                            return StaggeredGridTile.count(
-                              crossAxisCellCount: 1,
-                              mainAxisCellCount: 1,
-                              child: GestureDetector(
-                                  onTap: () {
-                                    final newListPost = [..._posts];
-                                    final tempPost = newListPost[e.key];
-                                    newListPost.removeAt(e.key);
-                                    newListPost.insert(0, tempPost);
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                ExploreListPostScreen(
-                                                    title: 'Explore',
-                                                    posts: newListPost,)));
-                                  },
-                                  child: ImageHelper.loadImageNetWork(
-                                      _posts[e.key].images![0],
-                                      fit: BoxFit.cover)),
-                            );
-                          }). toList()
-                        ],
-                      ),
-                    )
-                  )
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      ExploreListPostScreen(
+                                                        title: 'Explore',
+                                                        posts: newListPost,
+                                                      )));
+                                        },
+                                        child: ImageHelper.loadImageNetWork(
+                                            _posts[e.key].images![0],
+                                            fit: BoxFit.cover)),
+                                  );
+                                }).toList()
+                              ],
+                            ),
+                          ))
             : _isLoadingShimmer
                 ? LoadingShimmer(
                     child: ListView(children: <Widget>[

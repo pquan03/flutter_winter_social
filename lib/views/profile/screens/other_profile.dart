@@ -12,8 +12,8 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
 import 'package:insta_node_app/views/profile/screens/follow_user.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
@@ -193,6 +193,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
           user.sId,
         ],
         'url': auth.user!.sId,
+        'type': 'follow',
         'content': 'notification',
         'image': '',
         'user': {
@@ -237,6 +238,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
               ),
             ),
             body: NestedScrollView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _scrollController,
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
@@ -297,6 +299,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                             : 'Follow',
                                         style: TextStyle(
                                           fontSize: 16,
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                         )),
                                   ),
@@ -349,7 +352,8 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                     decoration: BoxDecoration(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primaryContainer,
+                                            .primaryContainer
+                                            .withOpacity(0.4),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Text('Message',
@@ -366,45 +370,49 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                       ),
                     ),
                   ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    floating: true,
-                    delegate: _SliverAppBarDelegate(
-                      TabBar(
-                        indicatorColor: Theme.of(context).colorScheme.secondary,
-                        labelColor: Theme.of(context).colorScheme.secondary,
-                        unselectedLabelColor: Colors.grey[400],
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.grid_on),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.movie_filter),
-                          ),
-                        ],
+                  if (_posts.isNotEmpty || _reels.isNotEmpty)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      floating: true,
+                      delegate: _SliverAppBarDelegate(
+                        TabBar(
+                          indicatorColor:
+                              Theme.of(context).colorScheme.secondary,
+                          labelColor: Theme.of(context).colorScheme.secondary,
+                          unselectedLabelColor: Colors.grey[400],
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(
+                              icon: Icon(Icons.grid_on),
+                            ),
+                            Tab(
+                              icon: Icon(Icons.movie_filter),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ];
               },
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  // tab 1
-                  ListPostProfileWiget(
-                    isLoadMore: _isLoadMore,
-                    isLoading: _isLoading,
-                    posts: _posts,
-                  ),
-                  // tab 2
-                  ListReelProfileWidget(
-                    isLoadMore: _isLoadMore,
-                    isLoading: _isLoading,
-                    reels: _reels,
-                  ),
-                ],
-              ),
+              body: _posts.isNotEmpty || _reels.isNotEmpty
+                  ? TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // tab 1
+                        ListPostProfileWiget(
+                          isLoadMore: _isLoadMore,
+                          isLoading: _isLoading,
+                          posts: _posts,
+                        ),
+                        // tab 2
+                        ListReelProfileWidget(
+                          isLoadMore: _isLoadMore,
+                          isLoading: _isLoading,
+                          reels: _reels,
+                        ),
+                      ],
+                    )
+                  : Container(),
             ),
           );
   }

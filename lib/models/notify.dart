@@ -7,6 +7,7 @@ class Notify {
   String? url;
   String? text;
   String? content;
+  String? type;
   String? image;
   bool? isRead;
   String? createdAt;
@@ -20,6 +21,7 @@ class Notify {
       this.url,
       this.text,
       this.content,
+      this.type,
       this.image,
       this.isRead,
       this.createdAt,
@@ -35,6 +37,7 @@ class Notify {
     content = json['content'];
     image = json['image'];
     isRead = json['isRead'];
+    type = json['type'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
@@ -51,6 +54,7 @@ class Notify {
     data['text'] = this.text;
     data['content'] = this.content;
     data['image'] = this.image;
+    data['type'] = this.type;
     data['isRead'] = this.isRead;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;

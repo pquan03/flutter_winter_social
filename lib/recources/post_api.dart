@@ -10,38 +10,40 @@ class PostApi {
 
   Future<dynamic> getPosts(String token, int page, int limit) async {
     try {
-      final res = await _repository.getApi('posts?page=$page&limit=$limit', token);
-      return res.map((post)  {
+      final res =
+          await _repository.getApi('posts?page=$page&limit=$limit', token);
+      return res.map((post) {
         return model.Post.fromJson(post);
       }).toList();
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
-  } 
+  }
 
   Future<dynamic> getPostDiscover(String token, int page, int limit) async {
     try {
-      final res = await _repository.getApi('post_discover?page=$page&limit=$limit', token);
-      return res.map((post)  {
+      final res = await _repository.getApi(
+          'post_discover?page=$page&limit=$limit', token);
+      return res.map((post) {
         return Post.fromJson(post);
       }).toList();
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }
 
   Future<dynamic> savePost(String postId, String token) async {
-    try  {
+    try {
       await _repository.patchApi('save_post/$postId/save', {}, token);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }
 
-    Future<dynamic> unSavePost(String postId, String token) async {
-    try  {
+  Future<dynamic> unSavePost(String postId, String token) async {
+    try {
       await _repository.patchApi('save_post/$postId/unsave', {}, token);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }
@@ -49,7 +51,7 @@ class PostApi {
   Future<dynamic> deletePost(String postId, String token) async {
     try {
       await _repository.delApi('posts/$postId', token);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }
@@ -57,34 +59,31 @@ class PostApi {
   Future<dynamic> likePost(String postId, String token) async {
     try {
       await _repository.patchApi('posts/$postId/like', {}, token);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
-  }  
+  }
 
   Future<dynamic> unLikePost(String postId, String token) async {
     try {
       await _repository.patchApi('posts/$postId/unlike', {}, token);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
-  }  
+  }
 
-  Future<dynamic> createPost(String caption, List<Uint8List> files, String token) async {
+  Future<dynamic> createPost(
+      String caption, List<Uint8List> files, String token) async {
     try {
-      List<Images> images = [];
-      for(int i = 0; i < files.length; i++) {
-        final res = await imagePostUpload(files[i], true);
-        images.add(Images.fromJson(res));
+      List<String> images = [];
+      for (int i = 0; i < files.length; i++) {
+        final res = await imageUpload(files[i], true);
+        images.add(res);
       }
-      final res = await _repository.postApi('posts', {
-        'content': caption,
-        'images': images
-      }, token);
-
-
+      final res = await _repository.postApi(
+          'posts', {'content': caption, 'images': images}, token);
       return model.Post.fromJson(res);
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }
@@ -92,10 +91,10 @@ class PostApi {
   Future<dynamic> getSavedPosts(String token) async {
     try {
       final res = await _repository.getApi('saved_posts', token);
-      return res.map((post)  {
+      return res.map((post) {
         return model.Post.fromJson(post);
       }).toList();
-    } catch(err) {
+    } catch (err) {
       return err.toString();
     }
   }

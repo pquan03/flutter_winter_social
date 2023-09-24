@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/models/reel.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_event.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_state.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_event.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_bloc.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_state.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/views/comment/comment_card.dart';
@@ -189,6 +189,7 @@ class _CommentModelReelState extends State<CommentModelReel> {
                                       'recipients': [widget.reel.user!.sId!],
                                       'url': widget.reel.sId,
                                       'content': '',
+                                      'type': 'post',
                                       'image': widget.reel.backgroundUrl,
                                       'user': {
                                         'sId': user.sId,

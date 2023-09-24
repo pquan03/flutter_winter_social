@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_event.dart';
-import 'package:insta_node_app/views/comment/bloc/comment_bloc/comment_state.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_event.dart';
+import 'package:insta_node_app/bloc/comment_bloc/comment_state.dart';
 import 'package:insta_node_app/models/comment.dart';
 import 'package:insta_node_app/recources/comment_api.dart';
 
@@ -16,6 +16,8 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
   void _onGetComments(
       CommentEventFetch event, Emitter<CommentState> emit) async {
     emit(CommentStateLoading());
+    await Future.delayed(Duration(milliseconds: 300));
+    // delay 1s to show loading
     if (event.type == 'post') {
       final res =
           await CommentApi().getCommentsByPostId(event.postId, event.token);

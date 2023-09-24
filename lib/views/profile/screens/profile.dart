@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = false;
-  bool _isLoadMore = true;
+  bool _isLoadMore = false;
   List<Post> _posts = [];
   List<Reel> _reels = [];
   final ScrollController _scrollController = ScrollController();
@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         getReelProfile();
       }
     });
-    _scrollController.addListener(() { 
+    _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         if (_tabController.index == 0) {
@@ -67,6 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void getPostProfile() async {
+    setState(() {
+      _isLoadMore = true;
+    });
     if (_posts.isNotEmpty && _posts.length % limit != 0) {
       setState(() {
         _isLoadMore = false;
@@ -89,12 +92,12 @@ class _ProfileScreenState extends State<ProfileScreen>
         _posts = [..._posts, ...res];
         pagePost++;
         _isLoading = false;
+        _isLoadMore = false;
       });
     }
   }
 
-
-    void getReelProfile() async {
+  void getReelProfile() async {
     if (_reels.isNotEmpty && _reels.length % limit != 0) {
       setState(() {
         _isLoadMore = false;
@@ -108,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
     final auth = Provider.of<AuthProvider>(context, listen: false).auth;
     final res = await ReelApi()
-        .getUserReel(auth.user!.sId!, auth.accessToken!,pageReel, limit);
+        .getUserReel(auth.user!.sId!, auth.accessToken!, pageReel, limit);
     if (res is String) {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
@@ -142,22 +145,25 @@ class _ProfileScreenState extends State<ProfileScreen>
         automaticallyImplyLeading: false,
         centerTitle: false,
         titleSpacing: 16,
-        title: InkWell(
+        title: GestureDetector(
           onTap: () =>
               showModalBottomSheetCustom(context, ChooseAccountModalWidget()),
-          child: Row(
-            children: [
-              Text(
-                user.username!,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Icon(
-                Icons.keyboard_arrow_down,
-              ),
-            ],
+          child: Container(
+            color: Colors.transparent,
+            child: Row(
+              children: [
+                Text(
+                  user.username!,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -241,7 +247,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             child: const Text(
                               'Edit profile',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
                             ),
                           ),
                         ),
@@ -258,7 +267,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                             ),
                             child: const Text('Share profile',
-                                style: TextStyle(fontWeight: FontWeight.w600)),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
                           ),
                         ),
                       ],
@@ -267,45 +279,48 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
             ),
-            SliverPersistentHeader(
-              pinned: true,
-              floating: true,
-              delegate: _SliverAppBarDelegate(
-                TabBar(
-                  indicatorColor: Theme.of(context).colorScheme.secondary,
-                  labelColor: Theme.of(context).colorScheme.secondary,
-                  unselectedLabelColor: Colors.grey[400],
-                  controller: _tabController,
-                  tabs: const [
-                    Tab(
-                      icon: Icon(Icons.grid_on),
-                    ),
-                    Tab(
-                      icon: Icon(Icons.movie_filter),
-                    ),
-                  ],
+            if (_posts.isNotEmpty || _reels.isNotEmpty)
+              SliverPersistentHeader(
+                pinned: true,
+                floating: true,
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    indicatorColor: Theme.of(context).colorScheme.secondary,
+                    labelColor: Theme.of(context).colorScheme.secondary,
+                    unselectedLabelColor: Colors.grey[400],
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(
+                        icon: Icon(Icons.grid_on),
+                      ),
+                      Tab(
+                        icon: Icon(Icons.movie_filter),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            // tab 1
-            ListPostProfileWiget(
-              isLoadMore: _isLoadMore,
-              isLoading: _isLoading,
-              posts: _posts,
-            ),
-            // tab 2
-            ListReelProfileWidget(
-              isLoadMore: _isLoadMore,
-              isLoading: _isLoading,
-              reels: _reels,
-            ),
-          ],
-        ),
+        body: _posts.isEmpty && _reels.isEmpty
+            ? Container()
+            : TabBarView(
+                controller: _tabController,
+                children: [
+                  // tab 1
+                  ListPostProfileWiget(
+                    isLoadMore: _isLoadMore,
+                    isLoading: _isLoading,
+                    posts: _posts,
+                  ),
+                  // tab 2
+                  ListReelProfileWidget(
+                    isLoadMore: _isLoadMore,
+                    isLoading: _isLoading,
+                    reels: _reels,
+                  ),
+                ],
+              ),
       ),
     );
   }

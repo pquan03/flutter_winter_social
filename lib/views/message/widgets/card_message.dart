@@ -4,11 +4,13 @@ import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/views/message/widgets/call_message.dart';
 import 'package:insta_node_app/views/message/widgets/media_message.dart';
+import 'package:insta_node_app/views/message/widgets/post_message.dart';
 import 'package:insta_node_app/views/message/widgets/text_message.dart';
 import 'package:provider/provider.dart';
 
 class CardMessageWidget extends StatelessWidget {
-  const CardMessageWidget({super.key, required this.message,  required this.userAvatar});
+  const CardMessageWidget(
+      {super.key, required this.message, required this.userAvatar});
   final Messages message;
   final String userAvatar;
 
@@ -44,25 +46,31 @@ class CardMessageWidget extends StatelessWidget {
           Column(
             crossAxisAlignment: crossAxisAliment,
             children: [
+              message.linkPost != null
+                  ? PostMessageWidget(
+                      postMess: message.linkPost!,
+                      createdAt: message.createdAt!)
+                  : Container(),
               message.text != ''
                   ? TextMessageWidget(color: color, text: message.text!)
                   : Container(),
               // Image
               message.media!.isNotEmpty
-                  ? MediaMessageWidget(media: message.media!, crossAxisAlignment: crossAxisAliment)
+                  ? MediaMessageWidget(
+                      media: message.media!,
+                      crossAxisAlignment: crossAxisAliment)
                   : Container(),
               // call
               message.call != null
                   ? CallMessageWidget(
                       call: message.call!, createAt: message.createdAt!)
                   : Container(),
-              // Text(
-              //     convertTimeAgo(message.createdAt!),
-              //     style: TextStyle(
-              //       color: Colors.black54,
-              //       fontSize: 12,
-              //       fontWeight: FontWeight.w400,
-              //     )),
+              Text(convertTimeAgo(message.createdAt!),
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  )),
             ],
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
+import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
@@ -11,15 +12,15 @@ import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
 import 'package:provider/provider.dart';
 
-class PostSendMessModal extends StatefulWidget {
-  final Post post;
-  const PostSendMessModal({super.key, required this.post});
+class ReelSendMessModal extends StatefulWidget {
+  final Reel reel;
+  const ReelSendMessModal({super.key, required this.reel});
 
   @override
-  State<PostSendMessModal> createState() => _PostSendMessModalState();
+  State<ReelSendMessModal> createState() => _ReelSendMessModalState();
 }
 
-class _PostSendMessModalState extends State<PostSendMessModal> {
+class _ReelSendMessModalState extends State<ReelSendMessModal> {
   late TextEditingController _searchController;
   List<UserPost> _userFollowers = [];
   bool _isLoading = true;
@@ -94,11 +95,10 @@ class _PostSendMessModalState extends State<PostSendMessModal> {
                       shrinkWrap: true,
                       itemCount: _userFollowers.length + 1,
                       itemBuilder: (context, index) {
-                        if (index == _userFollowers.length) {
+                        if (index == _userFollowers.length)
                           return SizedBox(
                             height: 50,
                           );
-                        }
                         return ListTile(
                           onTap: () => setState(() {
                             selectedUser = _userFollowers[index];
@@ -187,7 +187,7 @@ class _PostSendMessModalState extends State<PostSendMessModal> {
         'avatar': currentUser.avatar,
         'username': currentUser.username,
         'text': '',
-        'linkPost': widget.post,
+        'linkPost': widget.reel,
         'senderId': currentUser.sId,
         'recipientId': user.sId,
         'media': [],

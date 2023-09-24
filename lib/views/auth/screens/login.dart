@@ -30,6 +30,92 @@ class _LoginScreenState extends State<LoginScreen> {
     _accountController.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.sizeOf(context).height * 0.12),
+                alignment: Alignment.bottomCenter,
+                child: ImageHelper.loadImageAsset(AssetHelper.icLogo,
+                    height: 60, width: 60)),
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.sizeOf(context).height * 0.12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormIntput(
+                      controller: _accountController,
+                      label: 'Username, email or phone number'),
+                  const SizedBox(height: 12),
+                  TextFormIntput(
+                      controller: _passwordController, label: 'Password'),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ButtonWidget(
+                    isLoading: _isLoading,
+                    text: 'Log in',
+                    backgroundColor: Colors.blue,
+                    onPressed: _loginUser,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                const ForgotPasswordScreen()));
+                      },
+                      child: Text(
+                        "Forgot password?",
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              children: [
+                ButtonWidget(
+                  text: 'Create new account',
+                  textColor: Colors.black,
+                  backgroundColor: Colors.transparent,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SignUpScreen()));
+                  },
+                  borderColor: Colors.blue,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Text(
+                  '☂ Winter',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   void _loginUser() async {
     try {
       setState(() {
@@ -47,93 +133,5 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: Container(
-          padding: const EdgeInsets.all(16),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.sizeOf(context).height * 0.12),
-                  alignment: Alignment.bottomCenter,
-                  child: ImageHelper.loadImageAsset(AssetHelper.icLogo,
-                      height: 60, width: 60)),
-              Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.sizeOf(context).height * 0.12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormIntput(
-                        controller: _accountController,
-                        label: 'Username, email or phone number'),
-                    const SizedBox(height: 12),
-                    TextFormIntput(
-                        controller: _passwordController, label: 'Password'),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ButtonWidget(
-                      isLoading: _isLoading,
-                      text: 'Log in',
-                      backgroundColor: Colors.blue,
-                      onPressed: _loginUser,
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  const ForgotPasswordScreen()));
-                        },
-                        child: Text(
-                          "Forgot password?",
-                          style: Theme.of(context).textTheme.displaySmall,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  ButtonWidget(
-                    text: 'Create new account',
-                    textColor: Colors.black,
-                    backgroundColor: Colors.transparent,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
-                    },
-                    borderColor: Colors.blue,
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    '☂ Winter',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

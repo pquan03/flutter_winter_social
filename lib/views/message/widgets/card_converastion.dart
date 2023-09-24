@@ -3,7 +3,7 @@ import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/utils/time_ago_custom.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:provider/provider.dart';
 

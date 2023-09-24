@@ -5,7 +5,8 @@ import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.d
 import 'package:insta_node_app/views/add/screens/widgets/button_add_post.dart';
 
 class AddScreen extends StatefulWidget {
-  const AddScreen({super.key});
+  final Function? handleNaviTapped;
+  const AddScreen({super.key, this.handleNaviTapped});
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -13,7 +14,6 @@ class AddScreen extends StatefulWidget {
 
 class _AddScreenState extends State<AddScreen> {
   final PageController _pageController = PageController();
-  bool _isShowTypeAdd = false;
 
   @override
   void dispose() {
@@ -23,19 +23,6 @@ class _AddScreenState extends State<AddScreen> {
 
   void navigationTapped(int page) {
     _pageController.jumpToPage(page);
-  }
-
-  void handleHideAddPostButton() {
-    if (!mounted) return;
-    setState(() {
-      _isShowTypeAdd = true;
-    });
-    if (!mounted) return;
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _isShowTypeAdd = false;
-      });
-    });
   }
 
   @override
@@ -49,25 +36,21 @@ class _AddScreenState extends State<AddScreen> {
               controller: _pageController,
               children: [
                 MediaGalleryPostScreen(
-                  handleHideAddPostButton: handleHideAddPostButton,
+                  handleNaviTapped: widget.handleNaviTapped,
                 ),
                 MediaGalleryStoryScreen(
-                  handleHideAddPostButton: handleHideAddPostButton,
+                  handleNaviTapped: widget.handleNaviTapped,
                 ),
                 MediaGalleryReelScreen(
-                  handleHideAddPostButton: handleHideAddPostButton,
+                  handleNaviTapped: widget.handleNaviTapped,
                 ),
               ],
             ),
           ),
           Positioned(
-            right: 30,
-            bottom: 30,
-            child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 250),
-                opacity: _isShowTypeAdd ? 0.0 : 1.0,
-                child: AddPostButton(handleChangeType: navigationTapped)),
-          )
+              bottom: 20,
+              right: 20,
+              child: AddPostButton(handleChangeType: navigationTapped))
         ],
       ),
     );

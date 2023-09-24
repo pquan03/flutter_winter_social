@@ -57,6 +57,18 @@ class _TextFormIntputState extends State<TextFormIntput> {
       style: const TextStyle(fontWeight: FontWeight.w500),
       cursorColor: Colors.green,
       decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+          ),
+        ),
         label: Text(widget.label),
         filled: true,
         suffixIcon: _isShowEye

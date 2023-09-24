@@ -30,50 +30,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     _pageController.dispose();
   }
 
-  void navigationTapped(int page) async {
-    _pageController.animateToPage(page,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.fastLinearToSlowEaseIn);
-  }
-
-  void findAccont() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final res = await AuthApi().forgotPassword(_accountController.text);
-    if (!mounted) return;
-    if (res is String) {
-      showSnackBar(context, 'Error', res);
-    } else {
-      navigationTapped(_currentIndex + 1);
-      setState(() {
-        user = res;
-      });
-    }
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void resetPassword() async {
-    if (_newPasswordController.text != _confirmPasswordController.text) {
-      showSnackBar(context, 'Error', 'Password and confirm password not match');
-    }
-    final res = await AuthApi()
-        .resetPassword(user['_id'] ?? '', _newPasswordController.text);
-    if (!mounted) return;
-    if (res == 'OK') {
-      showSnackBar(context, 'Success', 'Reset password successfully');
-      Navigator.pop(context);
-    } else {
-      showSnackBar(context, 'Error', res);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
@@ -84,7 +43,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         },
         children: [screen1(), screen2()],
       ),
-    ));
+    );
   }
 
   Widget screen2() {
@@ -231,5 +190,48 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
       ),
     );
+  }
+
+  void navigationTapped(int page) async {
+    _pageController.animateToPage(page,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.fastLinearToSlowEaseIn);
+  }
+
+  void findAccont() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final res = await AuthApi().forgotPassword(_accountController.text);
+    if (!mounted) return;
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (res is String) {
+        showSnackBar(context, 'Error', res);
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        navigationTapped(_currentIndex + 1);
+        setState(() {
+          user = res;
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
+  void resetPassword() async {
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      showSnackBar(context, 'Error', 'Password and confirm password not match');
+    }
+    final res = await AuthApi()
+        .resetPassword(user['_id'] ?? '', _newPasswordController.text);
+    if (!mounted) return;
+    if (res == 'OK') {
+      showSnackBar(context, 'Success', 'Reset password successfully');
+      Navigator.pop(context);
+    } else {
+      showSnackBar(context, 'Error', res);
+    }
   }
 }

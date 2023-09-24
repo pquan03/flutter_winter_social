@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/story.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
-import 'package:insta_node_app/views/post/widgets/story_card.dart';
+import 'package:insta_node_app/views/story/widgets/story_card.dart';
 import 'package:insta_node_app/views/story/screens/winter_stories.dart';
 
 class StoryListWidget extends StatefulWidget {

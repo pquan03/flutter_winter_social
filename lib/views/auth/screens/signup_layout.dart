@@ -56,74 +56,72 @@ class _SignUpLayoutState extends State<SignUpLayout> {
   Widget build(BuildContext context) {
     return _isLoadingShimmer
         ? LoadingSignUp()
-        : SafeArea(
-            child: Scaffold(
-                appBar: AppBar(
-                    automaticallyImplyLeading: false,
-                    centerTitle: false,
-                    title: GestureDetector(
-                      onTap: widget.backButtonPressed,
-                      child: const Icon(
-                        Icons.arrow_back,
-                        size: 30,
-                      ),
-                    )),
-                body: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.text!,
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          )),
-                      widget.description != null
-                          ? Container(
-                              padding: const EdgeInsets.only(top: 16),
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                widget.description!,
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700),
-                              ))
-                          : Container(),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextFormIntput(
-                        controller: widget.controller,
-                        label: widget.label!,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      ButtonWidget(
-                        text: widget.label == 'Password' ? 'Sign Up' : 'Next',
-                        backgroundColor: Colors.blue,
-                        onPressed: handleClickNextButton,
-                      )
-                    ],
-                  ),
-                ),
-                bottomNavigationBar: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    width: double.infinity,
-                    child: Text(
-                      'Already have an account?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
-                    ),
+        : Scaffold(
+            appBar: AppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: false,
+                title: GestureDetector(
+                  onTap: widget.backButtonPressed,
+                  child: const Icon(
+                    Icons.arrow_back,
+                    size: 30,
                   ),
                 )),
-          );
+            body: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.text!,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      )),
+                  widget.description != null
+                      ? Container(
+                          padding: const EdgeInsets.only(top: 16),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.description!,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700),
+                          ))
+                      : Container(),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormIntput(
+                    controller: widget.controller,
+                    label: widget.label!,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ButtonWidget(
+                    text: widget.label == 'Password' ? 'Sign Up' : 'Next',
+                    backgroundColor: Colors.blue,
+                    onPressed: handleClickNextButton,
+                  )
+                ],
+              ),
+            ),
+            bottomNavigationBar: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                child: Text(
+                  'Already have an account?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ));
   }
 }

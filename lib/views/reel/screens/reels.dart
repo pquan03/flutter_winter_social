@@ -28,51 +28,6 @@ class _ReelsScreenState extends State<ReelsScreen> {
     handleGetReels();
   }
 
-  void handleGetReels() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final token =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final res = await ReelApi().getReels(token, page, limit);
-    if (res is List) {
-      setState(() {
-        _reels = [..._reels, ...res];
-      });
-    } else {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    }
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void handleMute() {
-    setState(() {
-      _isMute = !_isMute;
-    });
-  }
-
-  void deleteReel(String reelId) async {
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final res = await ReelApi().deleteReel(reelId, token);
-    if(res is String) {
-      if(!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _reels.removeWhere((element) => element.sId == reelId);
-      });
-      final currentPage = _pageController.page!.toInt();
-      if(currentPage > 0) {
-        _pageController.jumpToPage(currentPage - 1);
-      } else if(currentPage < _reels.length - 1) {
-        _pageController.jumpToPage(currentPage + 1);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -84,15 +39,6 @@ class _ReelsScreenState extends State<ReelsScreen> {
             automaticallyImplyLeading: false,
             title: Row(
               children: [
-                // GestureDetector(
-                //     onTap: () => Navigator.pop(context),
-                //     child: Icon(
-                //       Icons.arrow_back,
-                //       color: Colors.white,
-                //     )),
-                // SizedBox(
-                //   width: 20,
-                // ),
                 Text(
                   'Reels',
                   style: TextStyle(fontSize: 20, color: Colors.white),
@@ -100,8 +46,9 @@ class _ReelsScreenState extends State<ReelsScreen> {
                 Spacer(),
                 GestureDetector(
                     onTap: () {
-                      if(!mounted) return;
-                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MediaGalleryReelScreen()));
+                      if (!mounted) return;
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => const MediaGalleryReelScreen()));
                     },
                     child: Icon(
                       Icons.camera_alt_outlined,
@@ -129,14 +76,14 @@ class _ReelsScreenState extends State<ReelsScreen> {
                           fontWeight: FontWeight.bold),
                     ))
                   : PageView.builder(
-                    onPageChanged: (index) {
-                      if (index == _reels.length - 1) {
-                        setState(() {
-                          page++;
-                        });
-                        handleGetReels();
-                      }
-                    },
+                      onPageChanged: (index) {
+                        if (index == _reels.length - 1) {
+                          setState(() {
+                            page++;
+                          });
+                          handleGetReels();
+                        }
+                      },
                       controller: _pageController,
                       itemCount: _reels.length,
                       scrollDirection: Axis.vertical,
@@ -150,5 +97,51 @@ class _ReelsScreenState extends State<ReelsScreen> {
         ),
       ),
     );
+  }
+
+  void handleGetReels() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res = await ReelApi().getReels(token, page, limit);
+    if (res is List) {
+      setState(() {
+        _reels = [..._reels, ...res];
+      });
+    } else {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void handleMute() {
+    setState(() {
+      _isMute = !_isMute;
+    });
+  }
+
+  void deleteReel(String reelId) async {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res = await ReelApi().deleteReel(reelId, token);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _reels.removeWhere((element) => element.sId == reelId);
+      });
+      final currentPage = _pageController.page!.toInt();
+      if (currentPage > 0) {
+        _pageController.jumpToPage(currentPage - 1);
+      } else if (currentPage < _reels.length - 1) {
+        _pageController.jumpToPage(currentPage + 1);
+      }
+    }
   }
 }

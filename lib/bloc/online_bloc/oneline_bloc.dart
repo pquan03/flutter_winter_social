@@ -1,7 +1,7 @@
 
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_event.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_event.dart';
 
 class OnlineBloc extends Bloc<OnlineEvent, List<String>> {
   OnlineBloc() : super([]) {

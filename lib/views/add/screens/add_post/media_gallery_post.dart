@@ -13,8 +13,8 @@ import 'package:insta_node_app/views/add/screens/widgets/sliver_appbar_delegate.
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryPostScreen extends StatefulWidget {
-  final Function? handleHideAddPostButton;
-  const MediaGalleryPostScreen({super.key, this.handleHideAddPostButton});
+  final Function? handleNaviTapped;
+  const MediaGalleryPostScreen({super.key, this.handleNaviTapped});
 
   @override
   State<MediaGalleryPostScreen> createState() => _MediaGalleryPostScreenState();
@@ -216,7 +216,13 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
           title: Row(
             children: [
               GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    if (widget.handleNaviTapped != null) {
+                      widget.handleNaviTapped!();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
                   child: const Icon(
                     Icons.close,
                     size: 30,
@@ -287,31 +293,30 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                               });
                             },
                             items: albumList
-                                    .map<DropdownMenuItem<AssetPathEntity>>(
-                                        (AssetPathEntity album) {
-                                    return DropdownMenuItem<AssetPathEntity>(
-                                      value: album,
-                                      child: Row(
-                                        children: [
-                                          Text(album.name),
-                                          const SizedBox(
-                                            width: 8,
-                                          ),
-                                          FutureBuilder(
-                                            future: album.assetCountAsync,
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return Text(
-                                                    snapshot.data.toString());
-                                              } else {
-                                                return const Text('haghaha');
-                                              }
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
+                                .map<DropdownMenuItem<AssetPathEntity>>(
+                                    (AssetPathEntity album) {
+                              return DropdownMenuItem<AssetPathEntity>(
+                                value: album,
+                                child: Row(
+                                  children: [
+                                    Text(album.name),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    FutureBuilder(
+                                      future: album.assetCountAsync,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Text(snapshot.data.toString());
+                                        } else {
+                                          return const Text('haghaha');
+                                        }
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),

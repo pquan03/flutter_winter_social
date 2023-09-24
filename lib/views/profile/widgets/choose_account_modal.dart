@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class ChooseAccountModalWidget extends StatelessWidget {
   const ChooseAccountModalWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<AuthProvider>(context).auth.user!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Wrap(
         children: [
-          buildAccountTile(),
+          buildAccountTile(currentUser.username!, currentUser.avatar!),
           const Divider(),
           buildAddAccountTile(),
           const Divider(),
@@ -19,10 +22,13 @@ class ChooseAccountModalWidget extends StatelessWidget {
     );
   }
 
-  Widget buildAccountTile() {
+  Widget buildAccountTile(String username, String avatar) {
     return ListTile(
-      leading: const Icon(Icons.person),
-      title: const Text('hiimwinter03'),
+      leading: CircleAvatar(
+        radius: 20,
+        backgroundImage: NetworkImage(avatar),
+      ),
+      title: Text(username),
       onTap: () {},
     );
   }

@@ -11,8 +11,8 @@ import 'package:insta_node_app/views/add/screens/add_story/show_stories.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
-  final Function? handleHideAddPostButton;
-  const MediaGalleryStoryScreen({super.key, this.handleHideAddPostButton});
+  final Function? handleNaviTapped;
+  const MediaGalleryStoryScreen({super.key, this.handleNaviTapped});
 
   @override
   State<MediaGalleryStoryScreen> createState() =>
@@ -110,7 +110,13 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
         title: Row(
           children: [
             GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () {
+                  if (widget.handleNaviTapped != null) {
+                    widget.handleNaviTapped!();
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
                 child: const Icon(
                   Icons.close,
                   color: Colors.white,

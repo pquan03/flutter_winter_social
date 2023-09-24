@@ -18,8 +18,6 @@ class SavedScreen extends StatefulWidget {
   State<SavedScreen> createState() => _SavedScreenState();
 }
 
-/// [AnimationController]s can be created with `vsync: this` because of
-/// [TickerProviderStateMixin].
 class _SavedScreenState extends State<SavedScreen>
     with TickerProviderStateMixin {
   late final TabController _tabController;
@@ -43,40 +41,6 @@ class _SavedScreenState extends State<SavedScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  void handleGetSavedReel() async {
-    final accessToken =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
-    final res = await ReelApi().getSavedReel(accessToken!);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _reels = [...res];
-      });
-    }
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void handleGetSavedPost() async {
-    final accessToken =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
-    final res = await PostApi().getSavedPosts(accessToken!);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _posts = [...res];
-      });
-    }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -127,7 +91,6 @@ class _SavedScreenState extends State<SavedScreen>
                 )
               : SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  // controller: _scrollController,
                   child: StaggeredGrid.count(
                     crossAxisCount: 3,
                     mainAxisSpacing: 2,
@@ -218,5 +181,39 @@ class _SavedScreenState extends State<SavedScreen>
         ],
       ),
     );
+  }
+
+  void handleGetSavedReel() async {
+    final accessToken =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
+    final res = await ReelApi().getSavedReel(accessToken!);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _reels = [...res];
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void handleGetSavedPost() async {
+    final accessToken =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken;
+    final res = await PostApi().getSavedPosts(accessToken!);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _posts = [...res];
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 }

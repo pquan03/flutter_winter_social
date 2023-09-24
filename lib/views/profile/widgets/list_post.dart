@@ -8,7 +8,11 @@ class ListPostProfileWiget extends StatelessWidget {
   final bool isLoading;
   final List<Post> posts;
   final bool isLoadMore;
-  const ListPostProfileWiget({super.key, required this.isLoadMore, required this.isLoading, required this.posts});
+  const ListPostProfileWiget(
+      {super.key,
+      required this.isLoadMore,
+      required this.isLoading,
+      required this.posts});
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +68,9 @@ class ListPostProfileWiget extends StatelessWidget {
                                         )));
                               },
                               child: ImageHelper.loadImageNetWork(
-                                  posts[e.key].images![0],
-                                  fit: BoxFit.cover,
-                                  )),
+                                posts[e.key].images!.first,
+                                fit: BoxFit.cover,
+                              )),
                         );
                       }).toList()
                     ],

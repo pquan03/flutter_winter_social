@@ -9,10 +9,10 @@ import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/utils/notifi_config.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 import 'package:insta_node_app/views/auth/screens/splash.dart';
-import 'package:insta_node_app/views/comment/bloc/chat_bloc/chat_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/noti_bloc/noti_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/online_bloc/oneline_bloc.dart';
-import 'package:insta_node_app/views/comment/bloc/simple_bloc_observer.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/bloc/noti_bloc/noti_bloc.dart';
+import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
+import 'package:insta_node_app/bloc/simple_bloc_observer.dart';
 import 'package:provider/provider.dart';
 
 void main() {

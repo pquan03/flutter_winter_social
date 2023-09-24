@@ -11,13 +11,6 @@ class ThemeClass {
     iconTheme: const IconThemeData(color: Colors.black),
     brightness: Brightness.light,
     indicatorColor: Colors.black,
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: Colors.black,
-      linearMinHeight: 2,
-      circularTrackColor: Colors.black,
-      refreshBackgroundColor: Colors.black,
-      linearTrackColor: Colors.transparent,
-    ),
     primaryColor: Colors.white,
     scaffoldBackgroundColor: Colors.white,
     textTheme: const TextTheme(
@@ -61,13 +54,6 @@ class ThemeClass {
     brightness: Brightness.dark,
     primaryColor: Colors.black,
     indicatorColor: Colors.white,
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: Colors.white,
-      linearMinHeight: 2,
-      circularTrackColor: Colors.white,
-      refreshBackgroundColor: Colors.white,
-      linearTrackColor: Colors.transparent,
-    ),
     scaffoldBackgroundColor: Colors.black,
     textTheme: const TextTheme(
       displayLarge: TextStyle(

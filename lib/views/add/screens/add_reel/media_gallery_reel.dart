@@ -9,8 +9,8 @@ import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryReelScreen extends StatefulWidget {
-  final Function? handleHideAddPostButton;
-  const MediaGalleryReelScreen({super.key, this.handleHideAddPostButton});
+  final Function? handleNaviTapped;
+  const MediaGalleryReelScreen({super.key, this.handleNaviTapped});
   @override
   State<MediaGalleryReelScreen> createState() => _MediaGalleryReelScreenState();
 }
@@ -37,10 +37,9 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
       });
     });
     _scrollController.addListener(() {
-      widget.handleHideAddPostButton!();
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-            print('load more');
+        print('load more');
         MediaServices()
             .loadAssets(selectedAlbum!, _currentPage + 1)
             .then((value) {
@@ -62,16 +61,15 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
 
   void handleRecordVideo() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? cameraVideo = await picker.pickVideo(source: ImageSource.camera);
+    final XFile? cameraVideo =
+        await picker.pickVideo(source: ImageSource.camera);
     if (cameraVideo == null) return;
     // convert xfile to file
     final convertToFile = File(cameraVideo.path);
-    if(!mounted) return;
-    Navigator.of(context).push(
-      createRoute(PreviewEditVideoScreen(videoFile: convertToFile)));
+    if (!mounted) return;
+    Navigator.of(context)
+        .push(createRoute(PreviewEditVideoScreen(videoFile: convertToFile)));
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +82,13 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
         title: Row(
           children: [
             GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () {
+                  if (widget.handleNaviTapped != null) {
+                    widget.handleNaviTapped!();
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
                 child: const Icon(
                   Icons.close,
                   size: 30,
@@ -98,7 +102,10 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'New reel',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -107,68 +114,76 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Container(
-                height: 50,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    DropdownButton<AssetPathEntity>(
-                      dropdownColor: Colors.black,
-                      value: selectedAlbum,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                      onChanged: (AssetPathEntity? value) async {
-                        setState(() {
-                          selectedAlbum = value;
-                        });
-                        MediaServices()
-                            .loadAssets(selectedAlbum!, 1)
-                            .then((value) {
-                          setState(() {
-                            assetList = value;
-                          });
-                        });
-                      },
-                      items: albumList.map<DropdownMenuItem<AssetPathEntity>>(
-                          (AssetPathEntity album) {
-                        return DropdownMenuItem<AssetPathEntity>(
-                          value: album,
-                          child: Row(
-                            children: [
-                              Text(album.name,),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              FutureBuilder(
-                                future: album.assetCountAsync,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return Text(snapshot.data.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),);
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                              )
-                            ],
+            height: 50,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                DropdownButton<AssetPathEntity>(
+                  dropdownColor: Colors.black,
+                  value: selectedAlbum,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                  onChanged: (AssetPathEntity? value) async {
+                    setState(() {
+                      selectedAlbum = value;
+                    });
+                    MediaServices().loadAssets(selectedAlbum!, 1).then((value) {
+                      setState(() {
+                        assetList = value;
+                      });
+                    });
+                  },
+                  items: albumList.map<DropdownMenuItem<AssetPathEntity>>(
+                      (AssetPathEntity album) {
+                    return DropdownMenuItem<AssetPathEntity>(
+                      value: album,
+                      child: Row(
+                        children: [
+                          Text(
+                            album.name,
                           ),
-                        );
-                      }).toList(),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: handleRecordVideo,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            )),
-                        child: const Icon(Icons.camera_alt_outlined),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          FutureBuilder(
+                            future: album.assetCountAsync,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text(
+                                  snapshot.data.toString(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            },
+                          )
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
-              ),
+                const Spacer(),
+                InkWell(
+                  onTap: handleRecordVideo,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: ShapeDecoration(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        )),
+                    child: const Icon(Icons.camera_alt_outlined),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: Stack(
@@ -219,11 +234,11 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
       children: [
         Positioned.fill(
           child: GestureDetector(
-            onTap: ()async {
+            onTap: () async {
               final convertToFile = await assetEntity.originFile;
-              if(!mounted) return;
-              Navigator.of(context).push(
-              createRoute(PreviewEditVideoScreen(videoFile: convertToFile!)));
+              if (!mounted) return;
+              Navigator.of(context).push(createRoute(
+                  PreviewEditVideoScreen(videoFile: convertToFile!)));
             },
             child: AssetEntityImage(
               assetEntity,

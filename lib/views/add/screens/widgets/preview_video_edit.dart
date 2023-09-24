@@ -52,7 +52,6 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
               reelFile: widget.videoFile,
               backgroundImage: buffer,
             )));
-    // Now you have saved the captured frame as an image in the filePath
   }
 
   @override
@@ -131,22 +130,25 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
                     decoration: BoxDecoration(
                         color: Colors.lightBlue,
                         borderRadius: BorderRadius.circular(20)),
-                    child: _isLoading ? Center(child: CircularProgressIndicator()) :  Row(
-                      children: const [
-                        Text(
-                          'Next',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
+                    child: _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : Row(
+                            children: const [
+                              Text(
+                                'Next',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                              )
+                            ],
+                          ),
                   ),
                 )
               ],

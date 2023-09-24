@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/post.dart';
+import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
@@ -21,7 +22,9 @@ class _LikesPostScreenState extends State<LikesPostScreen> {
 
   @override
   void initState() {
-    handleGetUserLikes();
+    Future.delayed(const Duration(milliseconds: 400), () {
+      handleGetUserLikes();
+    });
     _searchController = TextEditingController();
     super.initState();
   }
@@ -30,21 +33,6 @@ class _LikesPostScreenState extends State<LikesPostScreen> {
   void dispose() {
     super.dispose();
     _searchController.dispose();
-  }
-
-  void handleGetUserLikes() async {
-    final token =
-        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final res = await UserApi().getInfoListFollow(widget.likes, token);
-    if (res is String) {
-      if (!mounted) return;
-      showSnackBar(context, 'Error', res);
-    } else {
-      setState(() {
-        _userLikes = [..._userLikes, ...res];
-        _isLoading = false;
-      });
-    }
   }
 
   @override
@@ -104,71 +92,85 @@ class _LikesPostScreenState extends State<LikesPostScreen> {
                               itemCount: _userLikes.length,
                               itemBuilder: (context, index) {
                                 final user = _userLikes[index];
-                                return ListTile(
-                                  onTap: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (_) => OtherProfileScreen(
-                                              userId: user.sId!,
-                                              ))),
-                                  leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(user.avatar!),
-                                  ),
-                                  title: Text(user.username!),
-                                  subtitle: Text(user.fullname!),
-                                  trailing: currentUser.sId == user.sId
-                                      ? null
-                                      : currentUser.followers!.contains(user.sId!)
-                                          ? ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.grey[350],
-                                            ),
-                                              onPressed: () async {
-                                                final res = await UserApi()
-                                                    .unFollowUser(
-                                                        user.sId!, token);
-                                                if (res is String) {
-                                                  if (!mounted) return;
-                                                  showSnackBar(
-                                                      context, 'Error', res);
-                                                } else {
-                                                  setState(() {
-                                                    _userLikes.removeWhere(
-                                                        (element) =>
-                                                            element.sId ==
-                                                            user.sId);
-                                                  });
-                                                }
-                                              },
-                                              child: Text('Following', style: TextStyle(color: Colors.black),),
-                                          )
-                                          : ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.grey[350],
-                                            ),
-                                              onPressed: () async {
-                                                final res = await UserApi()
-                                                    .followUser(
-                                                        user.sId!, token);
-                                                if (res is String) {
-                                                  if (!mounted) return;
-                                                  showSnackBar(
-                                                      context, 'Error', res);
-                                                } else {
-                                                  setState(() {
-                                                    _userLikes.removeWhere(
-                                                        (element) =>
-                                                            element.sId ==
-                                                            user.sId);
-                                                  });
-                                                }
-                                              },
-                                              child: Text('Follow', style: TextStyle(color: Colors.black),),
-                                          ),
-                                );
+                                return buildUserCard(user, currentUser, token);
                               },
                             ),
                           ),
                         ],
                       )));
+  }
+
+  ListTile buildUserCard(UserPost user, User currentUser, String token) {
+    return ListTile(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => OtherProfileScreen(
+                userId: user.sId!,
+              ))),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(user.avatar!),
+      ),
+      title: Text(user.username!),
+      subtitle: Text(user.fullname!),
+      trailing: currentUser.sId == user.sId
+          ? null
+          : currentUser.followers!.contains(user.sId!)
+              ? ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[350],
+                  ),
+                  onPressed: () async {
+                    final res = await UserApi().unFollowUser(user.sId!, token);
+                    if (res is String) {
+                      if (!mounted) return;
+                      showSnackBar(context, 'Error', res);
+                    } else {
+                      setState(() {
+                        _userLikes
+                            .removeWhere((element) => element.sId == user.sId);
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Following',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                )
+              : ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[350],
+                  ),
+                  onPressed: () async {
+                    final res = await UserApi().followUser(user.sId!, token);
+                    if (res is String) {
+                      if (!mounted) return;
+                      showSnackBar(context, 'Error', res);
+                    } else {
+                      setState(() {
+                        _userLikes
+                            .removeWhere((element) => element.sId == user.sId);
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Follow',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+    );
+  }
+
+  void handleGetUserLikes() async {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res = await UserApi().getInfoListFollow(widget.likes, token);
+    if (res is String) {
+      if (!mounted) return;
+      showSnackBar(context, 'Error', res);
+    } else {
+      setState(() {
+        _userLikes = [..._userLikes, ...res];
+        _isLoading = false;
+      });
+    }
   }
 }

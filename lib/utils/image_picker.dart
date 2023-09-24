@@ -27,13 +27,6 @@ Future<dynamic> imageUpload(dynamic file, bool isUint8List) async {
   }
 }
 
-Future<dynamic> imagePostUpload(dynamic file, bool isUint8List) async {
-  var data = await upload(isUint8List ? file : file.readAsBytesSync());
-  return {
-    'url': data['url'],
-    'public_id': data['public_id'],
-  };
-}
 
 Future<dynamic> upload(dynamic file) async {
   final base64Img = base64Encode(file);

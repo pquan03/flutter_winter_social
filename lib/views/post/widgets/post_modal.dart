@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 class PostModal extends StatefulWidget {
   final String postId;
   final String postUserId;
-  final Function(String id) deletePost;
+  final Function deletePost;
   final Function savePost;
   final bool isSaved;
   const PostModal({
@@ -148,15 +148,21 @@ class _PostModalState extends State<PostModal> {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Cancel')),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
                               TextButton(
                                   onPressed: () async {
-                                    await widget.deletePost(widget.postId);
+                                    await widget.deletePost();
                                     if (!mounted) return;
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Delete')),
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  )),
                             ],
                           ));
                 }, true)
@@ -178,20 +184,18 @@ class _PostModalState extends State<PostModal> {
             Icon(
               icon,
               size: 30,
-              color: isImportant
-                  ? Theme.of(context).colorScheme.error
-                  : null,
+              color: isImportant ? Theme.of(context).colorScheme.error : null,
             ),
             const SizedBox(
               width: 16,
             ),
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18,
-              color: isImportant
-                  ? Theme.of(context).colorScheme.error
-                  : null
-              ),
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                  color:
+                      isImportant ? Theme.of(context).colorScheme.error : null),
             )
           ],
         ),

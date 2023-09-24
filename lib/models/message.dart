@@ -1,29 +1,30 @@
 import 'package:insta_node_app/models/conversation.dart';
+import 'package:insta_node_app/models/post.dart';
 
 class Messages {
   String? sId;
   String? conversationId;
   String? senderId;
   String? recipientId;
-  // String? linkPost;
+  Post? linkPost;
   String? text;
   List<String>? media;
   String? createdAt;
   String? updatedAt;
   Call? call;
 
-  Messages(
-      {this.sId,
-      this.conversationId,
-      this.senderId,
-      this.recipientId,
-      this.text,
-      // this.linkPost,
-      this.media,
-      this.createdAt,
-      this.updatedAt,
-      this.call,
-      });
+  Messages({
+    this.sId,
+    this.conversationId,
+    this.senderId,
+    this.recipientId,
+    this.text,
+    this.linkPost,
+    this.media,
+    this.createdAt,
+    this.updatedAt,
+    this.call,
+  });
 
   Messages.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -31,7 +32,8 @@ class Messages {
     senderId = json['senderId'];
     recipientId = json['recipientId'];
     text = json['text'] ?? '';
-    // linkPost = json['linkPost'] ?? '';
+    linkPost =
+        json['linkPost'] != null ? new Post.fromJson(json['linkPost']) : null;
     media = json['media'].cast<String>();
     call = json['call'] != null ? new Call.fromJson(json['call']) : null;
     createdAt = json['createdAt'];
@@ -45,7 +47,9 @@ class Messages {
     data['senderId'] = this.senderId;
     data['recipientId'] = this.recipientId;
     data['text'] = this.text;
-    // data['linkPost'] = this.linkPost;
+    if (this.linkPost != null) {
+      data['linkPost'] = this.linkPost!.toJson();
+    }
     data['media'] = this.media;
     if (this.call != null) {
       data['call'] = this.call!.toJson();
