@@ -132,6 +132,7 @@ class _WinterStoriesItemState extends State<WinterStoriesItem> {
                   left: 10.0,
                   right: 10.0,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
                         children: widget.stories.stories!.map((i) {
@@ -147,7 +148,11 @@ class _WinterStoriesItemState extends State<WinterStoriesItem> {
                           horizontal: 1.5,
                           vertical: 10.0,
                         ),
-                        child: UserInfo(user: widget.stories.user!),
+                        child: UserInfo(
+                          user: widget.stories.user!,
+                          createdAt:
+                              widget.stories.stories![_currentPage].createdAt!,
+                        ),
                       ),
                     ],
                   ),

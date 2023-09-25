@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,121 +32,130 @@ class _PreviewScreenState extends State<PreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          image: NetworkImage(
+            widget.imagesString![widget.initpage],
+            scale: 1,
+          ),
+        )),
         padding: const EdgeInsets.only(top: 30),
-        color: Colors.transparent,
         alignment: Alignment.center,
-        child: widget.imagesFile != null
-            ? CarouselSlider(
-                disableGesture: true,
-                options: CarouselOptions(
-                    onPageChanged: (index, reason) {},
-                    onScrolled: (_) async {},
-                    enableInfiniteScroll: false,
-                    viewportFraction: 0.9),
-                items: widget.imagesFile!.map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Hero(
-                        tag: i,
-                        child: AssetEntityImage(
-                          i,
-                          isOriginal: false,
-                          width: double.infinity,
-                          fit: BoxFit.contain,
-                          thumbnailSize: ThumbnailSize.square(1000),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              )
-            : widget.imagesBytes != null
-                ? CarouselSlider(
-                    disableGesture: true,
-                    options: CarouselOptions(
-                        onPageChanged: (index, reason) {},
-                        onScrolled: (_) async {},
-                        enableInfiniteScroll: false,
-                        viewportFraction: 0.9),
-                    items: widget.imagesBytes!.map((i) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Hero(
-                            tag: i,
-                            child: GestureDetector(
-                              onVerticalDragUpdate: (details) {
-                                if (details.delta.dy > 10) {
-                                  Navigator.pop(context);
-                                }
-                              },
-                              child: ImageHelper.loadImageMemory(
-                                i,
-                                width: double.infinity,
-                                height: 200,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList())
-                : Column(
-                    children: [
-                      Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: Icon(
-                                  Icons.close,
-                                  size: 30,
-                                ))
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: CarouselSlider(
-                            disableGesture: true,
-                            options: CarouselOptions(
-                              initialPage: widget.initpage,
-                              onPageChanged: (index, reason) {},
-                              aspectRatio: 1,
-                              viewportFraction: 1,
-                              enableInfiniteScroll: false,
-                              height: double.infinity,
-                            ),
-                            items: widget.imagesString!.map((i) {
-                              return Builder(
-                                builder: (BuildContext context) {
-                                  return Hero(
-                                    tag: i,
-                                    child: GestureDetector(
-                                      onVerticalDragUpdate: (details) {
-                                        if (details.delta.dy > 10) {
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                      child: ImageHelper.loadImageNetWork(i,
-                                          fit: BoxFit.contain,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                    ),
-                                  );
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: widget.imagesFile != null
+              ? CarouselSlider(
+                  disableGesture: true,
+                  options: CarouselOptions(
+                      onPageChanged: (index, reason) {},
+                      onScrolled: (_) async {},
+                      enableInfiniteScroll: false,
+                      viewportFraction: 0.9),
+                  items: widget.imagesFile!.map((i) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Hero(
+                          tag: i,
+                          child: AssetEntityImage(
+                            i,
+                            isOriginal: false,
+                            width: double.infinity,
+                            fit: BoxFit.contain,
+                            thumbnailSize: ThumbnailSize.square(1000),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                )
+              : widget.imagesBytes != null
+                  ? CarouselSlider(
+                      disableGesture: true,
+                      options: CarouselOptions(
+                          onPageChanged: (index, reason) {},
+                          onScrolled: (_) async {},
+                          enableInfiniteScroll: false,
+                          viewportFraction: 0.9),
+                      items: widget.imagesBytes!.map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Hero(
+                              tag: i,
+                              child: GestureDetector(
+                                onVerticalDragUpdate: (details) {
+                                  if (details.delta.dy > 10) {
+                                    Navigator.pop(context);
+                                  }
                                 },
-                              );
-                            }).toList(),
+                                child: ImageHelper.loadImageMemory(
+                                  i,
+                                  width: double.infinity,
+                                  height: 200,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList())
+                  : Column(
+                      children: [
+                        Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: 30,
+                                  ))
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: CarouselSlider(
+                              disableGesture: true,
+                              options: CarouselOptions(
+                                initialPage: widget.initpage,
+                                onPageChanged: (index, reason) {},
+                                aspectRatio: 1,
+                                viewportFraction: 1,
+                                enableInfiniteScroll: false,
+                                height: double.infinity,
+                              ),
+                              items: widget.imagesString!.map((i) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Hero(
+                                      tag: i,
+                                      child: GestureDetector(
+                                        onVerticalDragUpdate: (details) {
+                                          if (details.delta.dy > 10) {
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: ImageHelper.loadImageNetWork(i,
+                                            fit: BoxFit.contain,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+        ),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class Repository {
   // static const String baseUrl = 'https://test-server-insta-demo1.onrender.com/api';
-  static const String baseUrl = 'http://192.168.110.101:5000/api';
+  static const String baseUrl = 'http://192.168.110.103:5000/api';
   final Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
     HttpHeaders.acceptHeader: 'application/json',
