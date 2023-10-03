@@ -5,7 +5,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:insta_node_app/models/post.dart';
 
-class CommentEvent extends Equatable {
+abstract class CommentEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }

@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:insta_node_app/models/notify.dart';
 
 
-class NotiState extends Equatable {
+abstract class NotiState extends Equatable {
   const NotiState();
   @override
   List<Object?> get props => [];

@@ -1,8 +1,6 @@
-
-
 import 'package:equatable/equatable.dart';
 
-class OnlineEvent extends Equatable {
+abstract class OnlineEvent extends Equatable {
   @override
   List<Object> get props => [];
 }

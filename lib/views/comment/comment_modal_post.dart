@@ -22,18 +22,21 @@ class CommentModal extends StatefulWidget {
 }
 
 class _CommentModalState extends State<CommentModal> {
-  final TextEditingController _commentController = TextEditingController();
+  late TextEditingController _commentController;
   final FocusNode _commentFocus = FocusNode();
   double _ratio = 0.5;
   dynamic tag;
+  bool _isShowReply = false;
 
   @override
   void initState() {
     super.initState();
+    _commentController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _commentController.dispose();
     super.dispose();
   }
 
@@ -41,6 +44,12 @@ class _CommentModalState extends State<CommentModal> {
     _commentFocus.requestFocus();
     setState(() {
       tag = data;
+    });
+  }
+
+  void handleChangeShowReply(bool value) {
+    setState(() {
+      _isShowReply = value;
     });
   }
 
@@ -54,7 +63,7 @@ class _CommentModalState extends State<CommentModal> {
             postId: widget.post.sId!, token: accessToken, type: 'post')),
       child: AnimatedSize(
         duration: Duration(milliseconds: 300),
-        curve: Curves.ease,
+        curve: Curves.easeInOut,
         child: SizedBox(
           height: MediaQuery.of(context).size.height *
               (widget.ratio == 1 ? widget.ratio : _ratio),
@@ -90,6 +99,7 @@ class _CommentModalState extends State<CommentModal> {
                             itemCount: commentState.listComment.length,
                             itemBuilder: (context, index) {
                               return CommentCard(
+                                isShowReply: _isShowReply,
                                 comment: commentState.listComment[index],
                                 handleClickReply: handleClickReply,
                               );
@@ -171,9 +181,10 @@ class _CommentModalState extends State<CommentModal> {
                                             postId: widget.post.sId!,
                                             content: _commentController.text,
                                             tag: tag.user));
-                                    _commentController.text = '';
                                     setState(() {
+                                      _commentController.text = '';
                                       tag = null;
+                                      _isShowReply = true;
                                     });
                                   } else {
                                     // final msg = {

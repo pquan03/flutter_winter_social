@@ -10,7 +10,12 @@ import 'package:provider/provider.dart';
 class CommentCard extends StatefulWidget {
   final Comment comment;
   final Function handleClickReply;
-  const CommentCard({super.key, required this.comment, required this.handleClickReply});
+  final bool? isShowReply;
+  const CommentCard(
+      {super.key,
+      required this.comment,
+      required this.handleClickReply,
+      this.isShowReply});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -20,6 +25,21 @@ class _CommentCardState extends State<CommentCard> {
   bool _isLoadReply = false;
   bool _isShowReply = false;
   int _countReply = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (widget.isShowReply != null && widget.isShowReply == true) {
+      setState(() {
+        _isLoadReply = true;
+      });
+    }
+    super.didChangeDependencies();
+  }
 
   void handleLikeComment(String uId, String token) async {
     if (widget.comment.likes!.contains(uId)) {
@@ -49,30 +69,30 @@ class _CommentCardState extends State<CommentCard> {
     setState(() {
       _isLoadReply = true;
     });
-      await Future.delayed(Duration(milliseconds: 500));
-      if(widget.comment.reply!.length  - _countReply <= 4) {
-        setState(() {
-          _countReply += widget.comment.reply!.length - _countReply;
-          _isShowReply = true;
-          _isLoadReply = false;
-        });
-      } else {
+    await Future.delayed(Duration(milliseconds: 500));
+    if (widget.comment.reply!.length - _countReply <= 4) {
+      setState(() {
+        _countReply += widget.comment.reply!.length - _countReply;
+        _isShowReply = true;
+        _isLoadReply = false;
+      });
+    } else {
       setState(() {
         _countReply += 4;
         _isShowReply = true;
         _isLoadReply = false;
       });
-      }
     }
-  
-
+  }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
     final accessToken = Provider.of<AuthProvider>(context).auth.accessToken!;
     return Padding(
-      padding: widget.comment.tag == null ? const EdgeInsets.all(16) : const EdgeInsets.symmetric(vertical: 16),
+      padding: widget.comment.tag == null
+          ? const EdgeInsets.all(16)
+          : const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -94,36 +114,36 @@ class _CommentCardState extends State<CommentCard> {
                         children: [
                           Text(
                             widget.comment.user!.username!,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
                             width: 8,
                           ),
-                          widget.comment.tag != null ? 
-                          RichText(
-                            text: TextSpan(
-                              text: '@${widget.comment.tag!.username!} ',
-                              style: TextStyle(color: Colors.blue),
-                              children: [
-                                TextSpan(
-                                  text: widget.comment.content!,
+                          widget.comment.tag != null
+                              ? RichText(
+                                  text: TextSpan(
+                                      text:
+                                          '@${widget.comment.tag!.username!} ',
+                                      style: TextStyle(color: Colors.blue),
+                                      children: [
+                                        TextSpan(
+                                            text: widget.comment.content!,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ))
+                                      ]),
+                                )
+                              : Text(
+                                  widget.comment.content!,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Theme.of(context).colorScheme.secondary,
-                                  )
-                                )
-                              ]
-                            ),
-                          )
-                          :
-                          Text(
-                            widget.comment.content!,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
                         ],
                       ),
                     ),
@@ -179,18 +199,25 @@ class _CommentCardState extends State<CommentCard> {
                   height: 8,
                 ),
                 AnimatedCrossFade(
-                        duration: const Duration(milliseconds: 300),
-                        crossFadeState: _isShowReply == true && widget.comment.reply!.isNotEmpty
-                            ? CrossFadeState.showFirst
-                            : CrossFadeState.showSecond,
-                        firstChild: Column(
-                          children: [
-                            ...(widget.comment.reply!).sublist(0, _countReply).map((e) => CommentCard(comment: e, handleClickReply: widget.handleClickReply,))
-                          ],
-                        ),
-                        secondChild: Container(),
-                      ),
-                  widget.comment.reply!.length - _countReply > 0 && widget.comment.tag == null 
+                  duration: const Duration(milliseconds: 300),
+                  crossFadeState:
+                      _isShowReply == true && widget.comment.reply!.isNotEmpty
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                  firstChild: Column(
+                    children: [
+                      ...(widget.comment.reply!)
+                          .sublist(0, _countReply)
+                          .map((e) => CommentCard(
+                                comment: e,
+                                handleClickReply: widget.handleClickReply,
+                              ))
+                    ],
+                  ),
+                  secondChild: Container(),
+                ),
+                widget.comment.reply!.length - _countReply > 0 &&
+                        widget.comment.tag == null
                     ? GestureDetector(
                         onTap: handleLoadReplyComment,
                         child: Row(children: <Widget>[

@@ -1,10 +1,9 @@
-
-
 import 'package:insta_node_app/models/comment.dart';
 
 abstract class CommentState {
   final List<Comment>? comments;
-  const CommentState({this.comments});
+  final String? requestId;
+  const CommentState({this.comments, this.requestId});
   @override
   List<Object?> get props => [];
 }
@@ -22,7 +21,11 @@ class CommentStateError extends CommentState {
 
 class CommentStateSuccess extends CommentState {
   final List<Comment> listComment;
-  CommentStateSuccess({required this.listComment}): super(comments: listComment);
+  final String? successRequestId;
+  CommentStateSuccess({
+    required this.listComment,
+    this.successRequestId,
+  });
   @override
-  List<Object?> get props => [comments];
+  List<Object?> get props => [listComment, successRequestId];
 }

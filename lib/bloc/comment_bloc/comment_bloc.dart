@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/bloc/comment_bloc/comment_event.dart';
 import 'package:insta_node_app/bloc/comment_bloc/comment_state.dart';
-import 'package:insta_node_app/models/comment.dart';
 import 'package:insta_node_app/recources/comment_api.dart';
 
 class CommentBloc extends Bloc<CommentEvent, CommentState> {
@@ -10,20 +9,25 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     on<CreateCommentEvent>(_onCreateComment);
     on<CreateReplyEvent>(_onCreateReply);
   }
-  List<Comment> _comments = [];
-  List<Comment> get items => _comments;
 
   void _onGetComments(
       CommentEventFetch event, Emitter<CommentState> emit) async {
+    print(event.postId);
+    final currentState = this.state is CommentStateSuccess ? this.state : null;
+    if (currentState?.requestId != null &&
+        currentState?.requestId == event.postId) {
+      print('requestId: ${currentState?.requestId} - postId: ${event.postId}');
+      return;
+    }
     emit(CommentStateLoading());
     await Future.delayed(Duration(milliseconds: 300));
-    // delay 1s to show loading
     if (event.type == 'post') {
       final res =
           await CommentApi().getCommentsByPostId(event.postId, event.token);
       if (res is List) {
-        _comments.addAll([...res]);
-        emit(CommentStateSuccess(listComment: _comments));
+        emit(CommentStateSuccess(
+            listComment: [...currentState?.comments ?? [], ...res],
+            successRequestId: event.postId));
       } else {
         emit(CommentStateError(error: res));
       }
@@ -31,8 +35,9 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
       final res =
           await CommentApi().getCommentsByReelId(event.postId, event.token);
       if (res is List) {
-        _comments.addAll([...res]);
-        emit(CommentStateSuccess(listComment: _comments));
+        emit(CommentStateSuccess(
+            listComment: [...currentState?.comments ?? [], ...res],
+            successRequestId: event.postId));
       } else {
         emit(CommentStateError(error: res));
       }
@@ -50,16 +55,16 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
       if (res is String) {
         emit(CommentStateError(error: res));
       } else {
-        _comments.insert(0, res);
-        emit(CommentStateSuccess(listComment: _comments));
+        final state = this.state as CommentStateSuccess;
+        emit(CommentStateSuccess(listComment: [...state.listComment, res]));
       }
     } else {
       final res = await CommentApi().createCommentReel(data, event.token);
       if (res is String) {
         emit(CommentStateError(error: res));
       } else {
-        _comments.insert(0, res);
-        emit(CommentStateSuccess(listComment: _comments));
+        final state = this.state as CommentStateSuccess;
+        emit(CommentStateSuccess(listComment: [...state.listComment, res]));
       }
     }
   }
@@ -76,13 +81,15 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     if (res is String) {
       emit(CommentStateError(error: res));
     } else {
-      _comments = _comments.map((e) {
+      final state = this.state as CommentStateSuccess;
+      final listComments = state.listComment;
+      final temp = listComments.map((e) {
         if (e.sId == event.commentRootId) {
           e.reply!.insert(0, res);
         }
         return e;
       }).toList();
-      emit(CommentStateSuccess(listComment: _comments));
+      emit(CommentStateSuccess(listComment: temp));
     }
   }
 }

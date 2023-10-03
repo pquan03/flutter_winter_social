@@ -1,9 +1,7 @@
-
-
 import 'package:equatable/equatable.dart';
 import 'package:insta_node_app/models/message.dart';
 
-class ChatEvent extends Equatable {
+abstract class ChatEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }

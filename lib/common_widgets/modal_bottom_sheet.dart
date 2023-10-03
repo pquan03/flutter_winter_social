@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/views/keep_alive_screen.dart';
 
-void showModalBottomSheetCustom(
-    BuildContext context, Widget child) {
+void showModalBottomSheetCustom(BuildContext context, Widget child) {
   showModalBottomSheet<dynamic>(
       // isDismissible: true,
       isScrollControlled: true,
@@ -15,6 +15,6 @@ void showModalBottomSheetCustom(
           duration: const Duration(milliseconds: 200)),
       context: context,
       builder: (BuildContext context) {
-        return child;
+        return KeepAlivePage(child: child);
       });
 }
