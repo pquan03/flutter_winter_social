@@ -7,7 +7,11 @@ class StoryRenderScreen extends StatefulWidget {
   final Stories stories;
   final Function(int) naviTapped;
   final int currentPage;
-  const StoryRenderScreen({super.key, required this.stories, required this.naviTapped, required this.currentPage});
+  const StoryRenderScreen(
+      {super.key,
+      required this.stories,
+      required this.naviTapped,
+      required this.currentPage});
 
   @override
   State<StoryRenderScreen> createState() => _StoryRenderScreenState();
@@ -21,14 +25,15 @@ class _StoryRenderScreenState extends State<StoryRenderScreen> {
   void initState() {
     super.initState();
     if (widget.stories.stories!.isNotEmpty) {
-      widget.stories.stories!.forEach((element) {
+      for (int i = 0; i < widget.stories.stories!.length; i++) {
+        final element = widget.stories.stories![i];
         if (element.media!.media.contains('video')) {
           storyItems.add(
             StoryItem.pageVideo(
               element.media!.media,
               controller: controller,
-              duration:
-                  Duration(milliseconds: ((element.media!.duration) * 1000).toInt()),
+              duration: Duration(
+                  milliseconds: ((element.media!.duration) * 1000).toInt()),
             ),
           );
         } else {
@@ -40,7 +45,7 @@ class _StoryRenderScreenState extends State<StoryRenderScreen> {
             ),
           ));
         }
-      });
+      }
       setState(() {
         storyItems = storyItems.reversed.toList();
       });
@@ -81,7 +86,8 @@ class _StoryRenderScreenState extends State<StoryRenderScreen> {
                             storyItems: storyItems,
                             controller: controller,
                             onComplete: () {
-                              if(widget.currentPage == widget.stories.stories!.length - 1) {
+                              if (widget.currentPage ==
+                                  widget.stories.stories!.length - 1) {
                                 Navigator.of(context).pop();
                               } else {
                                 widget.naviTapped(widget.currentPage + 1);
@@ -149,9 +155,7 @@ class _StoryRenderScreenState extends State<StoryRenderScreen> {
                     Expanded(
                       child: TextField(
                         readOnly: true,
-                        onTap: () {
-                          
-                        },
+                        onTap: () {},
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),

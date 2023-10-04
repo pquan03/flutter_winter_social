@@ -7,8 +7,8 @@ import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
 import 'package:insta_node_app/views/auth/screens/forgot_password.dart';
 import 'package:insta_node_app/views/auth/screens/main_app.dart';
-import 'package:insta_node_app/views/auth/screens/signup.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/views/auth/screens/signup.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,9 +19,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _accountController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  late TextEditingController _accountController;
+  late TextEditingController _passwordController;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    _accountController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -32,22 +39,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isKeyboardShowing = MediaQuery.of(context).viewInsets.vertical > 0;
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       body: Container(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          shrinkWrap: true,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomLeft,
+                colors: [
+              // instagram gradient color
+              Color(0xFF833AB4).withOpacity(.2),
+              Color(0xFFFD1D1D).withOpacity(.1),
+              Color(0xFFFCAF45).withOpacity(.2),
+            ])),
+        padding: EdgeInsets.all(16),
+        child: Column(
           children: [
             Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.sizeOf(context).height * 0.12),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.sizeOf(context).height * 0.12),
                 alignment: Alignment.bottomCenter,
                 child: ImageHelper.loadImageAsset(AssetHelper.icLogo,
                     height: 60, width: 60)),
-            Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.sizeOf(context).height * 0.12),
+            Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -86,30 +100,48 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                ButtonWidget(
-                  text: 'Create new account',
-                  textColor: Colors.black,
-                  backgroundColor: Colors.transparent,
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const SignUpScreen()));
-                  },
-                  borderColor: Colors.blue,
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Text(
-                  '☂ Winter',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
-            )
+            isKeyboardShowing
+                ? Divider()
+                : SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const SignUpScreen())),
+                          child: Container(
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(24)),
+                              border: Border.all(color: Colors.blue, width: 2),
+                            ),
+                            child: Text(
+                              'Create New Account',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          '☂ Winter',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
           ],
         ),
       ),
@@ -117,10 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      setState(() {
-        _isLoading = true;
-      });
       final res = await AuthApi()
           .loginUser(_accountController.text, _passwordController.text);
       if (!mounted) return;

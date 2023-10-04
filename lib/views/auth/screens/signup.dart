@@ -28,8 +28,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _pageController.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return PageView(
@@ -79,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-   void navigationBackTapped() {
+  void navigationBackTapped() {
     if (_currentIndex > 0) {
       _pageController.jumpToPage(_currentIndex - 1);
     } else {

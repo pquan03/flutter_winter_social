@@ -14,13 +14,14 @@ class TextFormIntput extends StatefulWidget {
 }
 
 class _TextFormIntputState extends State<TextFormIntput> {
-  final FocusNode _focusNode = FocusNode();
+  late FocusNode _focusNode;
   bool _isShowEye = false;
   bool _obscureText = true;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
     _focusNode.addListener(() {
       setState(() {
         _isShowEye = _focusNode.hasFocus;
@@ -37,63 +38,61 @@ class _TextFormIntputState extends State<TextFormIntput> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '${widget.label} cannot be empty';
-        }
-        return null;
-      },
-      focusNode:
-          widget.label.contains('password') || widget.label.contains('Password')
-              ? _focusNode
-              : null,
-      controller: widget.controller,
-      obscureText:
-          widget.label.contains('password') || widget.label.contains('Password')
-              ? _obscureText
-              : false,
-      style: const TextStyle(fontWeight: FontWeight.w500),
-      cursorColor: Colors.green,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
-        ),
-        label: Text(widget.label),
-        filled: true,
-        suffixIcon: _isShowEye
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+            color: _focusNode.hasFocus ? Colors.grey[700]! : Colors.grey[400]!,
+            width: 2),
+      ),
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '${widget.label} cannot be empty';
+          }
+          return null;
+        },
+        focusNode: _focusNode,
+        controller: widget.controller,
+        obscureText: widget.label.contains('password') ||
+                widget.label.contains('Password')
             ? _obscureText
-                ? GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                    child: Icon(
-                      Icons.visibility_off,
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                    child: Icon(
-                      Icons.visibility,
-                    ),
-                  )
-            : null,
+            : false,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        cursorColor: Colors.green,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(0),
+          label: Text(widget.label),
+          filled: true,
+          border: InputBorder.none,
+          fillColor: Colors.transparent,
+          suffixIcon: _isShowEye && widget.label.contains('Password')
+              ? _obscureText
+                  ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                      child: Icon(
+                        Icons.visibility_off,
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                      child: Icon(
+                        Icons.visibility,
+                      ),
+                    )
+              : null,
+        ),
       ),
     );
   }

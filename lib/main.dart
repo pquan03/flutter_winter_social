@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:insta_node_app/constants/themes.dart';
@@ -16,11 +17,16 @@ import 'package:insta_node_app/bloc/simple_bloc_observer.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.red,
+    ),
+  );
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService().initNotification();
   Bloc.observer = SimpleBlocObserver();
   SocketConfig.socket.connect();
-  if(Platform.isAndroid) {
+  if (Platform.isAndroid) {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin
@@ -28,17 +34,19 @@ void main() {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestPermission();
   }
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => AuthProvider()),
-    ChangeNotifierProvider(create: (_) => ThemeModel()),
-  ], child: MultiBlocProvider(
-    providers: [
-      BlocProvider(create: (_) => NotiBloc()),
-      BlocProvider(create: (_) => ChatBloc()),
-      BlocProvider(create: (_) => OnlineBloc()),
-    ],
-    child: const MyApp(),
-  )));
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeModel()),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => NotiBloc()),
+          BlocProvider(create: (_) => ChatBloc()),
+          BlocProvider(create: (_) => OnlineBloc()),
+        ],
+        child: const MyApp(),
+      )));
 }
 
 class MyApp extends StatelessWidget {
@@ -59,8 +67,7 @@ class MyApp extends StatelessWidget {
                 : ThemeMode.dark,
         theme: ThemeClass
             .lightTheme, // applies this theme if the device theme is light mode
-        darkTheme: ThemeClass
-            .darkTheme, 
-        home:  SplashPage());
+        darkTheme: ThemeClass.darkTheme,
+        home: SplashPage());
   }
 }

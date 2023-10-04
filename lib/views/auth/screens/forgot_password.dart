@@ -32,41 +32,50 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        onPageChanged: (value) {
-          setState(() {
-            _currentIndex = value;
-          });
-        },
-        children: [screen1(), screen2()],
-      ),
+    return PageView(
+      controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      onPageChanged: (value) {
+        setState(() {
+          _currentIndex = value;
+        });
+      },
+      children: [screen1(), screen2()],
     );
   }
 
   Widget screen2() {
     return Scaffold(
-        appBar: AppBar(
-            automaticallyImplyLeading: false,
-            centerTitle: false,
-            title: GestureDetector(
-                onTap: () {
-                  if (_currentIndex > 0) {
-                    navigationTapped(_currentIndex - 1);
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  size: 30,
-                ))),
-        body: Padding(
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                // instagram gradient color
+                Color(0xFF833AB4).withOpacity(.2),
+                Color(0xFFFD1D1D).withOpacity(.1),
+                Color(0xFFFCAF45).withOpacity(.2),
+              ])),
           padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              GestureDetector(
+                  onTap: () {
+                    if (_currentIndex > 0) {
+                      navigationTapped(_currentIndex - 1);
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Icon(
+                    Icons.arrow_back,
+                    size: 30,
+                  )),
+              const SizedBox(
+                height: 10,
+              ),
               Container(
                 alignment: Alignment.center,
                 child: Column(
@@ -142,21 +151,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget screen1() {
     return Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: false,
-          title: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(
-                Icons.arrow_back,
-                size: 30,
-              ))),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomLeft,
+                colors: [
+              // instagram gradient color
+              Color(0xFF833AB4).withOpacity(.2),
+              Color(0xFFFD1D1D).withOpacity(.1),
+              Color(0xFFFCAF45).withOpacity(.2),
+            ])),
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 50,
+            ),
+            GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 30,
+                )),
+            const SizedBox(
+              height: 10,
+            ),
             Container(
                 alignment: Alignment.centerLeft,
                 child: Text(

@@ -4,9 +4,6 @@ showSnackBar(BuildContext context, String label, String content) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       showCloseIcon: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
       backgroundColor: label == 'Error' ? Colors.red : Colors.green,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +26,7 @@ showSnackBar(BuildContext context, String label, String content) {
           ),
         ],
       ),
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 5),
     ),
   );
 }

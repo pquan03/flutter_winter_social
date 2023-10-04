@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -246,7 +247,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
               thumbnailSize: const ThumbnailSize.square(1000),
               fit: BoxFit.cover,
               filterQuality: FilterQuality.medium,
-              errorBuilder: (context, error, StackTrace) {
+              errorBuilder: (context, error, stackTrace) {
                 return const Center(child: Text('Error'));
               },
             ),

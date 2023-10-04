@@ -45,11 +45,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
     SocketConfig.socket.on('checkUserOnlineToMe', (data) {
       final onlineBloc = BlocProvider.of<OnlineBloc>(context);
       final state = onlineBloc.state;
-      state.forEach((element) {
-        if (!data.contains(element)) {
-          onlineBloc.add(OnlineEventFetch(listUserId: [element]));
+      for (var i = 0; i < state.length; i++) {
+        if (!data.contains(state[i])) {
+          onlineBloc.add(OnlineEventFetch(listUserId: [state[i]]));
         }
-      });
+      }
     });
     SocketConfig.socket.on('checkUserOnlineToClient', (data) {
       final onlineBloc = BlocProvider.of<OnlineBloc>(context);
@@ -148,7 +148,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
     chatBloc.add(ChatEventFetch(token: token));
   }
 
-    void fetchNotificationData() async {
+  void fetchNotificationData() async {
     final token =
         Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
     final notifiBloc = BlocProvider.of<NotiBloc>(context);

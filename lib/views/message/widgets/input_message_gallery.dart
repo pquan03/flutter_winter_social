@@ -7,7 +7,10 @@ class InputMessageMedia extends StatefulWidget {
   final RequestType requestType;
   final Function(List<AssetEntity>) onSend;
   const InputMessageMedia(
-      {super.key, required this.maxCount, required this.requestType, required this.onSend});
+      {super.key,
+      required this.maxCount,
+      required this.requestType,
+      required this.onSend});
 
   @override
   State<InputMessageMedia> createState() => _InputMessageMediaState();
@@ -69,7 +72,9 @@ class _InputMessageMediaState extends State<InputMessageMedia> {
                     setState(() {
                       selectedAlbum = value;
                     });
-                    MediaServices().loadAssets(selectedAlbum!, _currentPage).then((value) {
+                    MediaServices()
+                        .loadAssets(selectedAlbum!, _currentPage)
+                        .then((value) {
                       setState(() {
                         assetList = value;
                       });
@@ -102,91 +107,97 @@ class _InputMessageMediaState extends State<InputMessageMedia> {
                 ),
               ),
               assetList.isEmpty
-                  ? Center(child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),)
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    )
                   : GridView.builder(
                       shrinkWrap: true,
                       itemCount: assetList.length,
                       physics: const BouncingScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: 2,
                         mainAxisSpacing: 2,
                       ),
                       itemBuilder: (context, index) {
-                          AssetEntity assetEntity = assetList[index];
-                          int idx = selectedAssetList
-                              .indexWhere((element) => element == assetEntity);
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (selectedAssetList.contains(assetEntity)) {
-                                  selectedAssetList.remove(assetEntity);
-                                } else {
-                                  selectedAssetList.add(assetEntity);
-                                }
-                              });
-                            },
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                    child: assetWidget(assetEntity)),
-                                Positioned(
-                                  top: 5,
-                                  right: 5,
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 32,
-                                    width: 32,
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: idx == -1
-                                          ? Colors.transparent
-                                          : Colors.lightBlue,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
+                        AssetEntity assetEntity = assetList[index];
+                        int idx = selectedAssetList
+                            .indexWhere((element) => element == assetEntity);
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (selectedAssetList.contains(assetEntity)) {
+                                selectedAssetList.remove(assetEntity);
+                              } else {
+                                selectedAssetList.add(assetEntity);
+                              }
+                            });
+                          },
+                          child: Stack(
+                            children: [
+                              Positioned.fill(child: assetWidget(assetEntity)),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 32,
+                                  width: 32,
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: idx == -1
+                                        ? Colors.transparent
+                                        : Colors.lightBlue,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
                                     ),
-                                    child: idx == -1
-                                        ? Container()
-                                        : Text(
-                                            (idx + 1).toString(),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
                                   ),
-                                )
-                              ],
-                            ),
-                          );
-                        }
-                      ),
+                                  child: idx == -1
+                                      ? Container()
+                                      : Text(
+                                          (idx + 1).toString(),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      }),
             ],
           ),
           selectedAssetList.isEmpty
               ? Container()
-              :
-          Positioned(
-            bottom: 20,
-            right: 10,
-            left: 10,
-            child: GestureDetector(
-              onTap: () => widget.onSend(selectedAssetList),
-              child: Container(
-                height: 50,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text('Send ${selectedAssetList.length}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),),
-              ),
-            ),
-          )
+              : Positioned(
+                  bottom: 20,
+                  right: 10,
+                  left: 10,
+                  child: GestureDetector(
+                    onTap: () => widget.onSend(selectedAssetList),
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.lightBlue,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        'Send ${selectedAssetList.length}',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                )
         ],
       ),
     );
@@ -198,7 +209,7 @@ class _InputMessageMediaState extends State<InputMessageMedia> {
       isOriginal: false,
       thumbnailSize: const ThumbnailSize.square(1000),
       fit: BoxFit.cover,
-      errorBuilder: (context, error, StackTrace) {
+      errorBuilder: (context, error, stackTrace) {
         return const Center(child: Text('Error'));
       },
     );

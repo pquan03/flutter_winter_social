@@ -8,12 +8,9 @@ import 'package:provider/provider.dart';
 
 class ExploreListReelScreen extends StatefulWidget {
   final List<Reel> reels;
-  final initpage;
+  final int initpage;
   const ExploreListReelScreen(
-      {super.key,
-      required this.reels,
-      required this.initpage
-      });
+      {super.key, required this.reels, required this.initpage});
 
   @override
   State<ExploreListReelScreen> createState() => _ExploreListReelScreenState();
@@ -45,13 +42,13 @@ class _ExploreListReelScreenState extends State<ExploreListReelScreen> {
       _isLoading = false;
     });
   }
-  
 
-    void deleteReel(String reelId) async {
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+  void deleteReel(String reelId) async {
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
     final res = await ReelApi().deleteReel(reelId, token);
-    if(res is String) {
-      if(!mounted) return;
+    if (res is String) {
+      if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
@@ -59,7 +56,6 @@ class _ExploreListReelScreenState extends State<ExploreListReelScreen> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,25 +68,28 @@ class _ExploreListReelScreenState extends State<ExploreListReelScreen> {
         title: Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              )
+                onTap: () => Navigator.pop(context),
+                child: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                )),
+            SizedBox(
+              width: 20,
             ),
-            SizedBox(width: 20,),
-            Text('Reels', style: TextStyle(fontSize: 20),),
+            Text(
+              'Reels',
+              style: TextStyle(fontSize: 20),
+            ),
             Spacer(),
             GestureDetector(
-              onTap: () {},
-              child: Icon(
-                Icons.camera_alt_outlined,
-                color: Colors.white,
-              )
-            ),
+                onTap: () {},
+                child: Icon(
+                  Icons.camera_alt_outlined,
+                  color: Colors.white,
+                )),
           ],
-        ), 
-        backgroundColor: Colors.transparent, 
+        ),
+        backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
       body: RefreshIndicator(

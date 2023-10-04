@@ -8,6 +8,7 @@ class ThemeClass {
   Color accentColor = HexColor('#FFD2BB');
 
   static ThemeData lightTheme = ThemeData(
+    fontFamily: 'Roboto',
     iconTheme: const IconThemeData(color: Colors.black),
     brightness: Brightness.light,
     indicatorColor: Colors.black,
@@ -37,7 +38,7 @@ class ThemeClass {
       elevation: 0,
     ),
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: Colors.grey[400],
+      fillColor: Colors.grey[350],
       iconColor: Colors.grey[400],
       suffixIconColor: Colors.black,
       hintStyle: const TextStyle(color: Colors.black54),
@@ -50,6 +51,7 @@ class ThemeClass {
   );
 
   static ThemeData darkTheme = ThemeData(
+    fontFamily: 'Roboto',
     iconTheme: const IconThemeData(color: Colors.white),
     brightness: Brightness.dark,
     primaryColor: Colors.black,

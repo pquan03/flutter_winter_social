@@ -30,71 +30,69 @@ class _ReelsScreenState extends State<ReelsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-            toolbarHeight: 50,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                Text(
-                  'Reels',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-                Spacer(),
-                GestureDetector(
-                    onTap: () {
-                      if (!mounted) return;
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => const MediaGalleryReelScreen()));
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+          toolbarHeight: 50,
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              Text(
+                'Reels',
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+              Spacer(),
+              GestureDetector(
+                  onTap: () {
+                    if (!mounted) return;
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => const MediaGalleryReelScreen()));
+                  },
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: Colors.white,
+                  )),
+            ],
+          )),
+      body: RefreshIndicator(
+        color: Theme.of(context).colorScheme.secondary,
+        onRefresh: () async {
+          handleGetReels();
+        },
+        child: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ))
+            : _reels.isEmpty
+                ? Center(
+                    child: Text(
+                    'No Reels',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ))
+                : PageView.builder(
+                    onPageChanged: (index) {
+                      if (index == _reels.length - 1) {
+                        setState(() {
+                          page++;
+                        });
+                        handleGetReels();
+                      }
                     },
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.white,
-                    )),
-              ],
-            )),
-        body: RefreshIndicator(
-          color: Theme.of(context).colorScheme.secondary,
-          onRefresh: () async {
-            handleGetReels();
-          },
-          child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.secondary,
-                ))
-              : _reels.isEmpty
-                  ? Center(
-                      child: Text(
-                      'No Reels',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ))
-                  : PageView.builder(
-                      onPageChanged: (index) {
-                        if (index == _reels.length - 1) {
-                          setState(() {
-                            page++;
-                          });
-                          handleGetReels();
-                        }
-                      },
-                      controller: _pageController,
-                      itemCount: _reels.length,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return ReelCardWidget(
-                          deleteReel: deleteReel,
-                          reel: _reels[index],
-                        );
-                      },
-                    ),
-        ),
+                    controller: _pageController,
+                    itemCount: _reels.length,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) {
+                      return ReelCardWidget(
+                        deleteReel: deleteReel,
+                        reel: _reels[index],
+                      );
+                    },
+                  ),
       ),
     );
   }

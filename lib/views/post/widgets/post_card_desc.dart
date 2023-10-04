@@ -35,8 +35,8 @@ class PostCardDesc extends StatelessWidget {
           RichText(
             text: TextSpan(
                 style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.bodyText1!.color),
+                  fontSize: 16,
+                ),
                 children: [
                   TextSpan(
                     text: post.userPost!.username!,

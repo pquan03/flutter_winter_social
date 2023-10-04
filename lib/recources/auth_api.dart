@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:insta_node_app/models/auth.dart';
+import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/recources/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,10 +17,31 @@ class AuthApi {
           },
           null);
       final auth = Auth.fromJson(res);
-      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final Future<SharedPreferences> asynPrefs =
+          SharedPreferences.getInstance();
       final SharedPreferences prefs = await asynPrefs;
-      prefs.setString('accessToken', auth.accessToken!);
-      prefs.setString('refreshToken', auth.refreshToken!);
+      final object = UserLoginned.fromJson({
+        'username': auth.user!.username,
+        'avatar': auth.user!.avatar,
+        'accessToken': auth.accessToken,
+        'refreshToken': auth.refreshToken,
+      });
+      List<String> decodeUserLogginedString =
+          prefs.getStringList('listUserLogin') ?? [];
+      List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
+          .map((e) => UserLoginned.fromJson(jsonDecode(e)))
+          .toList();
+      final index = decodeUserLoggined
+          .indexWhere((element) => element.username == object.username);
+      if (index != -1) {
+        decodeUserLoggined.removeAt(index);
+        decodeUserLoggined.insert(0, object);
+      } else {
+        decodeUserLoggined.insert(0, object);
+      }
+      final encodeUserLoggined =
+          decodeUserLoggined.map((e) => jsonEncode(e)).toList();
+      prefs.setStringList('listUserLogin', encodeUserLoggined);
       return auth;
     } catch (err) {
       return 'Error';
@@ -74,14 +98,38 @@ class AuthApi {
     return res;
   }
 
-  Future<dynamic> refreshTokenUser(String refreshToken) async {
+  Future<dynamic> refreshTokenUser(String refreshToken, int index) async {
     try {
       final res = await _repository.getApi('refresh_token', refreshToken);
       final auth = Auth.fromJson(res);
-      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final Future<SharedPreferences> asynPrefs =
+          SharedPreferences.getInstance();
       final SharedPreferences prefs = await asynPrefs;
-      prefs.setString('accessToken', auth.accessToken!);
-      prefs.setString('refreshToken', auth.refreshToken!);
+      List<String> decodeUserLogginedString =
+          prefs.getStringList('listUserLogin') ?? [];
+      List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
+          .map((e) => UserLoginned.fromJson(jsonDecode(e)))
+          .toList();
+      if (index != 0) {
+        final tempDecodeUserLoggined = decodeUserLoggined[index];
+        decodeUserLoggined.removeAt(index);
+        decodeUserLoggined.insert(
+            0,
+            UserLoginned.fromJson({
+              ...tempDecodeUserLoggined.toJson(),
+              'accessToken': auth.accessToken!,
+              'refreshToken': auth.refreshToken!,
+            }));
+      } else {
+        decodeUserLoggined[0] = UserLoginned.fromJson({
+          ...decodeUserLoggined[0].toJson(),
+          'accessToken': auth.accessToken!,
+          'refreshToken': auth.refreshToken!,
+        });
+      }
+      final encodeUserLoggined =
+          decodeUserLoggined.map((e) => jsonEncode(e)).toList();
+      prefs.setStringList('listUserLogin', encodeUserLoggined);
       return auth;
     } catch (err) {
       return err.toString();
@@ -90,10 +138,21 @@ class AuthApi {
 
   Future<dynamic> logoutUser() async {
     try {
-      final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
+      final Future<SharedPreferences> asynPrefs =
+          SharedPreferences.getInstance();
       final SharedPreferences prefs = await asynPrefs;
-      prefs.remove('accessToken');
-      prefs.remove('refreshToken');
+      List<String> decodeUserLogginedString =
+          prefs.getStringList('listUserLogin') ?? [];
+      List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
+          .map((e) => UserLoginned.fromJson(jsonDecode(e)))
+          .toList();
+      decodeUserLoggined[0] = UserLoginned.fromJson({
+        ...decodeUserLoggined[0].toJson(),
+        'accessToken': '',
+      });
+      final encodeUserLoggined =
+          decodeUserLoggined.map((e) => jsonEncode(e)).toList();
+      prefs.setStringList('listUserLogin', encodeUserLoggined);
       return 'Success';
     } catch (err) {
       return err.toString();
@@ -118,7 +177,7 @@ class AuthApi {
     }
   }
 
-    Future<dynamic> resetPassword(String id, String password) async {
+  Future<dynamic> resetPassword(String id, String password) async {
     try {
       final res = await _repository.postApi(
           'reset_password',

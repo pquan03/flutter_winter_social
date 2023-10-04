@@ -15,11 +15,11 @@ import 'package:provider/provider.dart';
 class ReelCardWidget extends StatefulWidget {
   final Reel reel;
   final Function(String reelId) deleteReel;
-  const ReelCardWidget(
-      {super.key,
-      required this.reel,
-      required this.deleteReel,
-      });
+  const ReelCardWidget({
+    super.key,
+    required this.reel,
+    required this.deleteReel,
+  });
 
   @override
   State<ReelCardWidget> createState() => _ReelCardWidgetState();
@@ -29,13 +29,82 @@ class _ReelCardWidgetState extends State<ReelCardWidget> {
   bool _isAnimating = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+  Widget build(BuildContext context) {
+    final user = Provider.of<AuthProvider>(context, listen: false).auth.user;
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          GestureDetector(
+            onLongPress: () {
+              showModalBottomSheetCustom(
+                  context,
+                  ReelModal(
+                    reelId: widget.reel.sId!,
+                    deleteReel: (String reelId) {},
+                    reelUserId: widget.reel.user!.sId!,
+                    savePost: handleSaveReel,
+                    isSaved: user!.saved!.contains(widget.reel.sId!),
+                  ));
+            },
+            onDoubleTap: () {
+              setState(() {
+                _isAnimating = true;
+              });
+              handleLikeReel();
+            },
+            child: VideoCardWidget(
+              backgroundUrl: widget.reel.backgroundUrl,
+              videoUrl: widget.reel.videoUrl,
+            ),
+          ),
+          Positioned(
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 400),
+              opacity: _isAnimating ? 1 : 0,
+              child: Center(
+                child: LikeAnimation(
+                  isAnimating: _isAnimating,
+                  duration: const Duration(
+                    milliseconds: 700,
+                  ),
+                  onEnd: () {
+                    setState(() {
+                      _isAnimating = false;
+                    });
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    size: 100,
+                    shadows: const [
+                      BoxShadow(
+                          color: Colors.pinkAccent,
+                          blurRadius: 10,
+                          spreadRadius: 5)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+              bottom: 20,
+              right: 10,
+              child: ReelCardSideBarWidget(
+                  handleDelelteReel: () => widget.deleteReel(widget.reel.sId!),
+                  handleSaveReel: handleSaveReel,
+                  handleLikeReel: handleLikeReel,
+                  reel: widget.reel)),
+          Positioned(
+              left: 10,
+              right: 70,
+              bottom: 20,
+              child: ReelCardInforWidget(
+                reel: widget.reel,
+              ))
+        ],
+      ),
+    );
   }
 
   void handleLikeReel() async {
@@ -110,84 +179,5 @@ class _ReelCardWidgetState extends State<ReelCardWidget> {
         });
       }
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context, listen: false).auth.user;
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: <Widget>[
-          GestureDetector(
-            onLongPress: () {
-              showModalBottomSheetCustom(
-                context,
-                ReelModal(
-                  reelId: widget.reel.sId!,
-                  deleteReel: (String reelId) {},
-                  reelUserId: widget.reel.user!.sId!,
-                  savePost: handleSaveReel,
-                  isSaved: user!.saved!.contains(widget.reel.sId!),
-                ));
-            },
-            onDoubleTap: () {
-              setState(() {
-                _isAnimating = true;
-              });
-              handleLikeReel();
-            },
-            child: VideoCardWidget(
-              backgroundUrl: widget.reel.backgroundUrl,
-              videoUrl: widget.reel.videoUrl,
-            ),
-          ),
-          Positioned(
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 400),
-              opacity: _isAnimating ? 1 : 0,
-              child: Center(
-                child: LikeAnimation(
-                  isAnimating: _isAnimating,
-                  duration: const Duration(
-                    milliseconds: 700,
-                  ),
-                  onEnd: () {
-                    setState(() {
-                      _isAnimating = false;
-                    });
-                  },
-                  child: Icon(
-                    Icons.favorite,
-                    size: 100,
-                    shadows: const [
-                      BoxShadow(
-                          color: Colors.pinkAccent,
-                          blurRadius: 10,
-                          spreadRadius: 5)
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-              bottom: 20,
-              right: 10,
-              child: ReelCardSideBarWidget(
-                  handleDelelteReel: () => widget.deleteReel(widget.reel.sId!),
-                  handleSaveReel: handleSaveReel,
-                  handleLikeReel: handleLikeReel,
-                  reel: widget.reel)),
-          Positioned(
-              left: 10,
-              right: 70,
-              bottom: 20,
-              child: ReelCardInforWidget(
-                reel: widget.reel,
-              ))
-        ],
-      ),
-    );
   }
 }

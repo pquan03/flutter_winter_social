@@ -86,3 +86,33 @@ class User {
     return data;
   }
 }
+
+class UserLoginned {
+  final String username;
+  final String avatar;
+  final String accessToken;
+  final String refreshToken;
+
+  UserLoginned(
+      {required this.username,
+      required this.avatar,
+      required this.accessToken,
+      required this.refreshToken});
+
+  factory UserLoginned.fromJson(Map<String, dynamic> json) {
+    return UserLoginned(
+        username: json['username'],
+        avatar: json['avatar'],
+        accessToken: json['accessToken'],
+        refreshToken: json['refreshToken']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['username'] = this.username;
+    data['avatar'] = this.avatar;
+    data['accessToken'] = this.accessToken;
+    data['refreshToken'] = this.refreshToken;
+    return data;
+  }
+}

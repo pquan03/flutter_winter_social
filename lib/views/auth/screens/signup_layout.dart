@@ -57,20 +57,34 @@ class _SignUpLayoutState extends State<SignUpLayout> {
     return _isLoadingShimmer
         ? LoadingSignUp()
         : Scaffold(
-            appBar: AppBar(
-                automaticallyImplyLeading: false,
-                centerTitle: false,
-                title: GestureDetector(
-                  onTap: widget.backButtonPressed,
-                  child: const Icon(
-                    Icons.arrow_back,
-                    size: 30,
-                  ),
-                )),
             body: Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                    // instagram gradient color
+                    Color(0xFF833AB4).withOpacity(.2),
+                    Color(0xFFFD1D1D).withOpacity(.1),
+                    Color(0xFFFCAF45).withOpacity(.2),
+                  ])),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -102,26 +116,31 @@ class _SignUpLayoutState extends State<SignUpLayout> {
                     text: widget.label == 'Password' ? 'Sign Up' : 'Next',
                     backgroundColor: Colors.blue,
                     onPressed: handleClickNextButton,
-                  )
+                  ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      width: double.infinity,
+                      child: Text(
+                        'Already have an account?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
             ),
-            bottomNavigationBar: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                child: Text(
-                  'Already have an account?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
-            ));
+          );
   }
 }

@@ -95,10 +95,11 @@ class _ReelSendMessModalState extends State<ReelSendMessModal> {
                       shrinkWrap: true,
                       itemCount: _userFollowers.length + 1,
                       itemBuilder: (context, index) {
-                        if (index == _userFollowers.length)
+                        if (index == _userFollowers.length) {
                           return SizedBox(
                             height: 50,
                           );
+                        }
                         return ListTile(
                           onTap: () => setState(() {
                             selectedUser = _userFollowers[index];

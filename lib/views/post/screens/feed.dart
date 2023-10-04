@@ -85,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: SvgPicture.asset(
                             AssetHelper.icSvg,
                             height: 32,
-                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ),

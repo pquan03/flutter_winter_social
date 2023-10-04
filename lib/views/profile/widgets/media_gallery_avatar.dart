@@ -269,7 +269,10 @@ class _MediaImageScreenState extends State<MediaImageScreen> {
                           value: album,
                           child: Row(
                             children: [
-                              Text(album.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                              Text(album.name,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
                               const SizedBox(
                                 width: 8,
                               ),
@@ -277,7 +280,12 @@ class _MediaImageScreenState extends State<MediaImageScreen> {
                                 future: album.assetCountAsync,
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
-                                    return Text(snapshot.data.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),);
+                                    return Text(
+                                      snapshot.data.toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    );
                                   } else {
                                     return const SizedBox();
                                   }
@@ -431,7 +439,7 @@ class _MediaImageScreenState extends State<MediaImageScreen> {
       isOriginal: false,
       thumbnailSize: const ThumbnailSize.square(1000),
       fit: BoxFit.cover,
-      errorBuilder: (context, error, StackTrace) {
+      errorBuilder: (context, error, stackTrace) {
         return const Center(child: Text('Error'));
       },
     );

@@ -90,7 +90,7 @@ class CallMessageWidget extends StatelessWidget {
       }
 
       result += '${minutes.toString().padLeft(2, '0')}:';
-      result += '${remainingSeconds.toString().padLeft(2, '0')}';
+      result += remainingSeconds.toString().padLeft(2, '0');
 
       return result;
     }
@@ -111,9 +111,7 @@ class CallMessageWidget extends StatelessWidget {
         : call.video == true
             ? 'Video chat'
             : 'Audio Call';
-    String time = call.times == 0
-        ? 'Today'
-        : formatTime(call.times!);
+    String time = call.times == 0 ? 'Today' : formatTime(call.times!);
     return Row(
       children: [
         Container(

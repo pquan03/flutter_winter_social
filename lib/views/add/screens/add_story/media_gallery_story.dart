@@ -4,10 +4,12 @@ import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
+import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:insta_node_app/views/add/screens/add_story/show_stories.dart';
+import 'package:insta_node_app/views/add/screens/widgets/preview_video_edit.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
@@ -378,6 +380,10 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                         style: TextStyle(color: Colors.black),
                       )
                     ]);
+              } else {
+                if (!mounted) return;
+                Navigator.of(context).push(
+                    createRoute(ShowStoriesScreen(assets: [assetEntity])));
               }
             } else {
               final newImageFile =

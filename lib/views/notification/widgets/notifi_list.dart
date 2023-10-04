@@ -91,10 +91,12 @@ class _NotifiListState extends State<NotifiList> {
             });
           }
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ExploreListPostScreen(posts: [], title: 'Post')));
+              builder: (_) =>
+                  ExploreListPostScreen(posts: const [], title: 'Post')));
         } else if (notiItem.type == 'reel') {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ExploreListPostScreen(posts: [], title: 'Reel')));
+              builder: (_) =>
+                  ExploreListPostScreen(posts: const [], title: 'Reel')));
         } else if (notiItem.type == 'follow') {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => OtherProfileScreen(
