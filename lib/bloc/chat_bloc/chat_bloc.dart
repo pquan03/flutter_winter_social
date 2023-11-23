@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
@@ -10,22 +11,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onFetch(ChatEventFetch event, Emitter<ChatState> emit) async {
-    if (event.isRefresh == null) {
-      final state = this.state;
-      if (state is ChatStateSuccess) {
-        if (state.listConversation.isEmpty) {
-          emit(ChatStateSuccess(listConversation: [...state.listConversation]));
-        } else {
-          return;
-        }
-      } else {
-        emit(ChatStateLoading());
-      }
-    }
     emit(ChatStateLoading());
     try {
-      final listConversation = await MessageApi().getConversations(event.token);
-      emit(ChatStateSuccess(listConversation: [...listConversation]));
+      final conversations = await MessageApi().getConversations(event.token);
+      emit(ChatStateSuccess(listConversation: [...conversations]));
     } catch (e) {
       emit(ChatStateError(error: e.toString()));
     }
@@ -35,8 +24,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final state = this.state;
     if (state is ChatStateSuccess) {
       final listConversation = [...state.listConversation];
-      final conversation = listConversation
-          .firstWhere((element) => element.sId == event.message.conversationId);
+      final conversation = listConversation.firstWhere(
+          (element) => element.sId == event.message.conversationId, orElse: () {
+        return Conversations.fromJson(
+            {...event.conversation!.toJson(), 'messages': []});
+      });
       conversation.isRead = ['${event.message.senderId}'];
       conversation.messages!.insert(0, event.message);
       listConversation.removeWhere(

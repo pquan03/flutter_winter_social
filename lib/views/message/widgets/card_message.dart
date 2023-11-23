@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/utils/repace_mp4_to_png.dart';
 import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/views/message/widgets/call_message.dart';
 import 'package:insta_node_app/views/message/widgets/media_message.dart';
 import 'package:insta_node_app/views/message/widgets/post_message.dart';
+import 'package:insta_node_app/views/message/widgets/reel_message.dart';
 import 'package:insta_node_app/views/message/widgets/text_message.dart';
 import 'package:provider/provider.dart';
 
@@ -18,16 +22,18 @@ class CardMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = Provider.of<AuthProvider>(context).auth.user!;
     bool isShowAvatar = message.senderId == currentUser.sId ? false : true;
-    final color = message.senderId == currentUser.sId
+    final backgroundColor = message.senderId == currentUser.sId
         ? Colors.blue
-        : Colors.grey.withOpacity(0.5);
+        : Theme.of(context).colorScheme.primaryContainer;
+    final textColor = message.senderId == currentUser.sId
+        ? Colors.white
+        : Theme.of(context).colorScheme.secondary;
     final mainAxisAlignment = message.senderId == currentUser.sId
         ? MainAxisAlignment.end
         : MainAxisAlignment.start;
     final crossAxisAliment = message.senderId == currentUser.sId
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
-
     return SizedBox(
       width: MediaQuery.sizeOf(context).width * 0.7,
       child: Row(
@@ -51,8 +57,48 @@ class CardMessageWidget extends StatelessWidget {
                       postMess: message.linkPost!,
                       createdAt: message.createdAt!)
                   : Container(),
+              message.linkReel != null
+                  ? ReelMessWidget(
+                      reelMess: message.linkReel!,
+                      createdAt: message.createdAt!)
+                  : Container(),
               message.text != ''
-                  ? TextMessageWidget(color: color, text: message.text!)
+                  ? message.linkStory != null
+                      ? Stack(
+                          children: [
+                            Container(
+                              width: MediaQuery.sizeOf(context).width * 0.7,
+                              padding: const EdgeInsets.only(
+                                  right: Dimensions.dPaddingSmall,
+                                  bottom: Dimensions.dPaddingMedium),
+                              child: InkWell(
+                                onTap: () {},
+                                child: ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                      Colors.white.withOpacity(0.5),
+                                      BlendMode.srcATop),
+                                  child: ImageHelper.loadImageNetWork(
+                                      replaceMp4ToPng(
+                                          message.linkStory!.media!.media),
+                                      fit: BoxFit.contain,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                                bottom: 0,
+                                right: isShowAvatar ? null : 0,
+                                child: TextMessageWidget(
+                                    backgroundColor: backgroundColor,
+                                    textColor: textColor,
+                                    text: message.text!))
+                          ],
+                        )
+                      : TextMessageWidget(
+                          backgroundColor: backgroundColor,
+                          textColor: textColor,
+                          text: message.text!)
                   : Container(),
               // Image
               message.media!.isNotEmpty

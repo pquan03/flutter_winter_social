@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
@@ -24,7 +25,7 @@ class _ConversationState extends State<Conversation> {
 
   @override
   void initState() {
-          SocketConfig.socket.on('addMessageToClient', (data) {
+    SocketConfig.socket.on('addMessageToClient', (data) {
       if (!mounted) return;
       setState(() {
         final message = Messages.fromJson(data);
@@ -34,7 +35,6 @@ class _ConversationState extends State<Conversation> {
     });
     super.initState();
   }
-
 
   void handleBack() {
     setState(() {
@@ -54,7 +54,7 @@ class _ConversationState extends State<Conversation> {
             title: '${user.username}',
             action: [
               IconButton(
-                padding: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: Dimensions.dPaddingSmall),
                 onPressed: () {},
                 icon: const Icon(
                   FontAwesomeIcons.video,
@@ -69,7 +69,7 @@ class _ConversationState extends State<Conversation> {
                 ),
               ),
             ],
-            child: 
+            child:
                 BlocBuilder<ChatBloc, ChatState>(builder: (context, chatState) {
               if (chatState is ChatStateLoading) {
                 return Center(
@@ -91,11 +91,14 @@ class _ConversationState extends State<Conversation> {
                               .auth
                               .accessToken!;
                       final chatBloc = BlocProvider.of<ChatBloc>(context);
-                      chatBloc.add(ChatEventFetch(token: token, isRefresh: true));
+                      chatBloc
+                          .add(ChatEventFetch(token: token, isRefresh: true));
                     },
                     child: ListView(
                       children: [
-                        Padding(padding: const EdgeInsets.only(top: 10)),
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                top: Dimensions.dPaddingSmall)),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 16),
                           height: 40,
@@ -134,12 +137,19 @@ class _ConversationState extends State<Conversation> {
                         const SizedBox(
                           height: 16,
                         ),
-                        Column(
-                          children: chatState.listConversation
-                              .map((e) =>
-                                  CardConversationWidget(conversation: e))
-                              .toList(),
-                        )
+                        chatState.listConversation.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No messages',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            : Column(
+                                children: chatState.listConversation
+                                    .map((e) =>
+                                        CardConversationWidget(conversation: e))
+                                    .toList(),
+                              )
                       ],
                     ));
               } else {

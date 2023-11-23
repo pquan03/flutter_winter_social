@@ -3,6 +3,8 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/views/post/screens/explore_list_post.dart';
 
+import '../../../constants/dimension.dart';
+
 class PostMessageWidget extends StatelessWidget {
   final Post postMess;
   final String createdAt;
@@ -29,7 +31,7 @@ class PostMessageWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -54,7 +56,7 @@ class PostMessageWidget extends StatelessWidget {
             ),
             // TextSpan
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
               child: RichText(
                 text: TextSpan(
                     text: postMess.userPost!.username!,

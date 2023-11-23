@@ -68,7 +68,7 @@ class MessageApi {
         },
       };
       await NotifiApi().createNotification(msg, token);
-      return res['message'];
+      return res;
     } catch (err) {
       return err.toString();
     }

@@ -74,8 +74,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _pageController.dispose();
+    _pageControllerWithAdd.dispose();
+    super.dispose();
   }
 
   @override
@@ -84,58 +85,62 @@ class _MainAppScreenState extends State<MainAppScreen> {
     return PageView(
       controller: _pageControllerWithAdd,
       children: [
-        AddScreen(
-          handleNaviTapped: () => handleNaviTapped(1),
-        ),
-        Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: _pageController,
-            onPageChanged: _onPageChanged,
-            children: <Widget>[..._screens(auth).map((e) => e).toList()],
+        KeepAlivePage(
+          child: AddScreen(
+            handleNaviTapped: () => handleNaviTapped(1),
           ),
-          bottomNavigationBar: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    width: 1,
+        ),
+        KeepAlivePage(
+          child: Scaffold(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            body: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              children: <Widget>[..._screens(auth).map((e) => e).toList()],
+            ),
+            bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-              child: CurvedNavigationBar(
-                animationDuration: const Duration(milliseconds: 300),
-                index: _currentIndex,
-                color: Theme.of(context).colorScheme.primary,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                buttonBackgroundColor: Theme.of(context).colorScheme.primary,
-                letIndexChange: (value) {
-                  if (value == 2) {
-                    handleNaviTapped(0);
-                    return false;
-                  }
-                  return true;
-                },
-                onTap: navigationTapped,
-                items: [
-                  iconWidget(0, Icons.home, Icons.home_outlined),
-                  iconWidget(1, Icons.search, Icons.search_outlined),
-                  iconWidget(2, Icons.add_box, Icons.add_box_outlined),
-                  iconWidget(
-                      3, Icons.movie_filter, Icons.movie_filter_outlined),
-                  Container(
-                    height: 35,
-                    width: 35,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                child: CurvedNavigationBar(
+                  animationDuration: const Duration(milliseconds: 300),
+                  index: _currentIndex,
+                  color: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+                  letIndexChange: (value) {
+                    if (value == 2) {
+                      handleNaviTapped(0);
+                      return false;
+                    }
+                    return true;
+                  },
+                  onTap: navigationTapped,
+                  items: [
+                    iconWidget(0, Icons.home, Icons.home_outlined),
+                    iconWidget(1, Icons.search, Icons.search_outlined),
+                    iconWidget(2, Icons.add_box, Icons.add_box_outlined),
+                    iconWidget(
+                        3, Icons.movie_filter, Icons.movie_filter_outlined),
+                    Container(
+                      height: 35,
+                      width: 35,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(auth.user!.avatar!),
+                        radius: 12,
+                      ),
                     ),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(auth.user!.avatar!),
-                      radius: 12,
-                    ),
-                  ),
-                ],
-              )),
+                  ],
+                )),
+          ),
         ),
       ],
     );

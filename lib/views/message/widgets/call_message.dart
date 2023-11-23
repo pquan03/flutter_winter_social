@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/conversation.dart';
 
+import '../../../constants/dimension.dart';
+
 class CallMessageWidget extends StatelessWidget {
   final Call call;
   final String createAt;
@@ -12,7 +14,7 @@ class CallMessageWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       width: MediaQuery.sizeOf(context).width * 0.7,
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: Dimensions.dPaddingSmall),
       decoration: ShapeDecoration(
           color: Colors.grey.withOpacity(0.5),
           shape: RoundedRectangleBorder(

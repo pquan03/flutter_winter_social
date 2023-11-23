@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 
 abstract class ChatEvent extends Equatable {
@@ -16,7 +17,8 @@ class ChatEventFetch extends ChatEvent {
 
 class ChatEventAddMessage extends ChatEvent {
   final Messages message;
-  ChatEventAddMessage({required this.message});
+  final Conversations? conversation;
+  ChatEventAddMessage({required this.message, this.conversation});
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, conversation];
 }

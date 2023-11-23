@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 
 class ButtonWidget extends StatefulWidget {
   final String text;
@@ -51,7 +52,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: Dimensions.dPaddingMedium),
                   decoration: widget.borderColor == Colors.transparent
                       ? BoxDecoration(
                           color: widget.backgroundColor,
@@ -80,7 +81,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     return Container(
       width: double.infinity,
       alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.dPaddingMedium),
       decoration: widget.borderColor == Colors.transparent
           ? BoxDecoration(
               color: widget.backgroundColor,

@@ -4,6 +4,8 @@ import 'package:insta_node_app/common_widgets/text_form_input.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 
+import '../../../constants/dimension.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -48,15 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
         body: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                // instagram gradient color
-                Color(0xFF833AB4).withOpacity(.2),
-                Color(0xFFFD1D1D).withOpacity(.1),
-                Color(0xFFFCAF45).withOpacity(.2),
-              ])),
+              gradient: Gradients.defaultGradientBackground),
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

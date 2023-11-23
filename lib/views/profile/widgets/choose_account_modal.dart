@@ -5,9 +5,13 @@ import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/views/auth/screens/loggedin_user.dart';
+import 'package:insta_node_app/views/auth/screens/login.dart';
 import 'package:insta_node_app/views/auth/screens/main_app.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../constants/dimension.dart';
 
 class ChooseAccountModalWidget extends StatefulWidget {
   const ChooseAccountModalWidget({super.key});
@@ -26,24 +30,10 @@ class _ChooseAccountModalWidgetState extends State<ChooseAccountModalWidget> {
     _getListUserLogined();
   }
 
-  void _getListUserLogined() async {
-    final Future<SharedPreferences> asyncPrefs =
-        SharedPreferences.getInstance();
-    final SharedPreferences prefs = await asyncPrefs;
-    List<String> decodeUserLogginedString =
-        prefs.getStringList('listUserLogin') ?? [];
-    List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
-        .map((e) => UserLoginned.fromJson(jsonDecode(e)))
-        .toList();
-    setState(() {
-      _listUserLogin.addAll(decodeUserLoggined);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: Dimensions.dPaddingSmall),
       child: Wrap(
         children: [
           _listUserLogin.isEmpty
@@ -68,19 +58,7 @@ class _ChooseAccountModalWidgetState extends State<ChooseAccountModalWidget> {
 
   Widget buildAccountTile(UserLoginned user, index) {
     return InkWell(
-      onTap: () async {
-        final res = await AuthApi().refreshTokenUser(user.refreshToken, index);
-        if (res is String) {
-          if (!mounted) return;
-          showSnackBar(context, 'Error', res);
-          return;
-        }
-        if (!mounted) return;
-        Provider.of<AuthProvider>(context, listen: false).setAuth(res);
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const MainAppScreen()),
-            (route) => false);
-      },
+      onTap: () => _loginOtherAccount(user.refreshToken, index),
       child: Container(
         color: Colors.transparent,
         child: ListTile(
@@ -97,19 +75,67 @@ class _ChooseAccountModalWidgetState extends State<ChooseAccountModalWidget> {
     );
   }
 
+  void _loginOtherAccount(String refreshToken, int index) async {
+    // shown loading dialog
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+    final res = await AuthApi().refreshTokenUser(refreshToken, index);
+    await Future.delayed(const Duration(seconds: 1), () {
+      if (res is String) {
+        if (!mounted) return;
+        showSnackBar(context, 'Error', res);
+        Navigator.of(context).pop();
+        return;
+      }
+      if (!mounted) return;
+      Provider.of<AuthProvider>(context, listen: false).setAuth(res);
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MainAppScreen()),
+          (route) => false);
+    });
+  }
+
+  void _getListUserLogined() async {
+    final Future<SharedPreferences> asyncPrefs =
+        SharedPreferences.getInstance();
+    final SharedPreferences prefs = await asyncPrefs;
+    List<String> decodeUserLogginedString =
+        prefs.getStringList('listUserLogin') ?? [];
+    List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
+        .map((e) => UserLoginned.fromJson(jsonDecode(e)))
+        .toList();
+    setState(() {
+      _listUserLogin.addAll(decodeUserLoggined);
+    });
+  }
+
   Widget buildAddAccountTile() {
-    return ListTile(
-      leading: const Icon(Icons.add),
-      title: const Text('Add account'),
-      onTap: () {},
+    return InkWell(
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+      },
+      child: ListTile(
+        leading: const Icon(Icons.add),
+        title: const Text('Add account'),
+      ),
     );
   }
 
   Widget buildSwitchAccountTile() {
-    return ListTile(
-      leading: const Icon(Icons.logout),
-      title: const Text('Switch account'),
-      onTap: () {},
+    return InkWell(
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const LoggedInScreen()));
+      },
+      child: ListTile(
+        leading: const Icon(Icons.logout),
+        title: const Text('Switch account'),
+      ),
     );
   }
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/views/notification/widgets/notifi_list.dart';
 
-class TestNotificationScreen extends StatefulWidget {
-  const TestNotificationScreen({super.key});
+class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
 
   @override
-  State<TestNotificationScreen> createState() => _TestNotificationScreenState();
+  State<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _TestNotificationScreenState extends State<TestNotificationScreen> {
+class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();

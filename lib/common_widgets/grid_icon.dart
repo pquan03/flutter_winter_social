@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 
 class GridIconWidget extends StatefulWidget {
   final TextEditingController controller;
@@ -77,7 +78,7 @@ class _GridIconWidgetState extends State<GridIconWidget> {
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
             firstChild: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: Dimensions.dPaddingMedium),
               child: Container(
                 alignment: Alignment.center,
                 width: double.infinity,
@@ -94,7 +95,7 @@ class _GridIconWidgetState extends State<GridIconWidget> {
                   controller: widget.controller,
                   style: TextStyle(color: Colors.white, fontSize: 30),
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.only(left: 10),
+                    contentPadding: const EdgeInsets.only(left: Dimensions.dPaddingSmall),
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.white),
                     suffix: GestureDetector(
@@ -112,7 +113,7 @@ class _GridIconWidgetState extends State<GridIconWidget> {
                             borderRadius: BorderRadius.circular(50),
                           ),
                         ),
-                        margin: const EdgeInsets.only(left: 10),
+                        margin: const EdgeInsets.only(left: Dimensions.dPaddingSmall),
                         child: Icon(
                           Icons.close,
                           color: Colors.white,

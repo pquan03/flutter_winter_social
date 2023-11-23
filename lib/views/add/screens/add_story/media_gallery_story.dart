@@ -4,12 +4,12 @@ import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
+import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:insta_node_app/views/add/screens/add_story/show_stories.dart';
-import 'package:insta_node_app/views/add/screens/widgets/preview_video_edit.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
@@ -67,38 +67,6 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-  }
-
-  void handleCapturePhoto() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
-    if (photo == null) return;
-    final imageFile = await photo.readAsBytes();
-    if (!mounted) return;
-    var imageEditor = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageEditor(
-            image: imageFile,
-            features: const ImageEditorFeatures(
-              pickFromGallery: false,
-              captureFromCamera: false,
-              crop: true,
-              blur: true,
-              brush: true,
-              emoji: true,
-              filters: true,
-              flip: true,
-              rotate: true,
-              text: true,
-            ),
-          ),
-        ));
-    if (!mounted) return;
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => AddPostCaptionScreen(
-              imageList: [imageEditor],
-            )));
   }
 
   @override
@@ -226,19 +194,21 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
         ),
       ),
       body: assetList.isEmpty
-          ? GridView.builder(
-              shrinkWrap: true,
-              itemCount: 10,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 2,
+          ? LoadingShimmer(
+              child: GridView.builder(
+                shrinkWrap: true,
+                itemCount: 10,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 2,
+                ),
+                itemBuilder: (context, index) {
+                  return Container(
+                    color: Colors.grey,
+                  );
+                },
               ),
-              itemBuilder: (context, index) {
-                return Container(
-                  color: Colors.grey,
-                );
-              },
             )
           : Stack(
               children: [
@@ -363,23 +333,62 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
     );
   }
 
+  void handleCapturePhoto() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+    if (photo == null) return;
+    final imageFile = await photo.readAsBytes();
+    if (!mounted) return;
+    var imageEditor = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageEditor(
+            image: imageFile,
+            features: const ImageEditorFeatures(
+              pickFromGallery: false,
+              captureFromCamera: false,
+              crop: true,
+              blur: true,
+              brush: true,
+              emoji: true,
+              filters: true,
+              flip: true,
+              rotate: true,
+              text: true,
+            ),
+          ),
+        ));
+    if (!mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => AddPostCaptionScreen(
+              imageList: [imageEditor],
+            )));
+  }
+
   Widget assetWidget(AssetEntity assetEntity, int index) {
     if (_isSelectOne) {
       return InkWell(
           onTap: () async {
             if (assetEntity.type == AssetType.video) {
               if (assetEntity.videoDuration.inSeconds > 30) {
-                return showAboutDialog(
+                showDialog(
                     context: context,
-                    applicationName: 'Insta Node',
-                    applicationVersion: '1.0.0',
-                    applicationIcon: const Icon(Icons.info),
-                    children: [
-                      const Text(
-                        'You can only select video less than 15 seconds',
-                        style: TextStyle(color: Colors.black),
-                      )
-                    ]);
+                    builder: (context) => AlertDialog(
+                          title: const Text('Warning!'),
+                          content: const Text(
+                              'You can only select video less than 30 seconds'),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  'Ok',
+                                  style: TextStyle(color: Colors.blue),
+                                )),
+                          ],
+                        ));
+                return;
               } else {
                 if (!mounted) return;
                 Navigator.of(context).push(
@@ -457,32 +466,45 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
             );
           }
           if (selectedAssetList.length > 4) {
-            return showAboutDialog(
+            showDialog(
                 context: context,
-                applicationName: 'Insta Node',
-                applicationVersion: '1.0.0',
-                applicationIcon: const Icon(Icons.info),
-                children: [
-                  const Text(
-                    'You can only select 5 images',
-                    style: TextStyle(color: Colors.black),
-                  )
-                ]);
+                builder: (context) => AlertDialog(
+                      title: const Text('Warning!'),
+                      content: const Text('You can only select 5 items'),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Ok',
+                              style: TextStyle(color: Colors.blue),
+                            )),
+                      ],
+                    ));
+            return;
           }
           //  get duration of video
           if (assetEntity.type == AssetType.video) {
             if (assetEntity.videoDuration.inSeconds > 30) {
-              return showAboutDialog(
+              showDialog(
                   context: context,
-                  applicationName: 'Insta Node',
-                  applicationVersion: '1.0.0',
-                  applicationIcon: const Icon(Icons.info),
-                  children: [
-                    const Text(
-                      'You can only select video less than 15 seconds',
-                      style: TextStyle(color: Colors.black),
-                    )
-                  ]);
+                  builder: (context) => AlertDialog(
+                        title: const Text('Warning!'),
+                        content: const Text(
+                            'You can only select video less than 30 seconds'),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Ok',
+                                style: TextStyle(color: Colors.blue),
+                              )),
+                        ],
+                      ));
+              return;
             }
           }
           setState(() {

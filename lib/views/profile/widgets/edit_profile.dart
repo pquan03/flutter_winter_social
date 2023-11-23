@@ -9,6 +9,8 @@ import 'package:insta_node_app/views/profile/widgets/edit_item_profile.dart';
 import 'package:insta_node_app/views/profile/widgets/edit_avatar_modal.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constants/dimension.dart';
+
 class EditProfileScreen extends StatefulWidget {
   final User user;
   final Function onUpdateUser;
@@ -78,31 +80,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             'address': _addressController.text,
           }
         };
-        if(auth.user.toString() != User.fromJson(newAuth['user']).toString()) {
-          showDialog(context: context,
-          builder: (context) {
-            return AlertDialog(
-              alignment: Alignment.center,
-              title: Text('Unsaved changes?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-              content: Text('You have unsaved changes. Are you sure you want to cancel?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }, 
-                  child: Text('No', style: TextStyle(color: Colors.black)),
-                ),
-                TextButton(
-                  onPressed: () {
-                    widget.onUpdateUser(newAuth);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  }, 
-                  child: Text('Yes', style: TextStyle(color: Colors.blue)),
-                ),
-              ],
-            );
-          });
+        if (auth.user.toString() != User.fromJson(newAuth['user']).toString()) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  alignment: Alignment.center,
+                  title: Text(
+                    'Unsaved changes?',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  content: Text(
+                      'You have unsaved changes. Are you sure you want to cancel?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No', style: TextStyle(color: Colors.black)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        widget.onUpdateUser(newAuth);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: Text('Yes', style: TextStyle(color: Colors.blue)),
+                    ),
+                  ],
+                );
+              });
         } else {
           Navigator.pop(context);
         }
@@ -110,7 +117,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       action: [
         _isLoading
             ? Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: Dimensions.dPaddingSmall),
                 child: Center(
                     child: CircularProgressIndicator(
                   color: Colors.blue,
@@ -208,7 +215,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             buildTextFormField(_websiteController, 'Add link'),
             buildTextFormField(_genderController, 'Gender'),
             buildTextFormField(_storyController, 'Story'),
-            Padding(padding: const EdgeInsets.only(bottom: 16))
+            Padding(
+                padding:
+                    const EdgeInsets.only(bottom: Dimensions.dPaddingMedium))
           ],
         ),
       ),
@@ -225,7 +234,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 )));
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: Dimensions.dPaddingMedium),
         decoration: BoxDecoration(
             color: Colors.transparent,
             border: Border(bottom: BorderSide(color: Colors.grey))),
@@ -252,12 +261,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     controller: controller,
                     style: TextStyle(
-                        fontSize: 18,
+                      fontSize: 18,
                     ),
                     decoration: InputDecoration(
                       suffix: label == 'Gender'
                           ? Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
+                              padding: const EdgeInsets.only(
+                                  right: Dimensions.dPaddingSmall),
                               child: Icon(
                                 FontAwesomeIcons.arrowRight,
                                 color: Colors.white,

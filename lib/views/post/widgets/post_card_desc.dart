@@ -36,6 +36,7 @@ class PostCardDesc extends StatelessWidget {
             text: TextSpan(
                 style: TextStyle(
                   fontSize: 16,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 children: [
                   TextSpan(

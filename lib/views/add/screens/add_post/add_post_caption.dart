@@ -10,6 +10,8 @@ import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../constants/dimension.dart';
+
 class AddPostCaptionScreen extends StatefulWidget {
   final List<Uint8List> imageList;
   const AddPostCaptionScreen({
@@ -65,7 +67,7 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
       action: [
         _isLoading
             ? Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: Dimensions.dPaddingSmall),
                 child: Center(
                   child: CircularProgressIndicator(
                     color: Theme.of(context).colorScheme.secondary,
@@ -82,7 +84,7 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
               )
       ],
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: Dimensions.dPaddingSmall),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -100,7 +102,7 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
                     createRoute(PreviewScreen(imagesBytes: widget.imageList)));
               },
               child: Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: Dimensions.dPaddingSmall),
                 child: widget.imageList.isEmpty
                     ? SizedBox(
                         height: 60,
@@ -129,7 +131,7 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
                 textDirection: TextDirection.ltr,
                 cursorColor: Colors.green,
                 decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(right: 10),
+                  contentPadding: EdgeInsets.only(right: Dimensions.dPaddingSmall),
                   hintText: 'Write a caption...',
                   alignLabelWithHint: true,
                   hintStyle: TextStyle(),

@@ -1,5 +1,7 @@
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/post.dart';
+import 'package:insta_node_app/models/reel.dart';
+import 'package:insta_node_app/models/story.dart';
 
 class Messages {
   String? sId;
@@ -7,6 +9,8 @@ class Messages {
   String? senderId;
   String? recipientId;
   Post? linkPost;
+  Reel? linkReel;
+  Story? linkStory;
   String? text;
   List<String>? media;
   String? createdAt;
@@ -20,6 +24,8 @@ class Messages {
     this.recipientId,
     this.text,
     this.linkPost,
+    this.linkReel,
+    this.linkStory,
     this.media,
     this.createdAt,
     this.updatedAt,
@@ -34,6 +40,9 @@ class Messages {
     text = json['text'] ?? '';
     linkPost =
         json['linkPost'] != null ? new Post.fromJson(json['linkPost']) : null;
+    linkReel =
+        json['linkReel'] != null ? new Reel.fromJson(json['linkReel']) : null;
+    linkStory = json['linkStory'] != null ? new Story.fromJson(json['linkStory']) : null;
     media = json['media'].cast<String>();
     call = json['call'] != null ? new Call.fromJson(json['call']) : null;
     createdAt = json['createdAt'];
@@ -49,6 +58,12 @@ class Messages {
     data['text'] = this.text;
     if (this.linkPost != null) {
       data['linkPost'] = this.linkPost!.toJson();
+    }
+    if (this.linkReel != null) {
+      data['linkReel'] = this.linkReel!.toJson();
+    }
+    if (this.linkStory != null) {
+      data['linkStory'] = this.linkStory!.toJson();
     }
     data['media'] = this.media;
     if (this.call != null) {

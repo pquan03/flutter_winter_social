@@ -11,6 +11,8 @@ import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/auth/screens/signup.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constants/dimension.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -42,16 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
     bool isKeyboardShowing = MediaQuery.of(context).viewInsets.vertical > 0;
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomLeft,
-                colors: [
-              // instagram gradient color
-              Color(0xFF833AB4).withOpacity(.2),
-              Color(0xFFFD1D1D).withOpacity(.1),
-              Color(0xFFFCAF45).withOpacity(.2),
-            ])),
+        decoration:
+            BoxDecoration(gradient: Gradients.defaultGradientBackground),
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
@@ -101,9 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             isKeyboardShowing
-                ? Divider()
+                ? SizedBox.shrink()
                 : SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.12,
+                    height: MediaQuery.of(context).size.height * 0.15,
                     child: Column(
                       children: [
                         InkWell(
@@ -113,7 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Container(
                             width: double.infinity,
                             alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: Dimensions.dPaddingMedium),
                             decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius:
@@ -123,9 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Create New Account',
                               style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -157,8 +150,9 @@ class _LoginScreenState extends State<LoginScreen> {
           .loginUser(_accountController.text, _passwordController.text);
       if (!mounted) return;
       Provider.of<AuthProvider>(context, listen: false).setAuth(res);
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainAppScreen()));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainAppScreen()),
+          (route) => false);
     } catch (err) {
       showSnackBar(context, 'Error', 'Email or password is incorrect');
     }

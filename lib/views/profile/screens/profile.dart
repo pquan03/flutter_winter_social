@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/reel.dart';
-import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/views/add/screens/add_post/media_gallery_post.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
-import 'package:insta_node_app/views/profile/screens/follow_user.dart';
 import 'package:insta_node_app/views/profile/widgets/choose_account_modal.dart';
 import 'package:insta_node_app/views/profile/widgets/edit_profile.dart';
 import 'package:insta_node_app/views/profile/widgets/list_post.dart';
 import 'package:insta_node_app/views/profile/widgets/list_reel.dart';
+import 'package:insta_node_app/views/profile/widgets/profile_user_info.dart';
 import 'package:insta_node_app/views/setting/screens/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -199,33 +197,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    profileInfoUser(user),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.fullname!,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    ProfileUserInfoWidget(
+                      user: user,
+                      scrollController: _scrollController,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.story!,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.website!,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.purple,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -321,76 +296,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ],
               ),
-      ),
-    );
-  }
-
-  Widget profileInfoUser(User user) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ImageHelper.loadImageNetWork(user.avatar!,
-            borderRadius: BorderRadius.circular(50),
-            fit: BoxFit.cover,
-            height: 72,
-            width: 72),
-        const SizedBox(width: 24),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              startColumnItem(user.countPosts!, 'Posts', () {
-                _scrollController.animateTo(150,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn);
-              }),
-              startColumnItem(user.followers!.length, 'Followers', () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(
-                        initIndex: 0,
-                        username: user.username!,
-                        followers: user.followers!,
-                        following: user.following!)));
-              }),
-              startColumnItem(user.following!.length, 'Following', () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(
-                        initIndex: 1,
-                        username: user.username!,
-                        followers: user.followers!,
-                        following: user.following!)));
-              }),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget startColumnItem(int number, String title, Function()? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              number.toString(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

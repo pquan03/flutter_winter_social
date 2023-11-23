@@ -7,6 +7,8 @@ import 'package:insta_node_app/common_widgets/like_animation.dart';
 import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/dimension.dart';
+
 class CommentCard extends StatefulWidget {
   final Comment comment;
   final Function handleClickReply;
@@ -92,7 +94,7 @@ class _CommentCardState extends State<CommentCard> {
     return Padding(
       padding: widget.comment.tag == null
           ? const EdgeInsets.all(16)
-          : const EdgeInsets.symmetric(vertical: 16),
+          : const EdgeInsets.symmetric(vertical: Dimensions.dPaddingMedium),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

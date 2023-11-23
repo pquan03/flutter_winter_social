@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class PreviewScreen extends StatefulWidget {
@@ -31,132 +32,99 @@ class _PreviewScreenState extends State<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: NetworkImage(
-            widget.imagesString![widget.initpage],
-            scale: 1,
-          ),
-        )),
-        padding: const EdgeInsets.only(top: 30),
-        alignment: Alignment.center,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: widget.imagesFile != null
-              ? CarouselSlider(
-                  disableGesture: true,
-                  options: CarouselOptions(
-                      onPageChanged: (index, reason) {},
-                      onScrolled: (_) async {},
-                      enableInfiniteScroll: false,
-                      viewportFraction: 0.9),
-                  items: widget.imagesFile!.map((i) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return Hero(
-                          tag: i,
-                          child: AssetEntityImage(
-                            i,
-                            isOriginal: false,
-                            width: double.infinity,
-                            fit: BoxFit.contain,
-                            thumbnailSize: ThumbnailSize.square(1000),
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
-                )
-              : widget.imagesBytes != null
-                  ? CarouselSlider(
-                      disableGesture: true,
-                      options: CarouselOptions(
-                          onPageChanged: (index, reason) {},
-                          onScrolled: (_) async {},
-                          enableInfiniteScroll: false,
-                          viewportFraction: 0.9),
-                      items: widget.imagesBytes!.map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Hero(
-                              tag: i,
-                              child: GestureDetector(
-                                onVerticalDragUpdate: (details) {
-                                  if (details.delta.dy > 10) {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: ImageHelper.loadImageMemory(
-                                  i,
-                                  width: double.infinity,
-                                  height: 200,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }).toList())
-                  : Column(
-                      children: [
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  icon: Icon(
-                                    Icons.close,
-                                    size: 30,
-                                  ))
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: CarouselSlider(
-                              disableGesture: true,
-                              options: CarouselOptions(
-                                initialPage: widget.initpage,
-                                onPageChanged: (index, reason) {},
-                                aspectRatio: 1,
-                                viewportFraction: 1,
-                                enableInfiniteScroll: false,
-                                height: double.infinity,
-                              ),
-                              items: widget.imagesString!.map((i) {
-                                return Builder(
-                                  builder: (BuildContext context) {
-                                    return Hero(
-                                      tag: i,
-                                      child: GestureDetector(
-                                        onVerticalDragUpdate: (details) {
-                                          if (details.delta.dy > 10) {
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child: ImageHelper.loadImageNetWork(i,
-                                            fit: BoxFit.contain,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ],
+        extendBody: true,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
+                decoration: BoxDecoration(
+                    gradient: Gradients.defaultGradientBackground),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 50,
                     ),
-        ),
-      ),
-    );
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.close,
+                        size: 25,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                      child: Builder(builder: (_) {
+                        if (widget.imagesBytes != null &&
+                            widget.imagesBytes!.isNotEmpty) {
+                          return CarouselSlider(
+                            options: CarouselOptions(
+                              height: MediaQuery.of(context).size.height * 0.8,
+                              initialPage: widget.initpage,
+                              enableInfiniteScroll: false,
+                              viewportFraction: 1,
+                            ),
+                            items: widget.imagesBytes!
+                                .map((e) => ImageHelper.loadImageMemory(
+                                      e,
+                                      fit: BoxFit.cover,
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                    ))
+                                .toList(),
+                          );
+                        } else if (widget.imagesFile != null &&
+                            widget.imagesFile!.isNotEmpty) {
+                          return CarouselSlider(
+                            options: CarouselOptions(
+                              height: MediaQuery.of(context).size.height * 0.8,
+                              initialPage: widget.initpage,
+                              enableInfiniteScroll: false,
+                              viewportFraction: 1,
+                            ),
+                            items: widget.imagesFile!
+                                .map((e) => ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                      child: AssetEntityImage(
+                                        e,
+                                        fit: BoxFit.cover,
+                                        isOriginal: false,
+                                        thumbnailSize:
+                                            const ThumbnailSize.square(1000),
+                                      ),
+                                    ))
+                                .toList(),
+                          );
+                        }
+                        return CarouselSlider(
+                          options: CarouselOptions(
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            initialPage: widget.initpage,
+                            enableInfiniteScroll: false,
+                            viewportFraction: 1,
+                          ),
+                          items: widget.imagesString!
+                              .map((e) => ImageHelper.loadImageNetWork(e,
+                                  fit: BoxFit.cover,
+                                  borderRadius: BorderRadius.circular(10)))
+                              .toList(),
+                        );
+                      }),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ));
   }
 }

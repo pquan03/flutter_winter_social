@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/views/add/screens/add_reel/add_reel_caption.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -26,32 +27,13 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
     _videoController = VideoPlayerController.file(widget.videoFile);
     _videoController.initialize();
     _videoController.play();
+    _videoController.setLooping(true);
   }
 
   @override
   void dispose() {
     super.dispose();
     _videoController.dispose();
-  }
-
-  Future<void> captureFrameAndSave() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final boundary = _boundaryKey.currentContext!.findRenderObject()
-        as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: 3.0);
-    final byteData = await image.toByteData(format: ImageByteFormat.png);
-    final buffer = byteData!.buffer.asUint8List();
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => AddReelCaptionScreen(
-              reelFile: widget.videoFile,
-              backgroundImage: buffer,
-            )));
   }
 
   @override
@@ -124,7 +106,7 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
                   onTap: captureFrameAndSave,
                   child: Container(
                     height: 50,
-                    margin: const EdgeInsets.only(right: 10),
+                    margin: const EdgeInsets.only(right: Dimensions.dPaddingSmall),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
@@ -157,5 +139,25 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> captureFrameAndSave() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final boundary = _boundaryKey.currentContext!.findRenderObject()
+        as RenderRepaintBoundary;
+    final image = await boundary.toImage();
+    final byteData = await image.toByteData(format: ImageByteFormat.png);
+    final buffer = byteData!.buffer.asUint8List();
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => AddReelCaptionScreen(
+              reelFile: widget.videoFile,
+              backgroundImage: buffer,
+            )));
   }
 }

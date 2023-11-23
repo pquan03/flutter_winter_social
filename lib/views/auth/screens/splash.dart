@@ -71,6 +71,8 @@ class _SplashPageState extends State<SplashPage> {
     final Future<SharedPreferences> asynPrefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await asynPrefs;
     final String? themeMode = prefs.getString('themeMode');
+    // settings theme
+    // prefs.clear();
     if (themeMode != null) {
       print(themeMode);
       if (!mounted) return;
@@ -81,8 +83,10 @@ class _SplashPageState extends State<SplashPage> {
     List<UserLoginned> decodeUserLoggined = decodeUserLogginedString
         .map((e) => UserLoginned.fromJson(jsonDecode(e)))
         .toList();
+    // if have user loggined => login the first user
     if (decodeUserLoggined.isNotEmpty) {
       final currentUserLogin = decodeUserLoggined.first;
+      // if not logout all => login the first user
       if (currentUserLogin.accessToken != '' &&
           currentUserLogin.refreshToken != '') {
         final res =
@@ -94,13 +98,17 @@ class _SplashPageState extends State<SplashPage> {
         Provider.of<AuthProvider>(context, listen: false).setAuth(res);
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => MainAppScreen()));
-      } else {
+      }
+      // if logout all => login screen
+      else {
         if (!mounted) return;
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const LoggedInScreen()));
         return;
       }
-    } else {
+    }
+    // if no user loggined => login screen
+    else {
       if (!mounted) return;
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (_) => const LoginScreen()));

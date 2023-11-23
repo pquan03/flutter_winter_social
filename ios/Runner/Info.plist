@@ -60,5 +60,10 @@
 <string>$(PRODUCT_NAME) uses the camera for video calls.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>To enable GPS location access for Exif data</string>
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>sms</string>
+  <string>tel</string>
+</array>
 </dict>
 </plist>

@@ -4,6 +4,8 @@ import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
 import 'package:insta_node_app/views/auth/screens/loading_shimmer_sign_up.dart';
 
+import '../../../constants/dimension.dart';
+
 class SignUpLayout extends StatefulWidget {
   final TextEditingController controller;
   final String? text;
@@ -59,16 +61,8 @@ class _SignUpLayoutState extends State<SignUpLayout> {
         : Scaffold(
             body: Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                    // instagram gradient color
-                    Color(0xFF833AB4).withOpacity(.2),
-                    Color(0xFFFD1D1D).withOpacity(.1),
-                    Color(0xFFFCAF45).withOpacity(.2),
-                  ])),
+              decoration:
+                  BoxDecoration(gradient: Gradients.defaultGradientBackground),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

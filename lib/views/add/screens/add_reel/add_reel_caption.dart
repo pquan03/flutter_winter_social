@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
@@ -101,7 +102,7 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
             height: 20,
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.dPaddingMedium),
             child: TextField(
               cursorColor: Colors.green,
               controller: _captionController,
@@ -136,7 +137,7 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
           SizedBox(
             height: MediaQuery.sizeOf(context).height * 0.1,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(

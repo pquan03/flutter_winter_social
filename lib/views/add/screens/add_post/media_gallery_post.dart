@@ -4,6 +4,7 @@ import 'package:image_editor_plus/data/image_item.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
@@ -71,143 +72,8 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
     _scrollController.dispose();
   }
 
-  void handleChooseMedia() async {
-    if (_isSelectOne) {
-      final newImageFile = await convertAssetEntityToUint8List(selectedAsset!);
-      if (!mounted) return;
-      var imageEditor = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageEditor(
-            image: newImageFile,
-            features: const ImageEditorFeatures(
-              pickFromGallery: false,
-              captureFromCamera: false,
-              crop: true,
-              blur: true,
-              brush: true,
-              emoji: true,
-              filters: true,
-              flip: true,
-              rotate: true,
-              text: true,
-            ),
-          ),
-        ),
-      );
-      if (imageEditor != null) {
-        if (!mounted) return;
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => AddPostCaptionScreen(
-                  imageList: [imageEditor],
-                )));
-      }
-    } else {
-      if (selectedAssetList.isEmpty || selectedAssetList.length == 1) {
-        final newImageFile =
-            await convertAssetEntityToUint8List(selectedAsset!);
-        if (!mounted) return;
-        var imageEditor = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ImageEditor(
-              image: newImageFile,
-              features: const ImageEditorFeatures(
-                pickFromGallery: false,
-                captureFromCamera: false,
-                crop: true,
-                blur: true,
-                brush: true,
-                emoji: true,
-                filters: true,
-                flip: true,
-                rotate: true,
-                text: true,
-              ),
-            ),
-          ),
-        );
-        if (imageEditor != null) {
-          if (!mounted) return;
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => AddPostCaptionScreen(
-                    imageList: [imageEditor],
-                  )));
-        }
-        return;
-      }
-      final newImageFiles = await Future.wait(
-          selectedAssetList.map((e) => convertAssetEntityToUint8List(e)));
-      if (!mounted) return;
-      var imageEditor = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageEditor(
-            images: newImageFiles,
-            allowMultiple: true,
-            features: const ImageEditorFeatures(
-              pickFromGallery: false,
-              captureFromCamera: false,
-              crop: true,
-              blur: true,
-              brush: true,
-              emoji: true,
-              filters: true,
-              flip: true,
-              rotate: true,
-              text: true,
-            ),
-          ),
-        ),
-      );
-      if (imageEditor != null) {
-        if (!mounted) return;
-        final newListImage = (imageEditor as List<ImageItem>)
-            .map((e) => Uint8List.fromList(e.image))
-            .toList();
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => AddPostCaptionScreen(
-                  imageList: newListImage,
-                )));
-      }
-    }
-  }
-
-  void handleCapturePhoto() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
-    if (photo == null) return;
-    final imageFile = await photo.readAsBytes();
-    if (!mounted) return;
-    var imageEditor = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageEditor(
-            image: imageFile,
-            features: const ImageEditorFeatures(
-              pickFromGallery: false,
-              captureFromCamera: false,
-              crop: true,
-              blur: true,
-              brush: true,
-              emoji: true,
-              filters: true,
-              flip: true,
-              rotate: true,
-              text: true,
-            ),
-          ),
-        ));
-    if (!mounted) return;
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => AddPostCaptionScreen(
-              imageList: [imageEditor],
-            )));
-  }
-
   @override
   Widget build(BuildContext context) {
-    print('build');
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -351,19 +217,22 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
             ];
           },
           body: assetList.isEmpty
-              ? GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: 10,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 2,
+              ? LoadingShimmer(
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: 10,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        color: Colors.grey,
+                      );
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      color: Colors.grey,
-                    );
-                  },
                 )
               : GridView.builder(
                   shrinkWrap: true,
@@ -489,5 +358,139 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
         ),
       );
     }
+  }
+
+  void handleChooseMedia() async {
+    if (_isSelectOne) {
+      final newImageFile = await convertAssetEntityToUint8List(selectedAsset!);
+      if (!mounted) return;
+      var imageEditor = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageEditor(
+            image: newImageFile,
+            features: const ImageEditorFeatures(
+              pickFromGallery: false,
+              captureFromCamera: false,
+              crop: true,
+              blur: true,
+              brush: true,
+              emoji: true,
+              filters: true,
+              flip: true,
+              rotate: true,
+              text: true,
+            ),
+          ),
+        ),
+      );
+      if (imageEditor != null) {
+        if (!mounted) return;
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => AddPostCaptionScreen(
+                  imageList: [imageEditor],
+                )));
+      }
+    } else {
+      if (selectedAssetList.isEmpty || selectedAssetList.length == 1) {
+        final newImageFile =
+            await convertAssetEntityToUint8List(selectedAsset!);
+        if (!mounted) return;
+        var imageEditor = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ImageEditor(
+              image: newImageFile,
+              features: const ImageEditorFeatures(
+                pickFromGallery: false,
+                captureFromCamera: false,
+                crop: true,
+                blur: true,
+                brush: true,
+                emoji: true,
+                filters: true,
+                flip: true,
+                rotate: true,
+                text: true,
+              ),
+            ),
+          ),
+        );
+        if (imageEditor != null) {
+          if (!mounted) return;
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => AddPostCaptionScreen(
+                    imageList: [imageEditor],
+                  )));
+        }
+        return;
+      }
+      final newImageFiles = await Future.wait(
+          selectedAssetList.map((e) => convertAssetEntityToUint8List(e)));
+      if (!mounted) return;
+      var imageEditor = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageEditor(
+            images: newImageFiles,
+            allowMultiple: true,
+            features: const ImageEditorFeatures(
+              pickFromGallery: false,
+              captureFromCamera: false,
+              crop: true,
+              blur: true,
+              brush: true,
+              emoji: true,
+              filters: true,
+              flip: true,
+              rotate: true,
+              text: true,
+            ),
+          ),
+        ),
+      );
+      if (imageEditor != null) {
+        if (!mounted) return;
+        final newListImage = (imageEditor as List<ImageItem>)
+            .map((e) => Uint8List.fromList(e.image))
+            .toList();
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => AddPostCaptionScreen(
+                  imageList: newListImage,
+                )));
+      }
+    }
+  }
+
+  void handleCapturePhoto() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+    if (photo == null) return;
+    final imageFile = await photo.readAsBytes();
+    if (!mounted) return;
+    var imageEditor = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageEditor(
+            image: imageFile,
+            features: const ImageEditorFeatures(
+              pickFromGallery: false,
+              captureFromCamera: false,
+              crop: true,
+              blur: true,
+              brush: true,
+              emoji: true,
+              filters: true,
+              flip: true,
+              rotate: true,
+              text: true,
+            ),
+          ),
+        ));
+    if (!mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => AddPostCaptionScreen(
+              imageList: [imageEditor],
+            )));
   }
 }

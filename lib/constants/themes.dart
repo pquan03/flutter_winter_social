@@ -47,7 +47,7 @@ class ThemeClass {
     colorScheme: const ColorScheme.light().copyWith(
         primary: _themeClass.lightPrimaryColor,
         secondary: Colors.black,
-        primaryContainer: Colors.grey),
+        primaryContainer: Colors.grey[300]!.withOpacity(0.7)),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -88,7 +88,7 @@ class ThemeClass {
     colorScheme: const ColorScheme.dark().copyWith(
       primary: _themeClass.darkPrimaryColor,
       secondary: Colors.white,
-      primaryContainer: Colors.white60,
+      primaryContainer: Colors.grey[800],
     ),
   );
 }

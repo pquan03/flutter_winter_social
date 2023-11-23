@@ -42,8 +42,24 @@ class _WinterStoriesPageState extends State<WinterStoriesPage>
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: widget.listStories.length,
+      controller: _pageController,
+      itemBuilder: (context, index) {
+        return WinterStoriesItem(
+          stories: widget.listStories[index],
+          animationController: _animationController,
+          onParentoageChanged: handleChangePage,
+        );
+      },
+    );
+  }
+
   void handleChangePage() {
-    if(_pageController.page! + 1 < widget.listStories.length) {
+    if (_pageController.page! + 1 < widget.listStories.length) {
       _pageController.nextPage(
         duration: Duration(milliseconds: 1),
         curve: Curves.easeInOut,
@@ -51,23 +67,5 @@ class _WinterStoriesPageState extends State<WinterStoriesPage>
     } else {
       Navigator.pop(context);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: PageView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: widget.listStories.length,
-          controller: _pageController,
-          itemBuilder: (context, index) {
-            return WinterStoriesItem(
-              stories: widget.listStories[index],
-              animationController: _animationController,
-              onParentoageChanged: handleChangePage,
-            );
-          },
-        ),
-    );
   }
 }

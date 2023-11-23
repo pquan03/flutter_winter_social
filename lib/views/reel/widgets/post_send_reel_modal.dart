@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/reel.dart';
@@ -173,7 +174,9 @@ class _ReelSendMessModalState extends State<ReelSendMessModal> {
         Provider.of<AuthProvider>(context, listen: false).auth.user!;
     final chatBloc = BlocProvider.of<ChatBloc>(context);
     final state = chatBloc.state;
+    print(state);
     if (state is ChatStateSuccess) {
+      print('ok');
       final listConversation = state.listConversation;
       final currentConversation = listConversation.firstWhere((element) {
         final listUser = element.recipients!.map((e) => e.sId).toList();
@@ -182,13 +185,15 @@ class _ReelSendMessModalState extends State<ReelSendMessModal> {
         } else {
           return false;
         }
+      }, orElse: () {
+        return Conversations();
       });
       final message = {
-        'conversationId': currentConversation.sId,
+        'conversationId': currentConversation.sId ?? user.sId,
         'avatar': currentUser.avatar,
         'username': currentUser.username,
         'text': '',
-        'linkPost': widget.reel,
+        'linkReel': widget.reel,
         'senderId': currentUser.sId,
         'recipientId': user.sId,
         'media': [],
@@ -201,7 +206,9 @@ class _ReelSendMessModalState extends State<ReelSendMessModal> {
       } else {
         if (!mounted) return;
         final chatBloc = BlocProvider.of<ChatBloc>(context);
-        chatBloc.add(ChatEventAddMessage(message: Messages.fromJson(res)));
+        chatBloc.add(ChatEventAddMessage(
+            conversation: Conversations.fromJson(res['conversation']),
+            message: Messages.fromJson(res['message'])));
       }
     }
   }

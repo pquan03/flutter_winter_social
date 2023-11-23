@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/common_widgets/custom_back_button.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/models/user.dart' as model;
-import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
-import 'package:insta_node_app/views/profile/screens/follow_user.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/profile/widgets/list_post.dart';
 import 'package:insta_node_app/views/profile/widgets/list_reel.dart';
+import 'package:insta_node_app/views/profile/widgets/profile_user_info.dart';
 import 'package:provider/provider.dart';
+
+import '../../../constants/dimension.dart';
 
 class OtherProfileScreen extends StatefulWidget {
   final String userId;
@@ -238,7 +238,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
               ),
             ),
             body: NestedScrollView(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               controller: _scrollController,
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
@@ -248,41 +248,15 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          profileInfoUser(user),
-                          const SizedBox(height: 8),
-                          Text(
-                            user.fullname!,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            user.story!,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            user.website!,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.purple,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
+                          ProfileUserInfoWidget(user: user),
                           Row(
                             children: [
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () => handleFollowUser(auth),
                                   child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: Dimensions.dPaddingSmall),
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                         color: auth.user!.following!
@@ -317,21 +291,24 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                             .state;
                                     List<Messages> listMessage = [];
                                     if (stateChatBloc is ChatStateSuccess) {
-                                      listMessage = [
-                                        ...stateChatBloc.listConversation
-                                            .where((element) {
-                                              final listRecipientId = element
-                                                  .recipients!
-                                                  .map((e) => e.sId)
-                                                  .toList();
-                                              return listRecipientId
-                                                      .contains(user.sId) &&
-                                                  listRecipientId
-                                                      .contains(auth.user!.sId);
-                                            })
-                                            .first
-                                            .messages!
-                                      ];
+                                      if (stateChatBloc
+                                          .listConversation.isNotEmpty) {
+                                        listMessage = [
+                                          ...stateChatBloc.listConversation
+                                              .where((element) {
+                                                final listRecipientId = element
+                                                    .recipients!
+                                                    .map((e) => e.sId)
+                                                    .toList();
+                                                return listRecipientId
+                                                        .contains(user.sId) &&
+                                                    listRecipientId.contains(
+                                                        auth.user!.sId);
+                                              })
+                                              .first
+                                              .messages!
+                                        ];
+                                      }
                                     }
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
@@ -346,8 +323,8 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                                     listMessage)));
                                   },
                                   child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: Dimensions.dPaddingSmall),
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                         color: Theme.of(context)
@@ -370,28 +347,35 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                       ),
                     ),
                   ),
-                  if (_posts.isNotEmpty || _reels.isNotEmpty)
-                    SliverPersistentHeader(
-                      pinned: true,
-                      floating: true,
-                      delegate: _SliverAppBarDelegate(
-                        TabBar(
-                          indicatorColor:
-                              Theme.of(context).colorScheme.secondary,
-                          labelColor: Theme.of(context).colorScheme.secondary,
-                          unselectedLabelColor: Colors.grey[400],
-                          controller: _tabController,
-                          tabs: const [
-                            Tab(
-                              icon: Icon(Icons.grid_on),
+                  _posts.isEmpty && _reels.isEmpty
+                      ? SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(),
+                          ),
+                        )
+                      : SliverPersistentHeader(
+                          pinned: true,
+                          floating: true,
+                          delegate: _SliverAppBarDelegate(
+                            TabBar(
+                              indicatorColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              labelColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              unselectedLabelColor: Colors.grey[400],
+                              controller: _tabController,
+                              tabs: const [
+                                Tab(
+                                  icon: Icon(Icons.grid_on),
+                                ),
+                                Tab(
+                                  icon: Icon(Icons.movie_filter),
+                                ),
+                              ],
                             ),
-                            Tab(
-                              icon: Icon(Icons.movie_filter),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
                 ];
               },
               body: _posts.isNotEmpty || _reels.isNotEmpty
@@ -412,79 +396,9 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                         ),
                       ],
                     )
-                  : Container(),
+                  : Divider(),
             ),
           );
-  }
-
-  Widget startColumnItem(int number, String title, Function()? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              number.toString(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget profileInfoUser(User user) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ImageHelper.loadImageNetWork(user.avatar!,
-            borderRadius: BorderRadius.circular(50),
-            fit: BoxFit.cover,
-            height: 72,
-            width: 72),
-        const SizedBox(width: 24),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              startColumnItem(user.countPosts!, 'Posts', () {
-                _scrollController.animateTo(150,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn);
-              }),
-              startColumnItem(user.followers!.length, 'Followers', () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(
-                        initIndex: 0,
-                        username: user.username!,
-                        followers: user.followers!,
-                        following: user.following!)));
-              }),
-              startColumnItem(user.following!.length, 'Following', () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => FollowUserScreen(
-                        initIndex: 1,
-                        username: user.username!,
-                        followers: user.followers!,
-                        following: user.following!)));
-              }),
-            ],
-          ),
-        )
-      ],
-    );
   }
 }
 

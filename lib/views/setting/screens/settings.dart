@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
+import 'package:insta_node_app/views/auth/screens/login.dart';
 import 'package:insta_node_app/views/post/screens/saved_post.dart';
 import 'package:insta_node_app/views/setting/screens/dark_mode.dart';
 import 'package:insta_node_app/views/auth/screens/splash.dart';
 import 'package:insta_node_app/views/setting/widgets/setting_item_card.dart';
+
+import '../../../constants/dimension.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,7 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               Container(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding:
+                      const EdgeInsets.only(bottom: Dimensions.dPaddingMedium),
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Instagram settings',
@@ -55,7 +59,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icon(FontAwesomeIcons.moon),
                   title: 'Dark mode'),
               Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: Dimensions.dPaddingMedium),
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Logins',
@@ -63,10 +68,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   )),
               GestureDetector(
                 onTap: () {
-                  print('Add account');
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()));
                 },
                 child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: Dimensions.dPaddingMedium),
                     color: Colors.transparent,
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -100,7 +107,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   onPressed: () async {
                                     await AuthApi().logoutUser();
                                     if (!mounted) return;
-                                    Navigator.pop(context);
                                     // push and remove all screen
                                     Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
@@ -115,7 +121,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ));
                 },
                 child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: Dimensions.dPaddingMedium),
                     color: Colors.transparent,
                     alignment: Alignment.centerLeft,
                     child: Text(

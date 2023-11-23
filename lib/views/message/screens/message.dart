@@ -1,7 +1,11 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
+import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
 import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
@@ -32,6 +36,7 @@ class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   late IO.Socket socket;
+  final List<Messages> _messages = [];
   List<String> media = [];
   bool _isLoadMore = true;
   int page = 2;
@@ -43,7 +48,7 @@ class _MessageScreenState extends State<MessageScreen> {
     SocketConfig.socket.on('addMessageToClient', (data) {
       if (!mounted) return;
       setState(() {
-        // widget.firstListMessages.insert(0, Messages.fromJson(data));
+        _messages.addAll([...widget.firstListMessages]);
       });
     });
     if (widget.firstListMessages.length < limit) {
@@ -57,6 +62,12 @@ class _MessageScreenState extends State<MessageScreen> {
         _handleLoadMoreMessage();
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    _messages.addAll([...widget.firstListMessages]);
+    super.didChangeDependencies();
   }
 
   @override
@@ -180,13 +191,13 @@ class _MessageScreenState extends State<MessageScreen> {
           child: Column(
             children: [
               Expanded(
-                child: widget.firstListMessages.isNotEmpty
+                child: _messages.isNotEmpty
                     ? ListView.builder(
                         controller: _scrollController,
                         reverse: true,
-                        itemCount: widget.firstListMessages.length + 1,
+                        itemCount: _messages.length + 1,
                         itemBuilder: (context, index) {
-                          if (index == widget.firstListMessages.length) {
+                          if (index == _messages.length) {
                             return SizedBox(
                                 height: 70,
                                 child: Opacity(
@@ -201,7 +212,7 @@ class _MessageScreenState extends State<MessageScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 24.0),
                             child: CardMessageWidget(
-                                message: widget.firstListMessages[index],
+                                message: _messages[index],
                                 userAvatar: widget.user.avatar!),
                           );
                         },
@@ -240,7 +251,7 @@ class _MessageScreenState extends State<MessageScreen> {
       showSnackBar(context, 'Error', res);
     } else {
       setState(() {
-        widget.firstListMessages.addAll([...res]);
+        _messages.addAll([...res]);
         page++;
       });
     }
@@ -266,9 +277,14 @@ class _MessageScreenState extends State<MessageScreen> {
       if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
-      setState(() {
-        widget.firstListMessages.insert(0, Messages.fromJson(res));
-      });
+      if (!mounted) return;
+      final chatBloc = BlocProvider.of<ChatBloc>(context);
+      _messages.insert(0, Messages.fromJson(res['message']));
+      chatBloc.add(ChatEventAddMessage(
+          conversation: Conversations.fromJson(res['conversation']),
+          message: Messages.fromJson(
+            res['message'],
+          )));
       setState(() {
         media = [];
         _messageController.clear();

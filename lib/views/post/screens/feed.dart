@@ -54,13 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.secondary,
         onRefresh: () async {
-          setState(() {
-            _posts = [];
-            _stories = [];
-            page = 1;
-          });
-          getStories();
-          getPosts();
+          _refeshLoad();
         },
         child: CustomScrollView(
           controller: _scrollController,
@@ -82,17 +76,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(left: 16),
-                          child: SvgPicture.asset(
-                            AssetHelper.icSvg,
-                            height: 32,
-                          ),
+                          child: SvgPicture.asset(AssetHelper.icSvg,
+                              height: 32,
+                              colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.secondary,
+                                  BlendMode.srcATop)),
                         ),
                       ),
                       Spacer(),
                       GestureDetector(
                           onTap: () async {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => TestNotificationScreen()));
+                                builder: (_) => NotificationScreen()));
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -159,6 +154,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _refeshLoad() async {
+    setState(() {
+      _posts = [];
+      _stories = [];
+      page = 1;
+    });
+    getStories();
+    getPosts();
   }
 
   Widget emptyPostUi() {

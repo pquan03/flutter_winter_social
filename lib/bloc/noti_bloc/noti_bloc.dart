@@ -11,18 +11,6 @@ class NotiBloc extends Bloc<NotiEvent, NotiState> {
   }
 
   void _onFetch(NotiEventFetch event, Emitter<NotiState> emit) async {
-    if (event.isRefresh == null) {
-      final state = this.state;
-      if (state is NotiStateSuccess) {
-        if (state.listNoti.isEmpty) {
-          emit(NotiStateSuccess(listNoti: [...state.listNoti]));
-        } else {
-          return;
-        }
-      } else {
-        emit(NotiStateLoading());
-      }
-    }
     emit(NotiStateLoading());
     try {
       final listNoti = await NotifiApi().getNotifications(event.token);

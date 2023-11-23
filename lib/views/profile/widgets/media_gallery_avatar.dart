@@ -7,6 +7,8 @@ import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../../../constants/dimension.dart';
+
 class MediaImageScreen extends StatefulWidget {
   final int maxCount;
   final RequestType requestType;
@@ -241,7 +243,8 @@ class _MediaImageScreenState extends State<MediaImageScreen> {
                 height: 50,
                 width: double.infinity,
                 color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: Dimensions.dPaddingSmall),
                 child: Row(
                   children: [
                     DropdownButton<AssetPathEntity>(

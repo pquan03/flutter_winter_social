@@ -3,6 +3,8 @@ import 'package:insta_node_app/common_widgets/image_helper.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/views/add/screens/widgets/preview.dart';
 
+import '../../../constants/dimension.dart';
+
 class MediaMessageWidget extends StatelessWidget {
   final List<String> media;
   final CrossAxisAlignment crossAxisAlignment;
@@ -28,7 +30,8 @@ class MediaMessageWidget extends StatelessWidget {
                           )));
                     },
                     child: Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.only(
+                            bottom: Dimensions.dPaddingSmall),
                         child: Hero(
                           tag: e,
                           child: ImageHelper.loadImageNetWork(e,

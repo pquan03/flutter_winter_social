@@ -16,18 +16,6 @@ class CardConversationWidget extends StatefulWidget {
 }
 
 class _CardConversationWidgetState extends State<CardConversationWidget> {
-
-  void handleReadMessage(String userId, String token) async {
-            if(widget.conversation.isRead!.contains(userId) == false) {
-          await MessageApi().readMessage(widget.conversation.sId!, token);
-          if(!mounted) return;
-          setState(() {
-            widget.conversation.isRead!.add(userId);
-          });
-        }
-  }
-
-
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
@@ -35,12 +23,17 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
     final recipient = user.sId == widget.conversation.recipients![0].sId
         ? widget.conversation.recipients![1]
         : widget.conversation.recipients![0];
-    final fontWeight = widget.conversation.isRead!.contains(user.sId) ? FontWeight.normal : FontWeight.bold;
+    final fontWeight = widget.conversation.isRead!.contains(user.sId)
+        ? FontWeight.normal
+        : FontWeight.bold;
     final isOnline = OnlineBloc().state.contains(recipient.sId);
     return InkWell(
-      onTap: () async{
+      onTap: () async {
         handleReadMessage(user.sId!, token);
-        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => MessageScreen(user: recipient, firstListMessages: widget.conversation.messages!)));
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => MessageScreen(
+                user: recipient,
+                firstListMessages: widget.conversation.messages!)));
       },
       child: Container(
         color: Colors.transparent,
@@ -88,7 +81,8 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                   ),
                   Row(
                     children: [
-                      if (user.sId == widget.conversation.messages!.first.senderId)
+                      if (user.sId ==
+                          widget.conversation.messages!.first.senderId)
                         Row(
                           children: [
                             Text(
@@ -97,22 +91,28 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                                 fontWeight: fontWeight,
                               ),
                             ),
-                            if (widget.conversation.messages!.first.call != null)
+                            if (widget.conversation.messages!.first.call !=
+                                null)
                               Text(
                                 'You called ${widget.conversation.messages!.first.call!.times} times',
                                 style: TextStyle(
                                   fontWeight: fontWeight,
                                 ),
                               ),
-                            if (widget.conversation.messages!.first.text != null)
+                            if (widget.conversation.messages!.first.text !=
+                                null)
                               Text(
-                                widget.conversation.messages!.first.text!.length > 20 ? '${widget.conversation.messages!.first.text!.substring(0, 20)}...' :
-                                widget.conversation.messages!.first.text!,
+                                widget.conversation.messages!.first.text!
+                                            .length >
+                                        20
+                                    ? '${widget.conversation.messages!.first.text!.substring(0, 20)}...'
+                                    : widget.conversation.messages!.first.text!,
                                 style: TextStyle(
                                   fontWeight: fontWeight,
                                 ),
                               ),
-                            if (widget.conversation.messages!.first.media!.isNotEmpty)
+                            if (widget
+                                .conversation.messages!.first.media!.isNotEmpty)
                               Text(
                                 style: TextStyle(
                                   fontWeight: fontWeight,
@@ -121,7 +121,8 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                               )
                           ],
                         ),
-                      if (user.sId != widget.conversation.messages!.first.senderId)
+                      if (user.sId !=
+                          widget.conversation.messages!.first.senderId)
                         Row(
                           children: [
                             Text(
@@ -130,21 +131,24 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                                 fontWeight: fontWeight,
                               ),
                             ),
-                            if (widget.conversation.messages!.first.call != null)
+                            if (widget.conversation.messages!.first.call !=
+                                null)
                               Text(
                                 'called ${widget.conversation.messages!.first.call!.times} times',
                                 style: TextStyle(
                                   fontWeight: fontWeight,
                                 ),
                               ),
-                            if (widget.conversation.messages!.first.text != null)
+                            if (widget.conversation.messages!.first.text !=
+                                null)
                               Text(
                                 '${widget.conversation.messages!.first.text}',
                                 style: TextStyle(
                                   fontWeight: fontWeight,
                                 ),
                               ),
-                            if (widget.conversation.messages!.first.media!.isNotEmpty)
+                            if (widget
+                                .conversation.messages!.first.media!.isNotEmpty)
                               Text(
                                 'sent ${widget.conversation.messages!.first.media!.length} images',
                                 style: TextStyle(
@@ -155,10 +159,18 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                         ),
                       Text(
                         '· ${convertTimeAgo(widget.conversation.messages!.first.createdAt!)}',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: fontWeight),
+                        style: TextStyle(fontSize: 14, fontWeight: fontWeight),
                       ),
+                      Spacer(),
+                      if (widget.conversation.isRead!.contains(user.sId) ==
+                          false)
+                        Container(
+                            height: 10,
+                            width: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            )),
                     ],
                   ),
                 ],
@@ -168,5 +180,15 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
         ),
       ),
     );
+  }
+
+  void handleReadMessage(String userId, String token) async {
+    if (widget.conversation.isRead!.contains(userId) == false) {
+      await MessageApi().readMessage(widget.conversation.sId!, token);
+      if (!mounted) return;
+      setState(() {
+        widget.conversation.isRead!.add(userId);
+      });
+    }
   }
 }

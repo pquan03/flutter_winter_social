@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
+import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
@@ -57,8 +58,8 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                       setState(() {
                         _isLoadingShimmer = true;
                       });
-                      final res = await UserApi()
-                          .searchUser(value, accessToken);
+                      final res =
+                          await UserApi().searchUser(value, accessToken);
                       if (res is String) {
                         if (!mounted) return;
                         showSnackBar(context, 'Error', res);
@@ -109,19 +110,18 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                         BlocProvider.of<ChatBloc>(context, listen: false).state;
                     List<Messages> listMessage = [];
                     if (stateChatBloc is ChatStateSuccess) {
-                      listMessage = [
-                        ...stateChatBloc.listConversation
-                            .where((element) {
-                              final listRecipientId = element.recipients!
-                                  .map((e) => e.sId)
-                                  .toList();
-                              return listRecipientId
-                                      .contains(users[index].sId) &&
-                                  listRecipientId.contains(currentUser.sId);
-                            })
-                            .first
-                            .messages!
-                      ];
+                      if (stateChatBloc.listConversation.isNotEmpty) {
+                        final conversation = stateChatBloc.listConversation
+                            .firstWhere((element) {
+                          final listRecipientId =
+                              element.recipients!.map((e) => e.sId).toList();
+                          return listRecipientId.contains(users[index].sId) &&
+                              listRecipientId.contains(currentUser.sId);
+                        }, orElse: () {
+                          return Conversations();
+                        });
+                        listMessage = conversation.messages ?? [];
+                      }
                     }
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (_) => MessageScreen(
@@ -195,4 +195,3 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
     );
   }
 }
-

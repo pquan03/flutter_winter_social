@@ -6,6 +6,8 @@ import 'package:insta_node_app/common_widgets/grid_icon.dart';
 import 'package:insta_node_app/views/message/widgets/input_message_gallery.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../../../constants/dimension.dart';
+
 class InputMessageWidget extends StatefulWidget {
   final List<String> media;
   final String recipientId;
@@ -40,8 +42,8 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
           return Dialog(
             // The background color
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(
+              padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // The loading indicator
@@ -49,7 +51,7 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   SizedBox(
-                    height: 15,
+                    width: 15,
                   ),
                   // Some text
                   Text('Loading...')

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/story.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
 import 'package:insta_node_app/views/story/widgets/story_card.dart';
@@ -25,22 +26,16 @@ class _StoryListWidgetState extends State<StoryListWidget> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => MediaGalleryStoryScreen()));
               } else {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dismissible(
-                        key: UniqueKey(),
-                        direction: DismissDirection.down,
-                        onDismissed: (_) => Navigator.of(context).pop(),
-                        child: Dialog(
-                          insetPadding: const EdgeInsets.all(0),
-                          child: WinterStoriesPage(
-                            listStories: widget.stories,
-                            initPage: index,
-                          ),
-                        ),
-                      );
-                    });
+                showModalBottomSheetCustom(
+                    context,
+                    WinterStoriesPage(
+                      listStories: widget.stories,
+                      initPage: index,
+                    ),
+                    Config(
+                        useSafeArea: true,
+                        showDragHandle: false,
+                        barrierColor: Colors.black));
               }
             },
             child: StoryCardWidget(

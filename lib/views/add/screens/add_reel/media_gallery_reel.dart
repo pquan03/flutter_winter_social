@@ -1,9 +1,10 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
+import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/views/add/screens/widgets/preview_video_edit.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/media_services.dart';
@@ -40,7 +41,6 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        print('load more');
         MediaServices()
             .loadAssets(selectedAlbum!, _currentPage + 1)
             .then((value) {
@@ -58,18 +58,6 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-  }
-
-  void handleRecordVideo() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? cameraVideo =
-        await picker.pickVideo(source: ImageSource.camera);
-    if (cameraVideo == null) return;
-    // convert xfile to file
-    final convertToFile = File(cameraVideo.path);
-    if (!mounted) return;
-    Navigator.of(context)
-        .push(createRoute(PreviewEditVideoScreen(videoFile: convertToFile)));
   }
 
   @override
@@ -117,7 +105,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
           child: Container(
             height: 50,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.dPaddingSmall),
             child: Row(
               children: [
                 DropdownButton<AssetPathEntity>(
@@ -179,7 +167,10 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         )),
-                    child: const Icon(Icons.camera_alt_outlined),
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
@@ -193,20 +184,22 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
             controller: _scrollController,
             children: [
               assetList.isEmpty
-                  ? GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: 10,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 2,
+                  ? LoadingShimmer(
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        itemCount: 10,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 2,
+                          mainAxisSpacing: 2,
+                        ),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            color: Colors.grey,
+                          );
+                        },
                       ),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          color: Colors.grey,
-                        );
-                      },
                     )
                   : GridView.builder(
                       shrinkWrap: true,
@@ -228,6 +221,18 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
         ],
       ),
     );
+  }
+
+  void handleRecordVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? cameraVideo =
+        await picker.pickVideo(source: ImageSource.camera);
+    if (cameraVideo == null) return;
+    // convert xfile to file
+    final convertToFile = File(cameraVideo.path);
+    if (!mounted) return;
+    Navigator.of(context)
+        .push(createRoute(PreviewEditVideoScreen(videoFile: convertToFile)));
   }
 
   Widget assetWidget(AssetEntity assetEntity, int index) {

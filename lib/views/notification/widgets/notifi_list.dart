@@ -14,6 +14,8 @@ import 'package:insta_node_app/views/post/screens/explore_list_post.dart';
 import 'package:insta_node_app/views/profile/screens/other_profile.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constants/dimension.dart';
+
 class NotifiList extends StatefulWidget {
   const NotifiList({super.key});
 
@@ -59,11 +61,31 @@ class _NotifiListState extends State<NotifiList> {
             itemCount: notifications.length,
             itemBuilder: (context, index) {
               final notiItem = notifications[index];
-              return Container(
-                color:
-                    notiItem.isRead == true ? Colors.white : Colors.grey[400],
-                child: buildNotifiItem(notiItem, context),
-              );
+              return StreamBuilder<Object>(
+                  stream: null,
+                  builder: (context, snapshot) {
+                    return notiItem.isRead == true
+                        ? buildNotifiItem(notiItem, context)
+                        : Row(
+                            children: [
+                              Expanded(
+                                  child: buildNotifiItem(notiItem, context)),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Container(
+                                height: 10,
+                                width: 10,
+                                margin: const EdgeInsets.only(
+                                    right: Dimensions.dPaddingSmall),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              )
+                            ],
+                          );
+                  });
             },
           ),
         );
@@ -110,10 +132,16 @@ class _NotifiListState extends State<NotifiList> {
       ),
       title: Text(
         notiItem.text!,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style: TextStyle(
+            fontSize: 16,
+            fontWeight: notiItem.isRead! ? null : FontWeight.bold),
       ),
       subtitle: Text(
-        convertTimeAgo(notiItem.createdAt!),
+        convertTimeAgoNotifiCustom(notiItem.createdAt!),
+        style: TextStyle(
+            fontSize: 14,
+            fontWeight: notiItem.isRead! ? null : FontWeight.bold,
+            color: notiItem.isRead! ? null : Colors.blue),
       ),
       trailing: trailingNoti(notiItem),
     );

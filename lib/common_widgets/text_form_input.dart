@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/dimension.dart';
 
 class TextFormIntput extends StatefulWidget {
   final TextEditingController controller;
@@ -39,9 +40,8 @@ class _TextFormIntputState extends State<TextFormIntput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(Dimensions.dPaddingSmall),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
             color: _focusNode.hasFocus ? Colors.grey[700]! : Colors.grey[400]!,

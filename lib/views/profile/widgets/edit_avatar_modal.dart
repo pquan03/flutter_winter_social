@@ -19,35 +19,22 @@ class EditAvatarModal extends StatefulWidget {
 }
 
 class _EditAvatarModalState extends State<EditAvatarModal> {
-
-
   Future<void> callRestorablePicker(Auth auth) async {
-    final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => MediaImageScreen(maxCount: 5, requestType: RequestType.image, isChangeAvatar: true,)));
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => MediaImageScreen(
+                  maxCount: 5,
+                  requestType: RequestType.image,
+                  isChangeAvatar: true,
+                )));
     if (!mounted) return;
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) {
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // The loading indicator
-                  CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  // Some text
-                  Text('Loading...')
-                ],
-              ),
-            ),
-          );
-        });
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
     if (result == null) {
       Navigator.of(context).pop();
       return;

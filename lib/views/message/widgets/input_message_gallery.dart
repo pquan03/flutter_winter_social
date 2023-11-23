@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../../../constants/dimension.dart';
+
 class InputMessageMedia extends StatefulWidget {
   final int maxCount;
   final RequestType requestType;
@@ -65,7 +67,8 @@ class _InputMessageMediaState extends State<InputMessageMedia> {
                 alignment: Alignment.center,
                 height: 50,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: Dimensions.dPaddingSmall),
                 child: DropdownButton<AssetPathEntity>(
                   value: selectedAlbum,
                   onChanged: (AssetPathEntity? value) async {
