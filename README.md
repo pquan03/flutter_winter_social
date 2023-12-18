@@ -36,7 +36,7 @@ SocialApp is a social networking application built with Flutter on the client si
     * change profile info
     * Follow / Unfollow Users
     * show user's post and reel that user post
-    * show list user's flower and user's following
+    * show list user's follower and user's following
 * Notifications Feed showing recent likes / comments of your posts + new followers
 * Dark Mode Support
 * Stories/Status
