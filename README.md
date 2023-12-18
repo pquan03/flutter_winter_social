@@ -7,11 +7,34 @@ SocialApp is a social networking application built with Flutter on the client si
 
 | **Client Side**                                 | **Server Side**                                 |
 |--------------------------------------------------|-------------------------------------------------|
-| [Expo](https://docs.expo.dev/)                   | [Node.js](https://nodejs.org/)                  |
-| [React Native](https://reactnative.dev/)         | [Express.js](https://expressjs.com/)            |
-| [Redux](https://redux.js.org/)                   | [MongoDB](https://www.mongodb.com/)             |
-| [TypeScript](https://www.typescriptlang.org/)    | [TypeScript](https://www.typescriptlang.org/)  |
+| [Flutter](https://docs.flutter.dev/)             | [Node.js](https://nodejs.org/)                  |
+| [Bloc](https://bloclibrary.dev/#/)         | [Express.js](https://expressjs.com/)            |
+| [Provider](https://pub.dev/packages/provider)                   | [MongoDB](https://www.mongodb.com/)             |
+|     | [TypeScript](https://www.typescriptlang.org/)  |
 | [Socket.IO](https://socket.io/)                  | [Socket.IO](https://socket.io/)                 |
+
+## Features
+
+* Custom photo feed
+* Post photo posts from camera or gallery
+    * Like posts
+    * Comment on posts
+        * View all comments on a post
+* Search for users
+* Realtime Messaging and Sending images
+* Deleting Posts
+* Profile Pages
+    * Change profile picture
+    * Change username
+    * Follow / Unfollow Users
+    * Change image view from grid layout to feed layout
+    * Add your own bio
+* Notifications Feed showing recent likes / comments of your posts + new followers
+* Swipe to delete notification
+* Dark Mode Support
+* Stories/Status
+* Used Provider to manage state
+
 
 #  Screens
 
