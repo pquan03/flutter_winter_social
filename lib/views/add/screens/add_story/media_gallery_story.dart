@@ -99,7 +99,6 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 },
                 child: const Icon(
                   Icons.close,
-                  color: Colors.white,
                   size: 30,
                 )),
             const SizedBox(
@@ -110,10 +109,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                 alignment: Alignment.center,
                 child: Text(
                   'Add to story',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
             ),
@@ -128,12 +124,8 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
             child: Row(
               children: [
                 DropdownButton<AssetPathEntity>(
-                  dropdownColor: Colors.black,
                   value: selectedAlbum,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   onChanged: (AssetPathEntity? value) async {
                     setState(() {
                       selectedAlbum = value;
@@ -152,6 +144,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                         children: [
                           Text(
                             album.name,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(
                             width: 8,
@@ -162,9 +155,8 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                               if (snapshot.hasData) {
                                 return Text(
                                   snapshot.data.toString(),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 );
                               } else {
                                 return const SizedBox();

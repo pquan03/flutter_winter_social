@@ -39,15 +39,14 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Icon(
               Icons.close,
-              color: Colors.white,
               size: 30,
             )),
       ),
@@ -106,7 +105,8 @@ class _PreviewEditVideoScreenState extends State<PreviewEditVideoScreen> {
                   onTap: captureFrameAndSave,
                   child: Container(
                     height: 50,
-                    margin: const EdgeInsets.only(right: Dimensions.dPaddingSmall),
+                    margin:
+                        const EdgeInsets.only(right: Dimensions.dPaddingSmall),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(

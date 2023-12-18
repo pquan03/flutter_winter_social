@@ -90,7 +90,6 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                 child: const Icon(
                   Icons.close,
                   size: 30,
-                  color: Colors.white,
                 )),
             const SizedBox(
               width: 12,
@@ -101,9 +100,9 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                 child: Text(
                   'New reel',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.white),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
               ),
             ),
@@ -119,12 +118,8 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
             child: Row(
               children: [
                 DropdownButton<AssetPathEntity>(
-                  dropdownColor: Colors.black,
                   value: selectedAlbum,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   onChanged: (AssetPathEntity? value) async {
                     setState(() {
                       selectedAlbum = value;
@@ -143,6 +138,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                         children: [
                           Text(
                             album.name,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(
                             width: 8,
@@ -153,9 +149,8 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                               if (snapshot.hasData) {
                                 return Text(
                                   snapshot.data.toString(),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 );
                               } else {
                                 return const SizedBox();
@@ -173,10 +168,9 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: ShapeDecoration(
-                        color: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        )),
+                      borderRadius: BorderRadius.circular(20),
+                    )),
                     child: Icon(
                       Icons.camera_alt_outlined,
                       color: Theme.of(context).colorScheme.primary,
@@ -193,7 +187,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
           ListView(
             controller: _scrollController,
             children: [
-              isLoading 
+              isLoading
                   ? LoadingShimmer(
                       child: GridView.builder(
                         shrinkWrap: true,
