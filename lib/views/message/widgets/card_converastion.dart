@@ -8,14 +8,28 @@ import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:provider/provider.dart';
 
 class CardConversationWidget extends StatefulWidget {
-  const CardConversationWidget({super.key, required this.conversation});
+  const CardConversationWidget(
+      {super.key, required this.conversation, required this.currentUserId});
   final Conversations conversation;
+  final String currentUserId;
 
   @override
   State<CardConversationWidget> createState() => _CardConversationWidgetState();
 }
 
 class _CardConversationWidgetState extends State<CardConversationWidget> {
+  bool _isRead = false;
+
+  @override
+  void initState() {
+    if (widget.conversation.isRead!.contains(widget.currentUserId) == true) {
+      setState(() {
+        _isRead = true;
+      });
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
@@ -23,17 +37,26 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
     final recipient = user.sId == widget.conversation.recipients![0].sId
         ? widget.conversation.recipients![1]
         : widget.conversation.recipients![0];
-    final fontWeight = widget.conversation.isRead!.contains(user.sId)
-        ? FontWeight.normal
-        : FontWeight.bold;
+    final fontWeight = _isRead ? FontWeight.normal : FontWeight.bold;
     final isOnline = OnlineBloc().state.contains(recipient.sId);
     return InkWell(
       onTap: () async {
         handleReadMessage(user.sId!, token);
-        await Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => MessageScreen(
-                user: recipient,
-                firstListMessages: widget.conversation.messages!)));
+        await Navigator.of(context)
+            .push(MaterialPageRoute(
+                builder: (_) => MessageScreen(
+                    user: recipient,
+                    firstListMessages: widget.conversation.messages!)))
+            .then((value) {
+          if (_isRead) {
+            setState(() {});
+          } else {
+            setState(() {
+              _isRead = true;
+            });
+          }
+          return;
+        });
       },
       child: Container(
         color: Colors.transparent,
@@ -157,14 +180,12 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                               )
                           ],
                         ),
-                        
                       Text(
                         '· ${THelperFunctions.convertTimeAgo(widget.conversation.messages!.first.createdAt!)}',
                         style: TextStyle(fontSize: 14, fontWeight: fontWeight),
                       ),
                       Spacer(),
-                      if (widget.conversation.isRead!.contains(user.sId) ==
-                          false)
+                      if (!_isRead)
                         Container(
                             height: 10,
                             width: 10,
@@ -184,12 +205,15 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
   }
 
   void handleReadMessage(String userId, String token) async {
-    if (widget.conversation.isRead!.contains(userId) == false) {
+    if (!_isRead) {
       await MessageApi().readMessage(widget.conversation.sId!, token);
       if (!mounted) return;
       setState(() {
         widget.conversation.isRead!.add(userId);
+        _isRead = true;
       });
+    } else {
+      return;
     }
   }
 }

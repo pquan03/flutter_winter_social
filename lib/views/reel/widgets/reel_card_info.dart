@@ -41,7 +41,10 @@ class ReelCardInforWidget extends StatelessWidget {
             ),
             Text(
               reel.user!.username!,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .apply(color: Colors.white),
             ),
             SizedBox(
               width: 10,
@@ -56,7 +59,10 @@ class ReelCardInforWidget extends StatelessWidget {
                     border: Border.all(color: Colors.white, width: 1)),
                 child: Text(
                   'Follow',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .apply(color: Colors.white),
                 ),
               ),
           ],
@@ -67,7 +73,10 @@ class ReelCardInforWidget extends StatelessWidget {
         // content
         Text(
           reel.content!,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall!
+              .apply(color: Colors.white),
           maxLines: 3,
         ),
         if (reel.user!.username! != '')
@@ -77,7 +86,10 @@ class ReelCardInforWidget extends StatelessWidget {
         // song name
         Text(
           'Song name: ${reel.user!.username!}',
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall!
+              .apply(color: Colors.white),
         ),
       ],
     );

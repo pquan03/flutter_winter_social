@@ -152,8 +152,10 @@ class _ConversationState extends State<Conversation> {
                               )
                             : Column(
                                 children: chatState.listConversation
-                                    .map((e) =>
-                                        CardConversationWidget(conversation: e))
+                                    .map((e) => CardConversationWidget(
+                                          conversation: e,
+                                          currentUserId: user.sId!,
+                                        ))
                                     .toList(),
                               )
                       ],

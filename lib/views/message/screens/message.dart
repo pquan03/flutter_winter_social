@@ -121,7 +121,7 @@ class _MessageScreenState extends State<MessageScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                 Navigator.pop(context);
               },
               child: const Icon(
                 Icons.arrow_back,
