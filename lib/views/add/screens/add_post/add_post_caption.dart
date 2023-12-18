@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:insta_node_app/views/add/screens/widgets/preview.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../constants/dimension.dart';
@@ -125,13 +125,13 @@ class _AddPostCaptionScreenState extends State<AddPostCaptionScreen> {
             Expanded(
               child: TextField(
                 controller: _captionController,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                 maxLines: null,
                 textDirection: TextDirection.ltr,
-                cursorColor: Colors.green,
                 decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(right: Dimensions.dPaddingSmall),
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding:
+                      EdgeInsets.only(right: Dimensions.dPaddingSmall),
                   hintText: 'Write a caption...',
                   alignLabelWithHint: true,
                   hintStyle: TextStyle(),

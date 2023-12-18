@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/constants/dimension.dart';
+import 'package:insta_node_app/constants/size.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
@@ -45,6 +47,7 @@ class _ConversationState extends State<Conversation> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
+    final dark = THelperFunctions.isDarkMode(context);
     return _isSearch
         ? SearchUserScreen(
             handleBack: handleBack,
@@ -100,26 +103,29 @@ class _ConversationState extends State<Conversation> {
                             padding: const EdgeInsets.only(
                                 top: Dimensions.dPaddingSmall)),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: TSizes.defaultSpace),
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer
-                                .withOpacity(.3),
-                            borderRadius: BorderRadius.circular(8),
+                            color: dark ? Colors.grey[800] : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextField(
                             onTap: () => setState(() {
                               _isSearch = true;
                             }),
                             autofocus: false,
-                            style: TextStyle(fontWeight: FontWeight.bold),
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
+                              contentPadding: const EdgeInsets.all(0),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                size: 18,
+                              ),
                               hintText: "Search",
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
+                              hintStyle: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
                         ),

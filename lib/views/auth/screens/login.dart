@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/constants/size.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
 import 'package:insta_node_app/views/auth/screens/forgot_password.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:insta_node_app/views/auth/screens/signup.dart';
 import 'package:provider/provider.dart';
 
-import '../../../constants/dimension.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,10 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     bool isKeyboardShowing = MediaQuery.of(context).viewInsets.vertical > 0;
     return Scaffold(
-      body: Container(
-        decoration:
-            BoxDecoration(gradient: Gradients.defaultGradientBackground),
-        padding: EdgeInsets.all(16),
+      body: Padding(
+        padding: EdgeInsets.all(TSizes.defaultSpace),
         child: Column(
           children: [
             Container(
@@ -87,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         "Forgot password?",
-                        style: Theme.of(context).textTheme.displaySmall,
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
                   ),
@@ -100,27 +98,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: MediaQuery.of(context).size.height * 0.15,
                     child: Column(
                       children: [
-                        InkWell(
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (_) => const SignUpScreen())),
-                          child: Container(
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: Dimensions.dPaddingMedium),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(24)),
-                              border: Border.all(color: Colors.blue, width: 2),
-                            ),
-                            child: Text(
-                              'Create New Account',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                              onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignUpScreen())),
+                              child: const Text("Create new account")),
                         ),
                         const SizedBox(
                           height: 16,

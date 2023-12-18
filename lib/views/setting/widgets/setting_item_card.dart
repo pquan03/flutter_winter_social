@@ -18,13 +18,11 @@ class SettingItemCard extends StatelessWidget {
       child: Container(
         padding:
             const EdgeInsets.symmetric(vertical: Dimensions.dPaddingMedium),
-        color: Colors.transparent,
         child: Row(
           children: [
             icon,
             SizedBox(width: 16),
-            Text(title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),

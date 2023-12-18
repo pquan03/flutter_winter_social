@@ -5,13 +5,14 @@ import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
-import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
 import 'package:insta_node_app/views/add/screens/widgets/show_select_image_post.dart';
 import 'package:insta_node_app/views/add/screens/widgets/sliver_appbar_delegate.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class MediaGalleryPostScreen extends StatefulWidget {
   final Function? handleNaviTapped;
@@ -30,10 +31,17 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
   AssetEntity? selectedAsset;
   bool _isSelectOne = true;
   int _currentPage = 1;
+  bool isLoading = true;
 
   @override
   void initState() {
     MediaServices().loadAlbums(RequestType.image, 1).then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
       setState(() {
         albumList = [...value];
         selectedAlbum = value[0];
@@ -46,6 +54,7 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
           if (!mounted) return;
           setState(() {
             selectedAsset = value[0];
+            isLoading = false;
           });
         }
       });
@@ -216,7 +225,7 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
                   ))
             ];
           },
-          body: assetList.isEmpty
+          body: isLoading
               ? LoadingShimmer(
                   child: GridView.builder(
                     shrinkWrap: true,
@@ -362,7 +371,8 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
 
   void handleChooseMedia() async {
     if (_isSelectOne) {
-      final newImageFile = await convertAssetEntityToUint8List(selectedAsset!);
+      final newImageFile =
+          await THelperFunctions.convertAssetEntityToUint8List(selectedAsset!);
       if (!mounted) return;
       var imageEditor = await Navigator.push(
         context,
@@ -394,7 +404,8 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
     } else {
       if (selectedAssetList.isEmpty || selectedAssetList.length == 1) {
         final newImageFile =
-            await convertAssetEntityToUint8List(selectedAsset!);
+            await THelperFunctions.convertAssetEntityToUint8List(
+                selectedAsset!);
         if (!mounted) return;
         var imageEditor = await Navigator.push(
           context,
@@ -425,15 +436,15 @@ class _MediaGalleryPostScreenState extends State<MediaGalleryPostScreen> {
         }
         return;
       }
-      final newImageFiles = await Future.wait(
-          selectedAssetList.map((e) => convertAssetEntityToUint8List(e)));
+      final newImageFiles = await Future.wait(selectedAssetList
+          .map((e) => THelperFunctions.convertAssetEntityToUint8List(e)));
       if (!mounted) return;
       var imageEditor = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ImageEditor(
             images: newImageFiles,
-            allowMultiple: true,
+            // allowMultiple: true,
             features: const ImageEditorFeatures(
               pickFromGallery: false,
               captureFromCamera: false,

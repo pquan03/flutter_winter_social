@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/views/post/screens/explore_list_post.dart';
 
@@ -26,10 +26,7 @@ class ListPostProfileWiget extends StatelessWidget {
               ? Center(
                   child: Text(
                     'No Post',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                 )
               : SingleChildScrollView(
@@ -48,7 +45,6 @@ class ListPostProfileWiget extends StatelessWidget {
                                 opacity: isLoadMore ? 1 : 0,
                                 child: Center(
                                     child: CircularProgressIndicator(
-                                  color: Colors.blue,
                                 )),
                               ));
                         }

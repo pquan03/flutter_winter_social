@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/constants/dimension.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class PreviewScreen extends StatefulWidget {
   final List<AssetEntity>? imagesFile;

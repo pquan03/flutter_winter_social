@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 

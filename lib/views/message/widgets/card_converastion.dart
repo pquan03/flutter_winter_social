@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
-import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:provider/provider.dart';
 
@@ -157,8 +157,9 @@ class _CardConversationWidgetState extends State<CardConversationWidget> {
                               )
                           ],
                         ),
+                        
                       Text(
-                        '· ${convertTimeAgo(widget.conversation.messages!.first.createdAt!)}',
+                        '· ${THelperFunctions.convertTimeAgo(widget.conversation.messages!.first.createdAt!)}',
                         style: TextStyle(fontSize: 14, fontWeight: fontWeight),
                       ),
                       Spacer(),

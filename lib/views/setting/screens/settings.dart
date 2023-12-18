@@ -32,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Instagram settings',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                    style: Theme.of(context).textTheme.headlineMedium,
                   )),
               SettingItemCard(
                   icon: Icon(FontAwesomeIcons.userPlus),
@@ -78,10 +78,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Add account',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .apply(color: Colors.blue),
                     )),
               ),
               GestureDetector(
@@ -127,10 +127,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Log out',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .apply(color: Colors.blue),
                     )),
               ),
             ],

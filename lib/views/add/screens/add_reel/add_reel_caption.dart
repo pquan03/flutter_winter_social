@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:provider/provider.dart';
 
 class AddReelCaptionScreen extends StatefulWidget {
   final File reelFile;
   final Uint8List backgroundImage;
-  const AddReelCaptionScreen({super.key, required this.reelFile, required this.backgroundImage});
+  const AddReelCaptionScreen(
+      {super.key, required this.reelFile, required this.backgroundImage});
 
   @override
   State<AddReelCaptionScreen> createState() => _AddReelCaptionScreenState();
@@ -38,15 +39,23 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
     setState(() {
       _isLoading = true;
     });
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
-    final res = await ReelApi().createReel(_captionController.text, widget.backgroundImage, widget.reelFile, token);
-    if(res is String) {
-      if(!mounted) return;
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final res = await ReelApi().createReel(_captionController.text,
+        widget.backgroundImage, widget.reelFile, token);
+    if (res is String) {
+      if (!mounted) return;
       showSnackBar(context, 'Error', res);
     } else {
-      // navigation to reel screen 
-      if(!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => KeepAlivePage(child: MainAppScreen(initPage: 3,))), (route) => false);
+      // navigation to reel screen
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (_) => KeepAlivePage(
+                      child: MainAppScreen(
+                    initPage: 3,
+                  ))),
+          (route) => false);
     }
     setState(() {
       _isLoading = false;
@@ -57,6 +66,7 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: GestureDetector(
@@ -65,7 +75,6 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
               children: const [
                 Icon(
                   Icons.arrow_back,
-                  color: Colors.black,
                   size: 30,
                 ),
                 SizedBox(
@@ -73,10 +82,6 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
                 ),
                 Text(
                   'New reel',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                  ),
                 ),
               ],
             )),
@@ -96,33 +101,23 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.memory(widget.backgroundImage, fit: BoxFit.cover,))),
+                    child: Image.memory(
+                      widget.backgroundImage,
+                      fit: BoxFit.cover,
+                    ))),
           ),
           const SizedBox(
             height: 20,
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.dPaddingMedium),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.dPaddingMedium),
             child: TextField(
-              cursorColor: Colors.green,
               controller: _captionController,
               decoration: InputDecoration(
-                enabledBorder: UnderlineInputBorder(
-                  //<-- SEE HERE
-                  borderSide:
-                      BorderSide(width: 3, color: Colors.grey.withOpacity(.3)),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  //<-- and here
-                  borderSide:
-                      BorderSide(width: 3, color: Colors.grey.withOpacity(.3)),
-                ),
                 hintText: 'Write a caption...',
-                hintStyle: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 16,
-                ),
-                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
               ),
               style: TextStyle(
                 color: Colors.black,
@@ -160,10 +155,6 @@ class _AddReelCaptionScreenState extends State<AddReelCaptionScreen> {
                         alignment: Alignment.center,
                         child: Text(
                           'Back',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54),
                         ),
                       ),
                     ),

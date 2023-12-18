@@ -3,7 +3,7 @@ import 'package:insta_node_app/common_widgets/layout_screen.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/post/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +55,6 @@ class _ExploreListPostScreenState extends State<ExploreListPostScreen> {
                   child: Opacity(
                       opacity: _isLoading ? 1.0 : 0.0,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
                       )),
                 ),
               );

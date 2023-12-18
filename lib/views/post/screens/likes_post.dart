@@ -3,7 +3,7 @@ import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/profile/screens/other_profile.dart';
 import 'package:provider/provider.dart';
 

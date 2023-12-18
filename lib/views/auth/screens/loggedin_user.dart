@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/button_widget.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/constants/size.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/auth/screens/login.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:insta_node_app/views/auth/screens/signup.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,9 +95,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            gradient: Gradients.defaultGradientBackground),
+        padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Column(
           children: [
             Container(
@@ -119,7 +117,8 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                         return InkWell(
                           onTap: () => _login(user.refreshToken, index),
                           child: Container(
-                            margin: const EdgeInsets.only(bottom: Dimensions.dPaddingSmall),
+                            margin: const EdgeInsets.only(
+                                bottom: Dimensions.dPaddingSmall),
                             decoration: BoxDecoration(
                                 border:
                                     Border.all(color: Colors.grey, width: 2),
@@ -138,7 +137,6 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                                       _deleteUserLoggined(user.username),
                                   icon: Icon(
                                     Icons.delete,
-                                    color: Colors.red,
                                   )),
                             ),
                           ),
@@ -151,9 +149,9 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const LoginScreen()));
               },
-              child: const Text(
+              child: Text(
                 'Login with another account',
-                style: TextStyle(fontSize: 18, color: Colors.black),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
             Spacer(),
@@ -161,15 +159,13 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
               height: MediaQuery.of(context).size.height * 0.12,
               child: Column(
                 children: [
-                  ButtonWidget(
-                    text: 'Create new account',
-                    textColor: Colors.black,
-                    backgroundColor: Colors.transparent,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
-                    },
-                    borderColor: Colors.blue,
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen())),
+                        child: const Text("Create new account")),
                   ),
                   const SizedBox(
                     height: 16,

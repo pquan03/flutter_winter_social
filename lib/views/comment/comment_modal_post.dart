@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/bloc/comment_bloc/comment_event.dart';
 import 'package:insta_node_app/bloc/comment_bloc/comment_bloc.dart';
 import 'package:insta_node_app/bloc/comment_bloc/comment_state.dart';
+import 'package:insta_node_app/constants/size.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/views/comment/comment_card.dart';
 import 'package:provider/provider.dart';
 
@@ -123,8 +125,8 @@ class _CommentModalState extends State<CommentModal> {
                               ),
                               Expanded(
                                   child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: TSizes.defaultSpace),
                                 child: TextField(
                                   onTap: () {
                                     if (widget.ratio == 1) {
@@ -141,13 +143,9 @@ class _CommentModalState extends State<CommentModal> {
                                       });
                                     }
                                   },
-                                  cursorColor: Colors.green,
                                   controller: _commentController,
                                   focusNode: _commentFocus,
                                   autofocus: false,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
                                   decoration: InputDecoration(
                                       prefix: tag != null
                                           ? Container(
@@ -166,13 +164,16 @@ class _CommentModalState extends State<CommentModal> {
                                             )
                                           : null,
                                       hintText: 'Add a comment...',
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium,
                                       border: InputBorder.none),
                                 ),
                               )),
                               IconButton(
                                 onPressed: () async {
-                                  if (tag != null) {
+                                  if (tag != null &&
+                                      _commentController.text.isNotEmpty) {
                                     context.read<CommentBloc>().add(
                                         CreateReplyEvent(
                                             commentRootId:
@@ -187,22 +188,23 @@ class _CommentModalState extends State<CommentModal> {
                                       _isShowReply = true;
                                     });
                                   } else {
-                                    // final msg = {
-                                    //   'text': 'has commented on your post',
-                                    //   'recipients': [
-                                    //     widget.post.userPost!.sId!
-                                    //   ],
-                                    //   'url': widget.post.sId,
-                                    //   'content': '',
-                                    //   'image': widget.post.images![0],
-                                    //   'user': {
-                                    //     'sId': user.sId,
-                                    //     'username': user.username,
-                                    //     'avatar': user.avatar,
-                                    //   },
-                                    // };
-                                    // await NotifiApi().createNotification(msg, accessToken);
-                                    // if(!mounted) return;
+                                    final msg = {
+                                      'text': 'has commented on your post',
+                                      'recipients': [
+                                        widget.post.userPost!.sId!
+                                      ],
+                                      'url': widget.post.sId,
+                                      'content': '',
+                                      'image': widget.post.images![0],
+                                      'user': {
+                                        'sId': user.sId,
+                                        'username': user.username,
+                                        'avatar': user.avatar,
+                                      },
+                                    };
+                                    await NotifiApi()
+                                        .createNotification(msg, accessToken);
+                                    if (!mounted) return;
                                     context.read<CommentBloc>().add(
                                         CreateCommentEvent(
                                             type: 'post',

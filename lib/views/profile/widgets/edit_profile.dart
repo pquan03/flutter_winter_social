@@ -236,8 +236,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: Dimensions.dPaddingMedium),
         decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border(bottom: BorderSide(color: Colors.grey))),
+          color: Colors.transparent,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -275,7 +275,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             )
                           : null,
                       hintStyle: TextStyle(color: Colors.white),
-                      border: InputBorder.none,
                     ),
                   ),
           ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/views/reel/screens/explore_list_reel.dart';
 

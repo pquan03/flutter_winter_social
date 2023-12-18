@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 
 class CallingScreen extends StatefulWidget {

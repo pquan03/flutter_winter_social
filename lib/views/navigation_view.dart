@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/notify.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/add/screens/add.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
@@ -81,6 +82,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
     final auth = Provider.of<AuthProvider>(context).auth;
     return PageView(
       controller: _pageControllerWithAdd,
@@ -92,7 +94,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
         ),
         KeepAlivePage(
           child: Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: PageView(
               physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
@@ -110,9 +111,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 child: CurvedNavigationBar(
                   animationDuration: const Duration(milliseconds: 300),
                   index: _currentIndex,
-                  color: Theme.of(context).colorScheme.primary,
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+                  color: dark ? Colors.black : Colors.white,
+                  backgroundColor: dark ? Colors.white : Colors.black,
+                  buttonBackgroundColor: dark ? Colors.black : Colors.white,
                   letIndexChange: (value) {
                     if (value == 2) {
                       handleNaviTapped(0);
@@ -193,9 +194,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
       ];
 
   Widget iconWidget(int index, IconData iconActive, IconData iconInactive) {
-    return Icon(
-      index == _currentIndex ? iconActive : iconInactive,
-      color: Theme.of(context).colorScheme.secondary,
-    );
+    final dark = THelperFunctions.isDarkMode(context);
+    return Icon(index == _currentIndex ? iconActive : iconInactive,
+        color: index == _currentIndex
+            ? dark
+                ? Colors.white
+                : Colors.black
+            : Colors.grey.withOpacity(0.8));
   }
 }

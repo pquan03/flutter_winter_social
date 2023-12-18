@@ -5,12 +5,14 @@ import 'package:image_editor_plus/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
+import 'package:insta_node_app/constants/size.dart';
 import 'package:insta_node_app/utils/animate_route.dart';
-import 'package:insta_node_app/utils/convert_assest_entity_to_uint8list.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/add/screens/add_post/add_post_caption.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:insta_node_app/views/add/screens/add_story/show_stories.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class MediaGalleryStoryScreen extends StatefulWidget {
   final Function? handleNaviTapped;
@@ -32,10 +34,17 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
   bool _isSelectOne = true;
   double aspectRatio = 1;
   int _currentPage = 1;
+  bool isLoading = true;
 
   @override
   void initState() {
     MediaServices().loadAlbums(RequestType.all, 1).then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
       setState(() {
         albumList = value;
         selectedAlbum = value[0];
@@ -43,6 +52,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
       MediaServices().loadAssets(selectedAlbum!, 1).then((value) {
         setState(() {
           assetList = value;
+          isLoading = false;
         });
       });
     });
@@ -72,8 +82,8 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         toolbarHeight: 50,
         automaticallyImplyLeading: false,
@@ -112,7 +122,7 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Container(
-            height: 50,
+            height: TSizes.appBarHeight,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -167,33 +177,33 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
                   }).toList(),
                 ),
                 const Spacer(),
-                ElevatedButton(
-                  onPressed: () {
+                InkWell(
+                  onTap: () {
                     setState(() {
                       selectedAssetList.clear();
                       _isSelectOne = !_isSelectOne;
                     });
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[900],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                  child: !_isSelectOne
-                      ? const Text('Cancel',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold))
-                      : const Text(
-                          'Select',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: !_isSelectOne
+                        ? Text('Cancel',
+                            style: Theme.of(context).textTheme.bodyLarge)
+                        : Text(
+                            'Select',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
-      body: assetList.isEmpty
+      body: isLoading
           ? LoadingShimmer(
               child: GridView.builder(
                 shrinkWrap: true,
@@ -396,14 +406,15 @@ class _MediaGalleryStoryScreenState extends State<MediaGalleryStoryScreen> {
               }
             } else {
               final newImageFile =
-                  await convertAssetEntityToUint8List(assetEntity);
+                  await THelperFunctions.convertAssetEntityToUint8List(
+                      assetEntity);
               if (!mounted) return;
               var imageEditor = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ImageEditor(
                     image: newImageFile,
-                    allowMultiple: true,
+                    // allowMultiple: true,
                     features: const ImageEditorFeatures(
                       pickFromGallery: false,
                       captureFromCamera: false,

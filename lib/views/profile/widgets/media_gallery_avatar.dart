@@ -6,6 +6,7 @@ import 'package:image_editor_plus/utils.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 import '../../../constants/dimension.dart';
 

@@ -5,7 +5,7 @@ import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/reel/widgets/reel_card_info.dart';
 import 'package:insta_node_app/views/reel/widgets/reel_card_sidebar.dart';
 import 'package:insta_node_app/views/reel/widgets/reel_modal.dart';

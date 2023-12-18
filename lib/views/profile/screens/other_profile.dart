@@ -12,14 +12,13 @@ import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/profile/widgets/list_post.dart';
 import 'package:insta_node_app/views/profile/widgets/list_reel.dart';
 import 'package:insta_node_app/views/profile/widgets/profile_user_info.dart';
 import 'package:provider/provider.dart';
 
-import '../../../constants/dimension.dart';
 
 class OtherProfileScreen extends StatefulWidget {
   final String userId;
@@ -209,6 +208,7 @@ class _ProfileScreenState extends State<OtherProfileScreen>
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context).auth;
+    final dark = THelperFunctions.isDarkMode(context);
     return _isLoading
         ? Scaffold(
             appBar: AppBar(
@@ -255,27 +255,25 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                 child: GestureDetector(
                                   onTap: () => handleFollowUser(auth),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: Dimensions.dPaddingSmall),
                                     alignment: Alignment.center,
+                                    height: 40,
                                     decoration: BoxDecoration(
                                         color: auth.user!.following!
                                                 .contains(user.sId)
                                             ? Theme.of(context)
                                                 .colorScheme
                                                 .primaryContainer
-                                            : Colors.blue,
+                                            : Colors.black.withOpacity(.1),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Text(
-                                        auth.user!.following!.contains(user.sId)
-                                            ? 'Following'
-                                            : 'Follow',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        )),
+                                      auth.user!.following!.contains(user.sId)
+                                          ? 'Following'
+                                          : 'Follow',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -323,21 +321,18 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                                                     listMessage)));
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: Dimensions.dPaddingSmall),
+                                    height: 40,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primaryContainer
-                                            .withOpacity(0.4),
+                                        color: Colors.black.withOpacity(.1),
                                         borderRadius:
                                             BorderRadius.circular(10)),
-                                    child: Text('Message',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        )),
+                                    child: Text(
+                                      'Message',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -359,11 +354,13 @@ class _ProfileScreenState extends State<OtherProfileScreen>
                           floating: true,
                           delegate: _SliverAppBarDelegate(
                             TabBar(
+                              labelColor: dark ? Colors.white : Colors.black,
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              indicatorWeight: 1,
                               indicatorColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              labelColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              unselectedLabelColor: Colors.grey[400],
+                                  dark ? Colors.white : Colors.black,
+                              unselectedLabelColor:
+                                  Colors.black.withOpacity(.2),
                               controller: _tabController,
                               tabs: const [
                                 Tab(
@@ -413,7 +410,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Theme.of(context).colorScheme.primary,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: _tabBar,
     );
   }

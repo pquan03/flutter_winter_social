@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/common_widgets/like_animation.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/views/post/widgets/post_card_actions.dart';

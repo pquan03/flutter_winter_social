@@ -4,10 +4,10 @@ import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/post_api.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/post/widgets/post_card_body.dart';
 import 'package:insta_node_app/views/post/widgets/post_card_desc.dart';
 import 'package:insta_node_app/views/post/widgets/post_card_header.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {

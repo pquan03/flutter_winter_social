@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/constants/dimension.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/utils/repace_mp4_to_png.dart';
-import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/views/message/widgets/call_message.dart';
 import 'package:insta_node_app/views/message/widgets/media_message.dart';
 import 'package:insta_node_app/views/message/widgets/post_message.dart';
@@ -78,7 +77,7 @@ class CardMessageWidget extends StatelessWidget {
                                       Colors.white.withOpacity(0.5),
                                       BlendMode.srcATop),
                                   child: ImageHelper.loadImageNetWork(
-                                      replaceMp4ToPng(
+                                      THelperFunctions.replaceMp4ToPng(
                                           message.linkStory!.media!.media),
                                       fit: BoxFit.contain,
                                       borderRadius: BorderRadius.all(
@@ -111,7 +110,7 @@ class CardMessageWidget extends StatelessWidget {
                   ? CallMessageWidget(
                       call: message.call!, createAt: message.createdAt!)
                   : Container(),
-              Text(convertTimeAgo(message.createdAt!),
+              Text( THelperFunctions.convertTimeAgo(message.createdAt!),
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 12,

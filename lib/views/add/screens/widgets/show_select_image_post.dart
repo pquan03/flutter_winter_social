@@ -3,6 +3,7 @@ import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/views/reel/widgets/video_card.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class ShowSelectImagePostWidget extends StatefulWidget {
   final AssetEntity? selectedAsset;
@@ -42,17 +43,18 @@ class _ShowSelectImagePostWidgetState extends State<ShowSelectImagePostWidget> {
                                 ? VideoCardWidget(
                                     videoFile: snapShot.data!,
                                   )
-                                : Crop(
-                                    alwaysShowGrid: true,
-                                    aspectRatio: aspectRatio,
-                                    key: cropKey,
-                                    image: AssetEntityImageProvider(
-                                      widget.selectedAsset!,
-                                      isOriginal: false,
-                                      thumbnailSize:
-                                          const ThumbnailSize.square(1000),
-                                    ),
-                                  );
+                                : 
+                        Crop(
+                            alwaysShowGrid: true,
+                            aspectRatio: aspectRatio,
+                            key: cropKey,
+                            image: AssetEntityImageProvider(
+                              widget.selectedAsset!,
+                              isOriginal: false,
+                              thumbnailSize:
+                                  const ThumbnailSize.square(1000),
+                            ),
+                          );
                       } else {
                         return Container(
                           color: Colors.grey,

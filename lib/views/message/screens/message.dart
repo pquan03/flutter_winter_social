@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/constants/size.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 import 'package:insta_node_app/bloc/online_bloc/oneline_bloc.dart';
 import 'package:insta_node_app/views/message/widgets/card_message.dart';
@@ -85,7 +86,8 @@ class _MessageScreenState extends State<MessageScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        toolbarHeight: 50,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        toolbarHeight: TSizes.appBarHeight,
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(

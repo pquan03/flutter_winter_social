@@ -122,11 +122,13 @@ class _InputMessageWidgetState extends State<InputMessageWidget> {
             ),
             Expanded(
               child: TextField(
-                cursorColor: Colors.green,
                 onChanged: (value) => setState(() {}),
                 controller: widget.controller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   hintText: 'Message...',
                 ),
               ),

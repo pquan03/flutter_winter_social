@@ -44,15 +44,14 @@ class _PostModalState extends State<PostModal> {
                             alignment: Alignment.center,
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
                               shape: BoxShape.circle,
                               border: Border.fromBorderSide(BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: Theme.of(context).primaryColor,
                               )),
                             ),
                             child: Icon(
                               Icons.bookmark,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).primaryColor,
                               size: 30,
                             ),
                           ),
@@ -72,7 +71,7 @@ class _PostModalState extends State<PostModal> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.fromBorderSide(BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: Theme.of(context).primaryColor,
                               )),
                             ),
                             child: Icon(
@@ -96,7 +95,7 @@ class _PostModalState extends State<PostModal> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.fromBorderSide(BorderSide(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).primaryColor,
                       )),
                     ),
                     child: Icon(

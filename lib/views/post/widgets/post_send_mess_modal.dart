@@ -6,10 +6,10 @@ import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/message_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_event.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:provider/provider.dart';
 
 class PostSendMessModal extends StatefulWidget {

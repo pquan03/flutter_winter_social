@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/auth/screens/loggedin_user.dart';
 import 'package:insta_node_app/views/auth/screens/login.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

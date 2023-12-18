@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/profile/widgets/user_card.dart';
 import 'package:provider/provider.dart';
 
@@ -11,13 +11,13 @@ class FollowUserScreen extends StatefulWidget {
   final String username;
   final List<String> followers;
   final List<String> following;
-  const FollowUserScreen(
-      {super.key,
-      required this.initIndex,
-      required this.username,
-      required this.followers,
-      required this.following,
-      });
+  const FollowUserScreen({
+    super.key,
+    required this.initIndex,
+    required this.username,
+    required this.followers,
+    required this.following,
+  });
 
   @override
   State<FollowUserScreen> createState() => _FollowUserScreenState();
@@ -36,10 +36,12 @@ class _FollowUserScreenState extends State<FollowUserScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initIndex);
+    _tabController =
+        TabController(length: 2, vsync: this, initialIndex: widget.initIndex);
     getListInfo();
     _tabController.addListener(() {
-      if(_tabController.index != widget.initIndex && (_userFollowers.isEmpty || _userFollowing.isEmpty)) {
+      if (_tabController.index != widget.initIndex &&
+          (_userFollowers.isEmpty || _userFollowing.isEmpty)) {
         getListInfo();
       }
     });
@@ -52,18 +54,19 @@ class _FollowUserScreenState extends State<FollowUserScreen>
   }
 
   void getListInfo() async {
-    final token = Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
+    final token =
+        Provider.of<AuthProvider>(context, listen: false).auth.accessToken!;
     setState(() {
       _isLoading = true;
     });
-    if(_tabController.index == 0)  {
+    if (_tabController.index == 0) {
       final res = await UserApi().getInfoListFollow(widget.followers, token);
-      if(res is List) {
+      if (res is List) {
         setState(() {
           _userFollowers = [...res];
         });
       } else {
-        if(!mounted) return;
+        if (!mounted) return;
         showSnackBar(context, 'Error', res);
       }
       setState(() {
@@ -71,12 +74,12 @@ class _FollowUserScreenState extends State<FollowUserScreen>
       });
     } else {
       final res = await UserApi().getInfoListFollow(widget.following, token);
-      if(res is List) {
+      if (res is List) {
         setState(() {
           _userFollowing = [...res];
         });
       } else {
-        if(!mounted) return;
+        if (!mounted) return;
         showSnackBar(context, 'Error', res);
       }
       setState(() {
@@ -91,6 +94,7 @@ class _FollowUserScreenState extends State<FollowUserScreen>
 
   @override
   Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -119,15 +123,28 @@ class _FollowUserScreenState extends State<FollowUserScreen>
           ],
         ),
         bottom: TabBar(
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorWeight: 1,
+          indicatorColor: dark ? Colors.white : Colors.black,
+          labelColor: dark ? Colors.white : Colors.black,
+          unselectedLabelColor: Colors.black.withOpacity(.2),
           controller: _tabController,
           tabs: <Widget>[
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.followers.length.toString(), style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
-                  const SizedBox(width: 8,),
-                  Text('Followers', style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text(
+                    widget.followers.length.toString(),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    'Followers',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ],
               ),
             ),
@@ -135,9 +152,17 @@ class _FollowUserScreenState extends State<FollowUserScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(widget.following.length.toString(), style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
-                  const SizedBox(width: 8,),
-                  Text('Following', style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
+                  Text(
+                    widget.following.length.toString(),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    'Following',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ],
               ),
             ),
@@ -147,20 +172,26 @@ class _FollowUserScreenState extends State<FollowUserScreen>
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          _isLoading ? Center(child: CircularProgressIndicator(),) :
-          ListView.builder(
-            itemCount: _userFollowers.length,
-            itemBuilder: (context, index) {
-              return UserCardWidget(user: _userFollowers[index]);
-            },
-          ),
-          _isLoading ? Center(child: CircularProgressIndicator(),) :
-          ListView.builder(
-            itemCount: _userFollowing.length,
-            itemBuilder: (context, index) {
-              return UserCardWidget(user: _userFollowing[index]);
-            },
-          ),
+          _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: _userFollowers.length,
+                  itemBuilder: (context, index) {
+                    return UserCardWidget(user: _userFollowers[index]);
+                  },
+                ),
+          _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: _userFollowing.length,
+                  itemBuilder: (context, index) {
+                    return UserCardWidget(user: _userFollowing[index]);
+                  },
+                ),
         ],
       ),
     );

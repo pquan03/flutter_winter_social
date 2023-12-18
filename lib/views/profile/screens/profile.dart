@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
+import 'package:insta_node_app/constants/size.dart';
 import 'package:insta_node_app/models/auth.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/reel.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/reel_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/add/screens/add_post/media_gallery_post.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/profile/widgets/choose_account_modal.dart';
 import 'package:insta_node_app/views/profile/widgets/edit_profile.dart';
 import 'package:insta_node_app/views/profile/widgets/list_post.dart';
@@ -138,8 +139,10 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).auth.user!;
+    final dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         centerTitle: false,
         titleSpacing: 16,
@@ -204,48 +207,44 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Row(
                       children: [
                         Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (!mounted) return;
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => EditProfileScreen(
-                                      user: user,
-                                      onUpdateUser: handleUpdateUser)));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[350],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                side:
-                                    const BorderSide(color: Colors.transparent),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: dark
+                                    ? Colors.white.withOpacity(.1)
+                                    : Colors.black.withOpacity(.1)),
+                            child: IconButton(
+                              onPressed: () {
+                                if (!mounted) return;
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => EditProfileScreen(
+                                        user: user,
+                                        onUpdateUser: handleUpdateUser)));
+                              },
+                              icon: Text(
+                                "Edit profile",
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
-                            ),
-                            child: const Text(
-                              'Edit profile',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: TSizes.spaceBtwItems),
                         Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[350],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                side:
-                                    const BorderSide(color: Colors.transparent),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: dark
+                                    ? Colors.white.withOpacity(.1)
+                                    : Colors.black.withOpacity(.1)),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Text(
+                                "Share profile",
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
-                            child: const Text('Share profile',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16)),
                           ),
                         ),
                       ],
@@ -260,9 +259,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                 floating: true,
                 delegate: _SliverAppBarDelegate(
                   TabBar(
-                    indicatorColor: Theme.of(context).colorScheme.secondary,
-                    labelColor: Theme.of(context).colorScheme.secondary,
-                    unselectedLabelColor: Colors.grey[400],
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 1,
+                    indicatorColor: dark ? Colors.white : Colors.black,
+                    labelColor: dark ? Colors.white : Colors.black,
+                    unselectedLabelColor: Colors.grey.withOpacity(.2),
                     controller: _tabController,
                     tabs: const [
                       Tab(
@@ -312,7 +313,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Theme.of(context).colorScheme.primary,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: _tabBar,
     );
   }

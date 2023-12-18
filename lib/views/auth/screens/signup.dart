@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/auth/screens/signup_layout.dart';
 
 class SignUpScreen extends StatefulWidget {

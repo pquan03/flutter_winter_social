@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
-import 'package:insta_node_app/constants/dimension.dart';
+import 'package:insta_node_app/constants/size.dart';
 import 'package:insta_node_app/views/add/screens/add_story/add_stories_modal.dart';
 import 'package:insta_node_app/views/reel/widgets/video_card.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class ShowStoriesScreen extends StatefulWidget {
   final List<AssetEntity> assets;
@@ -106,7 +107,7 @@ class _ShowStoriesScreenState extends State<ShowStoriesScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: Dimensions.dPaddingSmall),
+              margin: const EdgeInsets.only(top: TSizes.defaultSpace),
               height: MediaQuery.sizeOf(context).height * 0.08,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -27,7 +27,7 @@ class _CommentModelReelState extends State<CommentModelReel> {
   final FocusNode _commentFocus = FocusNode();
   double _ratio = 0.5;
   dynamic tag;
-  bool _isShowReply = false;
+  final bool _isShowReply = false;
 
   @override
   void initState() {

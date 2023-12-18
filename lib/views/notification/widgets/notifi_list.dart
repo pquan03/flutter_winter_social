@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/models/notify.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
-import 'package:insta_node_app/utils/time_ago_custom.dart';
 import 'package:insta_node_app/bloc/noti_bloc/noti_bloc.dart';
 import 'package:insta_node_app/bloc/noti_bloc/noti_event.dart';
 import 'package:insta_node_app/bloc/noti_bloc/noti_state.dart';
@@ -137,7 +137,7 @@ class _NotifiListState extends State<NotifiList> {
             fontWeight: notiItem.isRead! ? null : FontWeight.bold),
       ),
       subtitle: Text(
-        convertTimeAgoNotifiCustom(notiItem.createdAt!),
+        THelperFunctions.convertTimeAgoNotifiCustom(notiItem.createdAt!),
         style: TextStyle(
             fontSize: 14,
             fontWeight: notiItem.isRead! ? null : FontWeight.bold,

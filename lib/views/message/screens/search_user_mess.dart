@@ -6,9 +6,9 @@ import 'package:insta_node_app/models/message.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/user_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:insta_node_app/bloc/chat_bloc/chat_state.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/message/screens/message.dart';
 import 'package:provider/provider.dart';
 
@@ -30,10 +30,36 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
     super.dispose();
   }
 
+  void textFieldChange(value, accessToken) async {
+    setState(() {
+      users = [];
+    });
+    if (value != '') {
+      setState(() {
+        _isLoadingShimmer = true;
+      });
+      final res = await UserApi().searchUser(value, accessToken);
+      if (res is String) {
+        if (!mounted) return;
+        showSnackBar(context, 'Error', res);
+      } else {
+        setState(() {
+          users = [...res];
+          _isLoadingShimmer = false;
+        });
+      }
+    } else {
+      setState(() {
+        users = [];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final accessToken = Provider.of<AuthProvider>(context).auth.accessToken!;
     final currentUser = Provider.of<AuthProvider>(context).auth.user!;
+    final dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -49,44 +75,21 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
                 width: 16,
               ),
               Expanded(
-                child: TextField(
-                  onChanged: (value) async {
-                    setState(() {
-                      users = [];
-                    });
-                    if (value != '') {
-                      setState(() {
-                        _isLoadingShimmer = true;
-                      });
-                      final res =
-                          await UserApi().searchUser(value, accessToken);
-                      if (res is String) {
-                        if (!mounted) return;
-                        showSnackBar(context, 'Error', res);
-                      } else {
-                        setState(() {
-                          users = [...res];
-                          _isLoadingShimmer = false;
-                        });
-                      }
-                    } else {
-                      setState(() {
-                        users = [];
-                      });
-                    }
-                  },
-                  cursorColor: Colors.green,
-                  controller: _searchController,
-                  autofocus: true,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w700),
-                  decoration: const InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                    border: InputBorder.none,
+                child: SizedBox(
+                  height: 40,
+                  child: TextField(
+                    onChanged: (value) => textFieldChange(value, accessToken),
+                    controller: _searchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      enabledBorder: InputBorder.none,
+                      fillColor: dark ? Colors.grey[800] : Colors.grey[200],
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 0),
+                      hintText: 'Search',
+                      hintStyle: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
                 ),
               )

@@ -1,6 +1,5 @@
 import 'package:insta_node_app/models/conversation.dart';
 import 'package:insta_node_app/models/message.dart';
-import 'package:insta_node_app/recources/notifi_api.dart';
 import 'package:insta_node_app/recources/repository.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 
@@ -50,24 +49,24 @@ class MessageApi {
     try {
       final res = await _repository.postApi('message', data, token);
       SocketConfig.createMessage(res['message']);
-      final newData = data as dynamic;
-      final text = newData['media'].isNotEmpty
-          ? 'send ${newData['media'].length} photo'
-          : newData['text'];
-      final msg = {
-        'text': 'Send you a messsage: $text',
-        'recipients': [newData['recipientId']],
-        'url': newData['conversationId'],
-        'content': newData['text'],
-        'type': 'message',
-        'image': '',
-        'user': {
-          'sId': newData['senderId'],
-          'username': newData['username'],
-          'avatar': newData['avatar'],
-        },
-      };
-      await NotifiApi().createNotification(msg, token);
+      // final newData = data as dynamic;
+      // final text = newData['media'].isNotEmpty
+      //     ? 'send ${newData['media'].length} photo'
+      //     : newData['text'];
+      // final msg = {
+      //   'text': 'Send you a messsage: $text',
+      //   'recipients': [newData['recipientId']],
+      //   'url': newData['conversationId'],
+      //   'content': newData['text'],
+      //   'type': 'message',
+      //   'image': '',
+      //   'user': {
+      //     'sId': newData['senderId'],
+      //     'username': newData['username'],
+      //     'avatar': newData['avatar'],
+      //   },
+      // };
+      // await NotifiApi().createNotification(msg, token);
       return res;
     } catch (err) {
       return err.toString();

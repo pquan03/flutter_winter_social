@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_node_app/constants/size.dart';
 
 class LayoutScreen extends StatefulWidget {
   final bool isClose;
@@ -25,8 +26,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
-        toolbarHeight: 50,
+        toolbarHeight: TSizes.appBarHeight,
         actions: widget.action != null ? [...widget.action!] : null,
         title: Row(
           children: [
@@ -47,11 +49,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
             ),
             Text(
               widget.title!,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
+import 'package:insta_node_app/constants/size.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
 import 'package:insta_node_app/common_widgets/loading_shimmer.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/user_api.dart';
 import 'package:insta_node_app/views/post/screens/explore_list_post.dart';
 import 'package:insta_node_app/views/profile/screens/other_profile.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
 import 'package:insta_node_app/views/search/widgets/temp_loading_shimmer_search.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -79,10 +80,38 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void textFieldChange(value) async {
+    setState(() {
+      users = [];
+    });
+    if (value != '') {
+      setState(() {
+        _isLoadingShimmer = true;
+      });
+      final res = await UserApi().searchUser(value, widget.accessToken);
+      if (res is String) {
+        if (!mounted) return;
+        showSnackBar(context, 'Error', res);
+      } else {
+        setState(() {
+          users = [...res];
+          _isLoadingShimmer = false;
+        });
+      }
+    } else {
+      setState(() {
+        users = [];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          toolbarHeight: TSizes.appBarHeight,
           title: Row(
             children: [
               _isSearch
@@ -107,56 +136,25 @@ class _SearchScreenState extends State<SearchScreen> {
                     )
                   : Container(),
               Expanded(
-                child: Container(
-                  height: AppBar().preferredSize.height * 0.7,
-                  decoration: ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withOpacity(.3),
-                  ),
+                child: SizedBox(
+                  height: 40,
                   child: TextField(
-                    onChanged: (value) async {
-                      setState(() {
-                        users = [];
-                      });
-                      if (value != '') {
-                        setState(() {
-                          _isLoadingShimmer = true;
-                        });
-                        final res = await UserApi()
-                            .searchUser(value, widget.accessToken);
-                        if (res is String) {
-                          if (!mounted) return;
-                          showSnackBar(context, 'Error', res);
-                        } else {
-                          setState(() {
-                            users = [...res];
-                            _isLoadingShimmer = false;
-                          });
-                        }
-                      } else {
-                        setState(() {
-                          users = [];
-                        });
-                      }
-                    },
+                    onChanged: textFieldChange,
                     onTap: () {
                       setState(() {
                         _isSearch = true;
                       });
                     },
-                    cursorColor: Colors.green,
                     controller: _searchController,
                     autofocus: false,
                     focusNode: _focusNode,
                     decoration: InputDecoration(
+                      fillColor: dark ? Colors.grey[800] : Colors.grey[200],
+                      filled: true,
+                      contentPadding: const EdgeInsets.all(0),
                       prefixIcon: Icon(
                         Icons.search,
-                        size: 25,
-                        color: Theme.of(context).colorScheme.secondary,
+                        size: 18,
                       ),
                       suffixIcon: _searchController.text != ''
                           ? GestureDetector(
@@ -168,13 +166,12 @@ class _SearchScreenState extends State<SearchScreen> {
                               },
                               child: Icon(
                                 Icons.clear,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20,
+                                size: 18,
                               ),
                             )
                           : null,
                       hintText: "Search",
-                      border: InputBorder.none,
+                      hintStyle: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/constants/size.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/common_widgets/button_widget.dart';
 import 'package:insta_node_app/common_widgets/text_form_input.dart';
 import 'package:insta_node_app/views/auth/screens/loading_shimmer_sign_up.dart';
 
-import '../../../constants/dimension.dart';
 
 class SignUpLayout extends StatefulWidget {
   final TextEditingController controller;
@@ -59,10 +59,8 @@ class _SignUpLayoutState extends State<SignUpLayout> {
     return _isLoadingShimmer
         ? LoadingSignUp()
         : Scaffold(
-            body: Container(
-              padding: const EdgeInsets.all(16),
-              decoration:
-                  BoxDecoration(gradient: Gradients.defaultGradientBackground),
+            body: Padding(
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

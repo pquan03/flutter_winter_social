@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/story_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:insta_node_app/views/keep_alive_screen.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';

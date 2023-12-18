@@ -20,10 +20,13 @@ class ReelCardInforWidget extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                if(user!.sId != reel.user!.sId) {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => OtherProfileScreen(userId: reel.user!.sId!)));
+                if (user!.sId != reel.user!.sId) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) =>
+                          OtherProfileScreen(userId: reel.user!.sId!)));
                 } else {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileScreen()));
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => ProfileScreen()));
                 }
               },
               child: CircleAvatar(
@@ -38,29 +41,24 @@ class ReelCardInforWidget extends StatelessWidget {
             ),
             Text(
               reel.user!.username!,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(
               width: 10,
             ),
-            if(user!.following!.contains(reel.user!.sId!) || user.sId != reel.user!.sId!)
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.white, width: 1)),
-              child: Text(
-                'Follow',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
+            if (user!.following!.contains(reel.user!.sId!) ||
+                user.sId != reel.user!.sId!)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: Colors.white, width: 1)),
+                child: Text(
+                  'Follow',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-            ),
           ],
         ),
         SizedBox(
@@ -69,19 +67,17 @@ class ReelCardInforWidget extends StatelessWidget {
         // content
         Text(
           reel.content!,
-          style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.titleSmall,
           maxLines: 3,
         ),
-        if(reel.user!.username! != '')
-        SizedBox(
-          height: 10,
-        ),
+        if (reel.user!.username! != '')
+          SizedBox(
+            height: 10,
+          ),
         // song name
         Text(
           'Song name: ${reel.user!.username!}',
-          style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ],
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/models/post.dart';
-import 'package:insta_node_app/utils/time_ago_custom.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/auth_provider.dart';
@@ -40,7 +40,7 @@ class UserInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10.0),
-        Text(convertTimeAgo(createdAt),
+        Text(THelperFunctions.convertTimeAgo(createdAt),
             style: TextStyle(
               color: Colors.grey[600],
               fontSize: 16.0,

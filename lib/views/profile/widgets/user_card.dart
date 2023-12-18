@@ -14,19 +14,26 @@ class UserCardWidget extends StatelessWidget {
     final currentUser = Provider.of<AuthProvider>(context).auth.user!;
     return GestureDetector(
       onTap: () {
-        if(user.sId! == currentUser.sId) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileScreen()));
+        if (user.sId! == currentUser.sId) {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => ProfileScreen()));
           return;
         }
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => OtherProfileScreen(userId: user.sId!)));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => OtherProfileScreen(userId: user.sId!)));
       },
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(user.avatar!),
-        ),
-        title: Text(user.username!, style: TextStyle( fontSize: 18, fontWeight: FontWeight.bold),),
-        subtitle: Text(user.fullname!, style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600),),
-      ),
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(user.avatar!),
+          ),
+          title: Text(
+            user.username!,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          subtitle: Text(
+            user.fullname!,
+            style: Theme.of(context).textTheme.bodyMedium,
+          )),
     );
   }
 }

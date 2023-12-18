@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/models/post.dart';
 import 'package:insta_node_app/models/story.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/recources/post_api.dart';
 import 'package:insta_node_app/recources/story_api.dart';
-import 'package:insta_node_app/utils/show_snack_bar.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/message/screens/conversation.dart';
 import 'package:insta_node_app/views/notification/screens/notifications.dart';
 import 'package:insta_node_app/views/post/widgets/post_card.dart';
@@ -52,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        color: Theme.of(context).colorScheme.secondary,
         onRefresh: () async {
           _refeshLoad();
         },
@@ -61,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: <Widget>[
             SliverAppBar(
                 centerTitle: false,
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 floating: true,
                 titleSpacing: 0,
                 title: Row(

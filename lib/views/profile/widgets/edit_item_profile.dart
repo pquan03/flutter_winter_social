@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/layout_screen.dart';
+import 'package:insta_node_app/constants/size.dart';
 
 import '../../../constants/dimension.dart';
 
@@ -75,8 +76,7 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
         ),
       ],
       child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: Dimensions.dPaddingSmall),
+        padding: const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
         child: widget.label == 'Gender'
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,6 +137,7 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
               )
             : Column(
                 children: [
+                  Padding(padding: const EdgeInsets.only(top: 16)),
                   Container(
                     margin: const EdgeInsets.only(
                         bottom: Dimensions.dPaddingMedium),
@@ -165,11 +166,7 @@ class _EditItemProfileScreenState extends State<EditItemProfileScreen> {
                     listCannotChange.contains(widget.label)
                         ? 'This is not your username or pin. This name will be visible to your Instagram followers.'
                         : 'Provide your personal information, even if the account is used for a business, a pet or something else. This won\'t be a part of your public profile.',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium,
                   )
                 ],
               ),

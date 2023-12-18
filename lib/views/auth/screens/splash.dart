@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:insta_node_app/common_widgets/image_helper.dart';
-import 'package:insta_node_app/constants/asset_helper.dart';
+import 'package:insta_node_app/utils/helpers/image_helper.dart';
+import 'package:insta_node_app/utils/helpers/asset_helper.dart';
 import 'package:insta_node_app/models/user.dart';
 import 'package:insta_node_app/providers/auth_provider.dart';
 import 'package:insta_node_app/providers/theme.dart';
 import 'package:insta_node_app/recources/auth_api.dart';
 import 'package:insta_node_app/views/auth/screens/loggedin_user.dart';
 import 'package:insta_node_app/views/auth/screens/login.dart';
-import 'package:insta_node_app/views/auth/screens/main_app.dart';
+import 'package:insta_node_app/views/navigation_view.dart';
 import 'package:insta_node_app/utils/socket_config.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

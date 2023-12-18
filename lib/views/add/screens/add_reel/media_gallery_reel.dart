@@ -9,6 +9,7 @@ import 'package:insta_node_app/views/add/screens/widgets/preview_video_edit.dart
 import 'package:insta_node_app/utils/animate_route.dart';
 import 'package:insta_node_app/utils/media_services.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class MediaGalleryReelScreen extends StatefulWidget {
   final Function? handleNaviTapped;
@@ -24,10 +25,17 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
   List<AssetPathEntity> albumList = [];
   List<AssetEntity> assetList = [];
   int _currentPage = 1;
+  bool isLoading = true;
 
   @override
   void initState() {
     MediaServices().loadAlbums(RequestType.video, 1).then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
       setState(() {
         albumList = value;
         selectedAlbum = value[0];
@@ -35,6 +43,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
       MediaServices().loadAssets(selectedAlbum!, 1).then((value) {
         setState(() {
           assetList = value;
+          isLoading = false;
         });
       });
     });
@@ -63,8 +72,8 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         toolbarHeight: 50,
@@ -105,7 +114,8 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
           child: Container(
             height: 50,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.dPaddingSmall),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.dPaddingSmall),
             child: Row(
               children: [
                 DropdownButton<AssetPathEntity>(
@@ -183,7 +193,7 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
           ListView(
             controller: _scrollController,
             children: [
-              assetList.isEmpty
+              isLoading 
                   ? LoadingShimmer(
                       child: GridView.builder(
                         shrinkWrap: true,
@@ -201,21 +211,23 @@ class _MediaGalleryReelScreenState extends State<MediaGalleryReelScreen> {
                         },
                       ),
                     )
-                  : GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: assetList.length,
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 2,
-                      ),
-                      itemBuilder: (context, index) {
-                        AssetEntity assetEntity = assetList[index];
-                        return assetWidget(assetEntity, index);
-                      },
-                    ),
+                  : assetList.isNotEmpty
+                      ? GridView.builder(
+                          shrinkWrap: true,
+                          itemCount: assetList.length,
+                          physics: const BouncingScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 2,
+                            mainAxisSpacing: 2,
+                          ),
+                          itemBuilder: (context, index) {
+                            AssetEntity assetEntity = assetList[index];
+                            return assetWidget(assetEntity, index);
+                          },
+                        )
+                      : Center(child: Text('No video found')),
             ],
           ),
         ],

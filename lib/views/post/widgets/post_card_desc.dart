@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_node_app/common_widgets/modal_bottom_sheet.dart';
 import 'package:insta_node_app/models/post.dart';
-import 'package:insta_node_app/utils/time_ago_custom.dart';
+import 'package:insta_node_app/utils/helpers/helper_functions.dart';
 import 'package:insta_node_app/views/comment/comment_modal_post.dart';
 import 'package:insta_node_app/views/post/screens/likes_post.dart';
 
@@ -72,7 +72,8 @@ class PostCardDesc extends StatelessWidget {
           const SizedBox(
             height: 4,
           ),
-          Text(convertTimeAgo(post.createdAt!), style: TextStyle(fontSize: 16))
+          Text(THelperFunctions.convertTimeAgo(post.createdAt!),
+              style: TextStyle(fontSize: 16))
         ],
       ),
     );

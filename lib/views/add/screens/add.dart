@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_node_app/views/add/screens/add_post/media_gallery_post.dart';
 import 'package:insta_node_app/views/add/screens/add_reel/media_gallery_reel.dart';
 import 'package:insta_node_app/views/add/screens/add_story/media_gallery_story.dart';
-import 'package:insta_node_app/views/add/screens/widgets/button_add_post.dart';
+import 'package:insta_node_app/views/add/screens/widgets/button_type_add_post.dart';
 
 class AddScreen extends StatefulWidget {
   final Function? handleNaviTapped;
@@ -48,7 +48,7 @@ class _AddScreenState extends State<AddScreen> {
             ),
           ),
           Positioned(
-              bottom: 20,
+              bottom: 100,
               right: 20,
               child: AddPostButton(handleChangeType: navigationTapped))
         ],
