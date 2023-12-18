@@ -10,8 +10,8 @@ SocialApp is a social networking application built with Flutter on the client si
 | [Flutter](https://docs.flutter.dev/)             | [Node.js](https://nodejs.org/)                  |
 | [Bloc](https://bloclibrary.dev/#/)         | [Express.js](https://expressjs.com/)            |
 | [Provider](https://pub.dev/packages/provider)                   | [MongoDB](https://www.mongodb.com/)             |
-|     | [TypeScript](https://www.typescriptlang.org/)  |
-| [Socket.IO](https://socket.io/)                  | [Socket.IO](https://socket.io/)                 |
+|  [Socket.IO](https://socket.io/)    | [TypeScript](https://www.typescriptlang.org/)  |
+|                  | [Socket.IO](https://socket.io/)                 |
 
 ## Features
 
