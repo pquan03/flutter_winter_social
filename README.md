@@ -1,6 +1,6 @@
 # Social App
 
-SocialApp is a social networking application built with Flutter on the client side and Node.js, Express.js, and MongoDB on the server side. TypeScript is used throughout the project to enhance code quality and maintainability. Real-time communication is facilitated by Socket.IO.
+SocialApp is a social networking application built with Flutter on the client side and Node.js, Express.js, and MongoDB on the server side. Real-time communication is facilitated by Socket.IO.
 
 
 ## Technologies Used
